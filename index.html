@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Configure a self-signed certificate in Ubuntu to allow HTTPS access with an ASP.NET Core 2.1 application">
+    <meta name="author" content="Daniel Valcarce">
+
+    <!-- Load JQuery at the beginning in order to run functions in comments.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://davamix.github.io/styles/main.css">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg fixed-top" style="background-color: dodgerblue">
+        <a class="navbar-brand" href="#">Daniel Valcarce - .NET Developer</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarLinks" aria-controls="navbarLinks"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fas fa-bars fa-2x"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarLinks">
+            <ul class="navbar-nav mr-4">
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://github.com/davamix" title="Code on Github">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-github fa-2x"></i>
+                            <span>Github</span>
+
+                        </div>
+                        <i class="fab fa-github fa-3x d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://twitter.com/davamix" title="@davamix on Twitter">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-twitter-square fa-2x"></i>
+                            <span>Twitter</span>
+
+                        </div>
+                        <i class="fab fa-twitter-square fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://www.linkedin.com/in/danielvalcarce/" title="Linkedin profile">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-linkedin fa-2x"></i>
+                            <span>Linkedin</span>
+
+                        </div>
+                        <i class="fab fa-linkedin fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://davamix.wordpress.com/" title="Old blog on Wordpress">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-wordpress fa-2x"></i>
+                            <span>Old blog</span>
+
+                        </div>
+                        <i class="fab fa-wordpress fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="blog">
+            <div class="container">
+                <div class="post">
+
+                    <div class="title">
+                        <a href="https://davamix.giithub.io/posts/asp-net-core-2-with-https.html">
+                            <h1>Configure a self-signed certificate in Ubuntu to allow HTTPS access with an ASP.NET Core 2.1 application</h1>
+                        </a>
+                        <span class="d-flex p-2 date">17-07-2018</span>
+                        <hr />
+                    </div>
+
+                    <p>1. Create an asp.net core project as usual and check if you have access using HTTPS.</p>
+                    <div class="code">
+                        <code class="prompt">dotnet new web -o Sample</code>
+                        <code class="prompt">cd Sample</code>
+                        <code class="prompt">dotnet restore</code>
+                        <code class="prompt">dotnet run</code>
+                        
+                    </div>
+                    <p>
+                        1.1 Navigate to
+                        <a href="https://localhost:5001">https://localhost:5001</a>. Can you read the message
+                        <mark>Hello World!</mark>? Congrats, you can stop reading this guide. If Firefox shows you a
+                        <mark>Secure Connection Failed</mark> message or you have an error message in console like this:
+                    </p>
+                    <div class="code">
+                        <code>
+                            dbug: HttpsConnectionAdapter[1]<br/>
+                            Failed to authenticate HTTPS connection.<br/>
+                            System.Security.Authentication.AuthenticationException: Authentication failed, see inner exception. ---> Interop+Crypto+OpenSslCryptographicException: error:2006D002:BIO routines:BIO_new_file:system lib<br/>
+                        </code>
+                    </div>
+                    Keep reading.
+
+                    <p>2. Install<mark>ca-certificates</mark> and <mark>openssl</mark> packages</p>
+                    <div class="code">
+                        <code class="prompt">
+                            sudo apt-get install ca-certificates openssl
+                        </code>
+                    </div>
+                    
+                    <p>3. Genereate the .pfx certificate with dotnet command [<a href="#link1">1</a>]</p>
+                    <div class="code">
+                        <code class="prompt">
+                            dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p crypticpassword
+                        </code>
+                    </div>
+                    
+                    <p>4. Extract the .crt file [<a href="#link2">2</a>]</p>
+                    <div class="code">
+                        <code class="prompt">cd ${HOME}/.aspnet/https/</code>
+                        <code class="prompt">openssl pkcs12 -in aspnetapp.pfx -nocerts -out aspnetapp.pfx</code>
+                        <code class="prompt">openssl pkcs12 -in aspnetapp.pfx -clcerts -nokeys -out aspnetapp.crt</code>
+                    </div>
+                    
+                    <p>5. Copy the .crt file to the certificates location [<a href="#link3">3</a>]</p>
+                    <div class="code">
+                        <code class="prompt">
+                            sudo cp aspnetapp.crt /usr/local/share/ca-certificates/
+                        </code>
+                    </div>
+                    
+                    <p>6. Change the permissions to allow to read the certificate [<a href="#link4">4</a>]</p>
+                    <div class="code">
+                        <code class="prompt">
+                            sudo chmod +r /usr/local/share/ca-certificates/*
+                        </code>
+                    </div>
+                    
+                    <p>7. Run the application again and check the https address</p>
+                    <div class="code">
+                        <code class="prompt">
+                            dotnet run
+                        </code>
+                    </div>
+                    <p>
+                        Navigate to <a href="https://localhost:5001">https://localhost:5001</a>. If you have any error, you can check the links below to know more about each step.
+                    </p>
+                    <div class="post-links-section">
+                        <h2>LINKS</h2>
+                        <span id="link1">[1] <a href="https://github.com/dotnet/dotnet-docker/blob/master/samples/aspnetapp/aspnetcore-docker-https.md">https://github.com/dotnet/dotnet-docker/blob/master/samples/aspnetapp/aspnetcore-docker-https.md</a></span><br />
+                        <span id="link2">[2] <a href="https://www.markbrilman.nl/2011/08/howto-convert-a-pfx-to-a-seperate-key-crt-file/">https://www.markbrilman.nl/2011/08/howto-convert-a-pfx-to-a-seperate-key-crt-file/</a></span><br />
+                        <span id="link3">[3] <a href="https://stackoverflow.com/a/44160125">https://stackoverflow.com/a/44160125</a></span><br />
+                        <span id="link4">[4] <a href="https://github.com/dotnet/cli/issues/9376#issuecomment-393954876">https://github.com/dotnet/cli/issues/9376#issuecomment-393954876</a></span><br />
+                    </div>
+                </div> <!-- post -->
+
+                <div class="footer mt-4">
+                    <a class="comments" href="https://davamix.github.io/posts/post-a.html#post-comments">
+                        <div id="blog-post-date"></div>
+                    </a>
+                    <hr />
+                </div>
+            </div>
+        </div> <!-- blog -->
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.2.0/js/all.js" integrity="sha384-4oV5EgaV02iISL2ban6c/RmotsABqE4yZxZLcYMAdG7FAPsyHYAPpywE9PJo+Khy"
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://davamix.github.io/scripts/comments.js"></script>
+    <script type="text/javascript">
+        GetTotalComments( 1 );
+    </script>
+
+    
+</body>
+
+</html>

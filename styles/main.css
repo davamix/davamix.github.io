@@ -1,0 +1,139 @@
+.navbar-brand{
+    text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
+    padding: .25rem 0;
+    color: rgba(255, 255, 255, 1);
+    background-color: transparent;
+}
+.navbar-brand:hover,
+.navbar-brand:focus{
+    border-bottom-color: rgba(255, 255, 255, 1);
+    color: rgba(255, 255, 255, 1); 
+}
+
+.nav-link{
+    cursor: pointer;
+    text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
+    padding: .25rem 0;
+    color: rgba(255, 255, 255, 1);
+    background-color: transparent;
+    border-bottom: .25rem solid transparent;
+}
+
+.nav-link:hover,
+.nav-link:focus{
+    border-bottom-color: rgba(255, 255, 255, 1);
+    color: rgba(255, 255, 255, 1);
+}
+
+.navbar-collapse{
+    justify-content: flex-end;
+}
+
+.blog{
+    margin:10rem 0;
+    position: relative;
+}
+
+.blog .footer .comments{
+    color: dodgerblue;
+    text-align: right;
+}
+.blog .footer hr{
+    margin-top: .5rem;
+}
+
+/* Post page */
+.post p{
+    padding-top: 1.5rem;
+    padding-bottom: 0;
+}
+
+.post .title h1{
+    color: dodgerblue;
+}
+
+.post .title hr{
+    margin:0;
+}
+
+.post .title .date{
+    font-size: .9rem;
+    color:#ff9f00;
+    justify-content: flex-end;
+}
+
+.post .title .date::before{
+    
+    content: "Published on ";
+    margin-right: .5rem;
+}
+
+.post .post-links-section{
+    padding-bottom: 1rem;
+}
+
+.code{
+    border: .1em solid dodgerblue;
+    padding: .5rem;
+    border-radius: 3px;
+}
+
+.code .prompt::before{
+    content: "$ ";
+    color:#333;
+}
+.code .prompt::after{
+    content: "\A";
+    white-space: pre;
+}
+
+.comments-header button{
+    background-color:dodgerblue;
+    color: rgba(255, 255, 255, 1);
+    
+}
+.comments-header button:hover,
+.comments-header button:focus{
+    color: rgba(255, 255, 255, 1);
+}
+
+.comments-section{
+    padding-top: 1rem;
+}
+
+.comment-box{
+    background-color: rgba(30, 144, 255, .1);
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+}
+
+.comment-data-box{
+    display: flex;
+    align-items: center;
+    padding: .5rem;
+}
+.comment-picture img{
+    width:64px;
+}
+.comment-user-date{
+    margin-left: 1rem;
+}
+
+.comment-username{
+    font-size: 1.2rem;
+}
+
+.comment-date{
+    font-size: .9rem;
+}
+
+.comment-value{
+    margin: 1rem 0 0 1rem;
+}
+
+
+
+
+
+
