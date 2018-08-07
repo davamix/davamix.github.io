@@ -163,11 +163,11 @@
 
                 <div class="footer mt-4">
                     <a class="comments" href="https://davamix.github.io/posts/asp-net-core-2-with-https.html#post-comments">
-                        <div id="blog-post-date"></div>
+                        <div id="blog-post-date1"></div>
                     </a>
                     <hr />
                     <script type="text/javascript">
-                        GetTotalComments( 1 );
+                        GetTotalComments(1);
                     </script>
                 </div>
 
@@ -184,40 +184,36 @@
                             On Windows 10 is not possible to install .NET Framework 3.5 using the <mark>Turn Windows features on or off</mark> option because the error <mark>0x800F081F</mark>.
                             In my case I installed it following the steps below:
                         </p>
-                        <ol>
-                            <li>Go to https://my.visualstudio.com and download "Windows 10 Features on Demand" iso (x86 or x64).</li>
-                            <li>Mount the iso</li>
-                            <li>
-                                Open a PowerShell command line as Administrator and run the next command
-                                <div class="code">
-                                    <code>Dism /online /enable-feature /featurename:NetFX3 /All /Source:D:\ /LimitAccess</code>
-                                </div>
-                            </li>
-                        </ol>
-    
-                        <p>
-                            The output should something like this:
-                        </p>
+                        <p>1. Go to <a href="https://my.visualstudio.com">https://my.visualstudio.com</a> and download <mark>Windows 10 Features on Demand</mark> iso (x86 or x64).</p>
+                        <p>2. Mount the iso</p>
+                        <p>3. Open a PowerShell command line as Administrator and run the next command</p>
                         <div class="code">
-                            Deployment Image Servicing and Management tool<br />
-                            Version: 10.0.14393.0<br />
-                            <br />
-                            Image Version: 10.0.14393.0<br />
-                            <br />
-                            Enabling feature(s)<br />
-                            [==========================100.0%==========================]<br />
-                            The operation completed successfully.
+                            <code>Dism /online /enable-feature /featurename:NetFX3 /All /Source:D:\ /LimitAccess</code>
+                        </div>
+                        
+                        <p>The output should something like this:</p>
+                        <div class="code">
+                            <code>
+                                Deployment Image Servicing and Management tool<br />
+                                Version: 10.0.14393.0<br />
+                                <br />
+                                Image Version: 10.0.14393.0<br />
+                                <br />
+                                Enabling feature(s)<br />
+                                [==========================100.0%==========================]<br />
+                                The operation completed successfully.
+                            </code>
                         </div>
     
                         <p>If you go to "Turn Windows features on or off" the option fot .NET Framework 3.5 must be cheked.</p>
                     </div> <!-- post -->
                     <div class="footer mt-4">
                         <a class="comments" href="https://davamix.github.io/posts/install-net-3-5-on-Windows-10.html#post-comments">
-                            <div id="blog-post-date"></div>
+                            <div id="blog-post-date2"></div>
                         </a>
                         <hr />
                         <script type="text/javascript">
-                            GetTotalComments( 2 );
+                            GetTotalComments(2);
                         </script>
                     </div>
             </div>

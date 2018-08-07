@@ -43,9 +43,9 @@ function GetTotalComments(comment_id, page_id){
             dataType: "json",
             success: function (comments, textStatus, jqXHR) {
                 var t = comments.length;
-                $("#blog-post-date").append("<div>Comments (" + t + ")</div>");
+                $("#blog-post-date" + comment_id).append("<div>Comments (" + t + ")</div>");
             },error: function () {
-                $("#blog-post-date").append("No comment");
+                $("#blog-post-date" + comment_id).append("No comment");
             }
 
             
