@@ -68,7 +68,7 @@
     margin-right: .5rem;
 }
 
-.post .post-links-section{
+.post .post-references-section{
     padding-bottom: 1rem;
 }
 
@@ -76,6 +76,11 @@
     border: .1em solid dodgerblue;
     padding: .5rem;
     border-radius: 3px;
+}
+
+pre code {
+    white-space: pre-line;
+    background-color: transparent;
 }
 
 .code .prompt::before{
