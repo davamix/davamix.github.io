@@ -6,7 +6,7 @@
 // todo: pages, configure issue url, open in new window?
 
 var CurrentPage = 0;
-var repo_name = "davamix/BlogTemp";
+var repo_name = "davamix/davamix.github.io";
 
 function ParseLinkHeader(link) {
     var entries = link.split(",");
@@ -31,7 +31,7 @@ function GetTotalComments(comment_id, page_id){
     var api_issue_url = api_url + "/issues/" + comment_id;
     var api_comments_url = api_url + "/issues/" + comment_id + "/comments" + "?page=" + page_id;
 
-    var url = "https://github.com/davamix/BlogTemp/issues/" + comment_id;
+    var url = "https://github.com/" + repo_name + "/issues/" + comment_id;
 
     $(document).ready(function () {
         $.getJSON(api_issue_url, function (data) {
@@ -61,7 +61,7 @@ function DoGithubComments(comment_id, page_id) {
     var api_issue_url = api_url + "/issues/" + comment_id;
     var api_comments_url = api_url + "/issues/" + comment_id + "/comments" + "?page=" + page_id;
 
-    var url = "https://github.com/davamix/BlogTemp/issues/" + comment_id;
+    var url = "https://github.com/" + repo_name + "/issues/" + comment_id;
 
     $(document).ready(function () {
         $.getJSON(api_issue_url, function (data) {
