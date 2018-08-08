@@ -64,12 +64,30 @@
 
 .post .title .date::before{
     
-    content: "Published on ";
+    content: "Written on ";
     margin-right: .5rem;
 }
 
 .post .post-references-section{
     padding-bottom: 1rem;
+}
+
+.note{
+    background-color: rgba(244, 244, 244, 1);
+    padding: 1rem;
+    margin: .5rem;
+    border-radius: 5px;
+    font-size: .9rem;
+}
+
+/* To avoid to have the content behind the fixed navbar */
+span.anchor::before{
+    content: '';
+    float: left;
+    position: relative;
+    width: 0;
+    height: 5rem;
+    margin-top: -5rem; 
 }
 
 .code{
