@@ -74,9 +74,10 @@
 
 .note{
     background-color: rgba(244, 244, 244, 1);
-    padding: 1rem;
+    padding: 1rem 0 1rem 2rem;
     margin: .5rem;
-    border-radius: 5px;
+    border-radius: 0 5px 5px 0;
+    border-left: 3px solid #333;
     font-size: .9rem;
 }
 
