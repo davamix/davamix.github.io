@@ -75,6 +75,7 @@
     <main>
         <div class="blog">
             <div class="container">
+                <!-- POST: Configure a self-signed certificate in Ubuntu to allow HTTPS access with an ASP.NET Core 2.1 application -->
                 <div class="post">
 
                     <div class="title">
@@ -171,6 +172,7 @@
                     </script>
                 </div>
 
+                <!-- POST: Install .NET Framework 3.5 on Windows 10-->
                 <div class="post">
                         <div class="title">
                             <a href="https://davamix.github.io/posts/install-net-3-5-on-Windows-10.html">
@@ -216,6 +218,161 @@
                             GetTotalComments(2);
                         </script>
                     </div>
+
+                    <!-- POST: Create and configure a local NuGet server -->
+                    <div class="post">
+
+                            <div class="title">
+                                <h1>Create and configure a local NuGet server</h1>        
+                                <span class="d-flex p-2 date">20-08-2016</span>
+                                <hr />
+                            </div>
+        
+                            <p>
+                                This guide will work with three project, the Nuget Server project, the Nuget Package project that contains a simple library and a Sample project to use the package created.
+                            </p>
+        
+                            <h3>Nuget Server project</h3>
+                            <p>
+                                <strong>1.</strong> Install the IIS server if you don't have it yet.<br/>
+                                <strong>2.</strong> Create a new site, NugetServer for example, to host the server.<br/>
+                                <strong>3.</strong> Configure the port 8080 if its free, or any other as you wish.<br/>
+                            </p>
+                            <p>
+                                From Visual Studio:<br/>
+                                <strong>1.</strong> Create an ASP.NET web project with the <mark>Empty</mark> template. <br/>
+                                <strong>2.</strong> Install the <mark>Nuget.Server</mark> package.<br/>
+                                <span class="anchor" id="nuget-server-note1"></span>
+                                <div class="note">
+                                    <strong>Note</strong><br/>
+                                    Check the <em>web.config</em> and be sure that the <mark>targetFramework</mark> version from <mark>httpRuntime</mark> entry is the same that <mark>targetFramework</mark> from <mark>compilation</mark> entry<br />
+                                    If you have more than once <mark>compilation</mark> entry then remove the different one.
+                                </div>
+                                <strong>3.</strong> Publish the project into your IIS server with the options below:
+                                <div class="note">
+                                    <strong>Note</strong><br/>
+                                    To publish the project on IIS you need to run Visual Studio as Administrator;
+                                </div>
+                            
+                                <p>Connection:</p>
+                                <div class="code">
+                                    <code>
+                                        - Publish method: Web deploy<br/>
+                                        - Server: localhost (no port number)<br/>
+                                        - Site name: NugetServer (site name in IIS)<br/>
+                                        - Destination URL: http://localhost:8080 (site address)
+                                    </code>
+                                </div>
+        
+                                <p>Settings:</p>
+                                <div class="code">
+                                    <code>
+                                        - Configuration: Release<br/>
+                                        - Expand <mark>File Publish Options</mark> and check <mark>Exclude file from the App_Data folder</mark>
+                                    </code>
+                                </div>
+                            </p>
+                            
+                            <h3>Nuget Package project</h3>
+                            <p>
+                                In Visual Studio create a new <mark>Class Library</mark> project and add a simple method that returns whatever value in order to test it later in the Sample project.<br/>
+                                Download <em>Nuget.exe</em> from <a href="https://www.nuget.org/downloads" target="_blank">https://www.nuget.org/downloads</a> and run the next command where the <em>.csproj</em> is located in order to create the <mark>.nuspec</mark> file.</p>
+                            <div class="code">
+                                <code class="prompt">
+                                    nuget.exe spec
+                                </code>
+                            </div>
+        
+                            <div class="note">
+                                <strong>Note</strong><br/>
+                                If you have an error like <br/>
+                                <code>Unexpected token 'spec' in expression or statement. + CategoryInfo : ParserError: (:) [], ParentContainsErrorRecordException + FullyQualifiedErrorId : UnexpectedToken</code><br/>
+                                Try to copy the <em>nuget.exe</em> to the same folder that <em>.csproj</em> file and run it from there.
+                            </div>
+                            
+                            <p>Open the <em>.nuspec</em> file created and complete all information.</p>
+                            <p>Build the project in <mark>Release</mark> mode and generate the nuget package with:</p>
+                            <div class="code">
+                                <code class="prompt">
+                                    nuget.exe pack Project_name.csproj -Prop Configuration=Release
+                                </code>
+                            </div>
+                            <div class="note">
+                                <strong>Note</strong><br/>
+                                The previous command could fail if you don't fill correctly the <em>.nuspec</em> file.
+                            </div>
+                            <p>Finally copy the <em>.nupkg</em> file created into the <mark>Packages</mark> folder of the NugetServer.</p>
+        
+                            <h3>Sample project</h3>
+                            <p>
+                                Create a new <mark>Console App</mark> project and configure the Nuget repository.
+                                <div class="code">
+                                    <code>Tools -> Nuget Package Manager -> Package Manager Settings -> Package Sources</code>
+                                </div>
+                                
+                                <p>Add a new one with this options:</p>
+                                <div class="code">
+                                    <code>
+                                            Name: Local Server<br/>
+                                            Source: http://localhost:8080/nuget<br />
+                                            Click on Update then Ok
+                                    </code>
+                                </div>
+                                <div class="note">
+                                    <strong>Note</strong><br/>
+                                    If there is an error getting the list of packages from local server like the image below
+                                    <img src="../images/create-local-nuget-server-1.PNG" title="Error ocurred getting the packages list from local Nuget server"><br/>
+                                    check the Output console to know more about the error.<br/>
+                                    <code>
+                                        [Local Server] The V2 feed at 'http://localhost:8080/Search()?$filter=IsLatestVersion&searchTerm=''&targetFramework='net47'&includePrerelease=false&$skip=0&$top=26&semVerLevel=2.0.0' returned an unexpected status code '500 Internal Server Error'.
+                                    </code><br/>
+                                    In this case the error 500 means that the sever cannot server the packages and is related with the note in the <a href="#nuget-server-note1">Nuget Server project</a> section.
+                                </div>
+                                If all works correctly then you have access to your package and all its classes and methods.
+                            </p>
+                            
+                            <h3>Extra: Automatise the package creation</h3>
+                            <p>
+                                This is an alternative version of the Nuget Package project. Instead of create the package and copy it to the server manually, these tasks are performed by a script when you build the project.
+                                </p>
+                                <p>
+                                Start in the same way creating the <mark>Class Library</mark> project and create a folder <mark>Tools</mark> in the solution folder then copy the <em>nuget.exe</em> file into it.<br/>
+                                Create a <mark>Post-Build event</mark> with the content below to create the nuget package automatically and be moved to the Packages folder of the Nuget server</p>
+                                <div class="code">
+                                    <code>
+                                        "$(SolutionDir)Tools\nuget.exe" pack "$(ProjectPath)" -Prop Configuration=Release<br/>
+                                        <br/>
+                                        if exist "$(TargetDir)*.nupkg" (<br/>
+                                        &emsp;&emsp;move "$(TargetDir)*.nupkg" "D:\path_to_server\Packages"<br/>
+                                        )
+                                    </code>
+                                </div>         
+                                Be sure that the version of the library has been incremented after the build. I use <a href="https://visualstudiogallery.msdn.microsoft.com/dd8c5682-58a4-4c13-a0b4-9eadaba919fe/">Automatic Versions</a>
+                                Now if you build several times you can check in the Sample project the latest version available for download.
+                                <div class="note">
+                                    <strong>Note</strong><br/>
+                                    If you don't see the new versions available that means the new nuget packages has not been generated.<br/>
+                                    You can check all versions available of the package in the <em>Packages/package_name</em> folder on Nuget Sever. If there is only one, means that something gone wrong.<br />
+                                    If you are reusing the Nuget Package Sample project be sure to remove the <em>.nuspec</em> and <em>.nupkg</em> files from project folder because you don't needed now also remove the <em>.nupkg</em> file from the Nuget Server that you copied manually.
+                                </div>
+                            </p>
+        
+                            <div class="post-references-section">
+                                <h2>References</h2>
+                                <a href="http://docs.nuget.org/create/hosting-your-own-nuget-feeds" target="_blank">Hosting Your Own NuGet Feeds</a><br/>
+                                <a href="http://docs.nuget.org/create/Creating-and-Publishing-a-Package" target="_blank">Creating and Publishing a Package</a>
+                            </div>
+                        </div> <!-- post -->
+                        <div class="footer mt-4">
+                            <a class="comments" href="https://davamix.github.io/posts/create-local-nuget-server.html#post-comments">
+                                <div id="blog-post-date3"></div>
+                            </a>
+                            <hr />
+                            <script type="text/javascript">
+                                GetTotalComments(3);
+                            </script>
+                        </div>
+
             </div>
         </div> <!-- blog -->
     </main>
