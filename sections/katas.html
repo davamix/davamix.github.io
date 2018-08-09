@@ -4,23 +4,22 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content=".NET Developer - Blog">
+    <meta name="description" content="Configure a self-signed certificate in Ubuntu to allow HTTPS access with an ASP.NET Core 2.1 application">
     <meta name="author" content="Daniel Valcarce">
 
     <!-- Load JQuery at the beginning in order to run functions in comments.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://davamix.net/scripts/comments.js"></script>
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
         crossorigin="anonymous">
-
     <link rel="stylesheet" href="https://davamix.net/styles/main.css">
 </head>
 
 <body>
-
     <nav class="navbar navbar-expand-lg fixed-top" style="background-color: dodgerblue">
-        <a class="navbar-brand" href="https://davamix.net/index.html">Daniel Valcarce - .NET Developer</a>
+        <a class="navbar-brand" href="#">Daniel Valcarce - .NET Developer</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarLinks" aria-controls="navbarLinks"
             aria-expanded="false" aria-label="Toggle navigation">
             <i class="far fa-bars fa-2x" style="color:white"></i>
@@ -32,10 +31,10 @@
                 <li class="nav-item">
                     <a class="nav-link" target="_blank" href="https://davamix.net" title="Home - Blog">
                         <div class="d-inline-block d-lg-none">
-                            <i class="fas fa-home fa-2x"></i>
+                            <i class="fal fa-home fa-2x"></i>
                             <span>Home - Blog</span>
                         </div>
-                        <i class="fas fa-home fa-3x d-lg-inline-block d-none"></i>
+                        <i class="fal fa-home fa-3x d-lg-inline-block d-none"></i>
                     </a>
                 </li>
             </ul>
@@ -43,10 +42,10 @@
                 <li class="nav-item">
                     <a class="nav-link" target="_blank" href="https://davamix.net/sections/katas.html" title="Katas">
                         <div class="d-inline-block d-lg-none">
-                            <i class="fal fa-code fa-2x"></i>
+                            <i class="fas fa-code fa-2x"></i>
                             <span>Katas</span>
                         </div>
-                        <i class="fal fa-code fa-3x d-lg-inline-block d-none"></i>
+                        <i class="fas fa-code fa-3x d-lg-inline-block d-none"></i>
                     </a>
                 </li>
             </ul>
@@ -67,7 +66,7 @@
         <div class="collapse navbar-collapse" id="navbarLinks">
             <ul class="navbar-nav mr-4">
                 <li class="nav-item">
-                    <a class="nav-link" target="_blank" href="https://github.com/davamix">
+                    <a class="nav-link" target="_blank" href="https://github.com/davamix" title="Code on Github">
                         <div class="d-inline-block d-lg-none">
                             <i class="fab fa-github fa-2x"></i>
                             <span>Github</span>
@@ -77,7 +76,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" target="_blank" href="https://twitter.com/davamix">
+                    <a class="nav-link" target="_blank" href="https://twitter.com/davamix" title="@davamix on Twitter">
                         <div class="d-inline-block d-lg-none">
                             <i class="fab fa-twitter-square fa-2x"></i>
                             <span>Twitter</span>
@@ -87,7 +86,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" target="_blank" href="https://www.linkedin.com/in/danielvalcarce/">
+                    <a class="nav-link" target="_blank" href="https://www.linkedin.com/in/danielvalcarce/" title="Linkedin profile">
                         <div class="d-inline-block d-lg-none">
                             <i class="fab fa-linkedin fa-2x"></i>
                             <span>Linkedin</span>
@@ -120,76 +119,13 @@
         </div>
     </nav>
 
-    <main>
-        <div class="blog">
-            <div class="container">
-                <div class="post">
 
-                    <div class="title">
-                        <h1>Install .NET Framework 3.5 on Windows 10</h1>        
-                        <span class="d-flex p-2 date">25-04-2017</span>
-                        <hr />
-                    </div>
-
-                    <p>
-                        On Windows 10 is not possible to install .NET Framework 3.5 using the <mark>Turn Windows features on or off</mark> option because the error <mark>0x800F081F</mark>.
-                        In my case I installed it following the steps below:
-                    </p>
-                    <p>1. Go to <a href="https://my.visualstudio.com">https://my.visualstudio.com</a> and download <mark>Windows 10 Features on Demand</mark> iso (x86 or x64).</p>
-                    <p>2. Mount the iso</p>
-                    <p>3. Open a PowerShell command line as Administrator and run the next command</p>
-                    <div class="code">
-                        <code>Dism /online /enable-feature /featurename:NetFX3 /All /Source:D:\ /LimitAccess</code>
-                    </div>
-                    
-                    <p>The output should something like this:</p>
-                    <div class="code">
-                        <code>
-                            Deployment Image Servicing and Management tool<br />
-                            Version: 10.0.14393.0<br />
-                            <br />
-                            Image Version: 10.0.14393.0<br />
-                            <br />
-                            Enabling feature(s)<br />
-                            [==========================100.0%==========================]<br />
-                            The operation completed successfully.
-                        </code>
-                    </div>
-
-                    <p>If you go to <mark>Turn Windows features on or off</mark> the option fot .NET Framework 3.5 must be cheked.</p>
-                </div> <!-- post -->
-
-                <hr />
-
-                <!-- Comments section (change ID comment on address and function parameter-->
-                <div id="post-comments" class="comments-section">
-                    <div class="comments-header">
-                        <a href="https://github.com/davamix/davamix.github.io/issues/2#new_comment_field" rel="nofollow"  target="_blank">
-                            <button type="button" class="btn float-right">
-                                Post a comment on Github
-                            </button>
-                        </a>
-                        <h2>COMMENTS</h2>    
-                    </div>
-                    <div id="gh-comments-list"></div>
-                    <a href="javascript:void(0)" id="gh-load-comments" class="btn" style="display:none">Load more comments</a>
-                </div>
-                
-            </div>
-        </div> <!-- blog -->
-    </main>
-
-
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
         crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-        <script defer src="https://pro.fontawesome.com/releases/v5.2.0/js/all.js" integrity="sha384-yBZ34R8uZDBb7pIwm+whKmsCiRDZXCW1vPPn/3Gz0xm4E95frfRNrOmAUfGbSGqN" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://davamix.net/scripts/comments.js"></script>
-    <script type="text/javascript">
-        DoGithubComments( 2 );
-    </script>
+    <script defer src="https://pro.fontawesome.com/releases/v5.2.0/js/all.js" integrity="sha384-yBZ34R8uZDBb7pIwm+whKmsCiRDZXCW1vPPn/3Gz0xm4E95frfRNrOmAUfGbSGqN"
+        crossorigin="anonymous"></script>
 
 </body>
 
