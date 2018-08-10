@@ -1,0 +1,64 @@
+.section{
+    margin-top:3rem;
+}
+
+.section.top{
+    margin-top:10rem;
+}
+
+.card{
+    background-color: rgba(244, 244, 244, 1);
+    width: 20rem;
+    margin: 1rem;
+    border:0;
+    border-radius: 0;
+}
+
+.card .header{
+    background-color: rgba(30, 144, 255, .1);
+}
+
+.card .header .title{
+    font-size:1.25rem;
+    padding:1rem 1rem 0 1rem;
+}
+
+.card .header .language{
+    font-size: .8rem;
+    text-align: right;
+    width: 100%;
+    background-color: rgba(30, 144, 255, .5);
+    padding-right: .5rem;
+}
+
+.card .header .language.cpp{
+    background-color: rgba(243, 75, 125, .2);
+}
+
+.card .header .language.csharp{
+    background-color: rgba(23, 134, 0, .2);
+}
+
+.card .header .language.shell{
+    background-color: rgba(110, 74, 126, .2);
+}
+
+.card .header .language.javascript{
+    background-color: rgba(241, 224, 90, .2);
+}
+
+.card .body{
+    padding-left: 1rem;
+    padding-top: 1rem;
+    height: 100%;
+}
+
+.card .footer{
+    border-radius: 0;
+    width: 100%;
+}
+
+.card-footer{
+    padding: 0;
+    align-content: stretch;
+}

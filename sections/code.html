@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Configure a self-signed certificate in Ubuntu to allow HTTPS access with an ASP.NET Core 2.1 application">
+    <meta name="author" content="Daniel Valcarce">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://davamix.net/styles/code-section.css">
+    <link rel="stylesheet" href="https://davamix.net/styles/main.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top" style="background-color: dodgerblue">
+        <a class="navbar-brand" href="https://davamix.net">Daniel Valcarce - .NET Developer</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarLinks" aria-controls="navbarLinks"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <i class="far fa-bars fa-2x" style="color:white"></i>
+        </button>
+
+        <!-- Section links -->
+        <div class="collapse navbar-collapse" id="navbarLinks">
+            <ul class="navbar-nav mr-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="https://davamix.net" title="Home - Blog">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fal fa-home fa-2x"></i>
+                            <span>Home - Blog</span>
+                        </div>
+                        <i class="fal fa-home fa-3x d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav mr-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" title="Code examples and Katas">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fas fa-code fa-2x"></i>
+                            <span>Code</span>
+                        </div>
+                        <i class="fas fa-code fa-3x d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+            </ul>
+            <!-- <ul class="navbar-nav mr-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="https://davamix.net/sections/projects.html" title="Personal projects">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fal fa-lightbulb fa-2x"></i>
+                            <span>Personal projects</span>
+                        </div>
+                        <i class="fal fa-lightbulb fa-3x d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+            </ul> -->
+        </div>
+
+        <!-- Social links -->
+        <div class="collapse navbar-collapse" id="navbarLinks">
+            <ul class="navbar-nav mr-4">
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://github.com/davamix" title="Code on Github">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-github-squared fa-2x"></i>
+                            <span>Github</span>
+
+                        </div>
+                        <i class="fab fa-github-squared fa-3x d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://twitter.com/davamix" title="@davamix on Twitter">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-twitter-square fa-2x"></i>
+                            <span>Twitter</span>
+
+                        </div>
+                        <i class="fab fa-twitter-square fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://www.linkedin.com/in/danielvalcarce/" title="Linkedin profile">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-linkedin fa-2x"></i>
+                            <span>Linkedin</span>
+
+                        </div>
+                        <i class="fab fa-linkedin fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://davamix.wordpress.com/" title="Old blog on Wordpress">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-wordpress fa-2x"></i>
+                            <span>Old blog</span>
+
+                        </div>
+                        <i class="fab fa-wordpress fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="mailto:davamix@gmail.com?subject=[DavamixNet]" title="Contact me at davamix@gmail.com">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="far fa-at fa-2x"></i>
+                            <span>Contact me at davamix@gmail.com</span>
+
+                        </div>
+                        <i class="far fa-at fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Katas -->
+        <div class="section top">
+            <div class="title">
+                <h1>Katas</h1>
+                <hr />
+            </div>
+
+            <div class="row">
+                <div class="card">
+                    <div class="header">
+                        <div class="title">Automorphic Number</div>
+                        <div class="language cpp">C++</div>
+                    </div>
+                    <div class="body">
+                        <p>Kata in C++</p>
+                        <p>Google Test</p>
+                    </div>
+                    <div class="">
+                        <a href="https://github.com/davamix/AutomorphicNumberKataCpp" target="_blank" class="btn btn-primary footer" title="Automorphic Number Kata in C++ - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">Tennis Kata</div>
+                        <div class="language cpp">C++</div>
+                    </div>
+                    <div class="body">
+                        <p>Kata in C++</p>
+                        <p>Google Test</p>
+                    </div>
+                    <div class="">
+                        <a href="https://github.com/davamix/TennisKataCpp" target="_blank" class="btn btn-primary footer" title="Tennis Kata in C++ - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">String Calculator</div>
+                        <div class="language cpp">C++</div>
+                    </div>
+                    <div class="body">
+                        <p>Kata in C++</p>
+                        <p>Google Test</p>
+                    </div>
+                    <div class="">
+                        <a href="https://github.com/davamix/StringCalculatorCpp" target="_blank" class="btn btn-primary footer" title="String Calculator Kata in C++ - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">String Calculator</div>
+                        <div class="language csharp">C#</div>
+                    </div>
+                    <div class="body">
+                        <p>Kata in C#</p>
+                        <p>NUnit</p>
+                    </div>
+                    <div class="">
+                        <a href="https://github.com/davamix/Enero-String-Calculator/tree/master/davamix" target="_blank" class="btn btn-primary footer"
+                            title="String Calculator Kata in C# - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            <!-- row -->
+        </div>
+        <!-- section -->
+
+
+        <!-- Templates -->
+        <div class="section">
+            <div class="title">
+                <h1>Templates</h1>
+                <hr />
+            </div>
+
+            <div class="row">
+                <div class="card">
+                    <div class="header">
+                        <div class="title">ASP.NET Core Web API Controller Template</div>
+                        <div class="language csharp">C#</div>
+                    </div>
+                    <div class="body">
+                        <p>Template to create a controller file in an ASP.NET Core Web API project.</p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/AspnetWebApiControllerTemplate" target="_blank" class="btn btn-primary footer" title="Template to create a controller file in an ASP.NET Core Web API project - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">ASP.NET Core Web API Slim template</div>
+                        <div class="language csharp">C#</div>
+                    </div>
+                    <div class="body">
+                        <p>Template for ASP.NET Core project based on built-in web template.</p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/AspnetWebApiSlimTemplate" target="_blank" class="btn btn-primary footer" title="Template for ASP.NET Core project based on built-in web template. - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">C++ project template</div>
+                        <div class="language shell">Shell Script</div>
+                    </div>
+                    <div class="body">
+                        <p>Shell script to create a folder structure for a C++ project with Google Test as a testing framework.
+                        </p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/Scripts" target="_blank" class="btn btn-primary footer" title="C++ template script - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">Prism Component for vS</div>
+                        <div class="language csharp">c#</div>
+                    </div>
+                    <div class="body">
+                        <p>Project template to create a basic structure for a Prism WPF component.</p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/VSTemplates" target="_blank" class="btn btn-primary footer" title="Prism Component for vS - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            <!-- row -->
+        </div>
+        <!-- section -->
+
+        <!-- Code -->
+        <div class="section">
+            <div class="title">
+                <h1>Code samples</h1>
+                <hr />
+            </div>
+
+            <div class="row">
+                <div class="card">
+                    <div class="header">
+                        <div class="title">
+                            Grokkin Algorithms
+                            <a href="https://www.manning.com/books/grokking-algorithms" rel="nofollow" target="_blank" title="Grokking Algorithms book @ Manning">
+                                <i class="far fa-external-link" style="color: dodgerblue;"></i>
+                            </a>
+                        </div>
+                        <div class="language cpp">C++</div>
+
+                    </div>
+                    <div class="body">
+                        <p>Algorithms implementation in C++ from Grokking Algorithms book.</p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/GrokkingAlgorithms" target="_blank" class="btn btn-primary footer" title="Algorithms implementation in C++ from Grokking Algorithms book - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">
+                            Open CV
+                            <a href="https://opencv.org/" rel="nofollow" target="_blank" title="Open CV web">
+                                <i class="far fa-external-link" style="color: dodgerblue;"></i>
+                            </a>
+                        </div>
+                        <div class="language cpp">C++</div>
+                    </div>
+                    <div class="body">
+                        <p>Samples with OpenCV 3</p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/OpenCV-samples" target="_blank" class="btn btn-primary footer" title="Samples with OpenCV 3 - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">Task Manager</div>
+                        <div class="language cpp">C++</div>
+                    </div>
+                    <div class="body">
+                        <p>Console application to add / remove text from file </p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/TaskManagerCpp" target="_blank" class="btn btn-primary footer" title="Task Manger in C++ - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">Matrices</div>
+                        <div class="language csharp">C#</div>
+                    </div>
+                    <div class="body">
+                        <p>Matrix multiplication sample</p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/Matrices" target="_blank" class="btn btn-primary footer" title="Matrices multiplication in C# - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">AWS service from XBox One</div>
+                        <div class="language csharp">C#</div>
+                    </div>
+                    <div class="body">
+                        <p>UWP application to test the Amazon Product Advertising API and deploy into a Xbox One</p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/XboxOneServiceAWS" target="_blank" class="btn btn-primary footer" title="AWS service from XBox One - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">WPF Drag &amp; Drop</div>
+                        <div class="language csharp">C#</div>
+                    </div>
+                    <div class="body">
+                        <p>Drag and Drop sample with WPF</p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/DragAndDrop" target="_blank" class="btn btn-primary footer" title="WPF Drag &#amp; Drop - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">
+                            Prism WPF
+                            <a href="https://github.com/PrismLibrary/Prism" rel="nofollow" target="_blank" title="Prism library on Github">
+                                <i class="far fa-external-link" style="color: dodgerblue;"></i>
+                            </a>
+                        </div>
+                        <div class="language csharp">C#</div>
+                    </div>
+                    <div class="body">
+                        <p>Prism WPF 6.2 and Prism.Autofac</p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/DragAndDrop" target="_blank" class="btn btn-primary footer" title="WPF Drag &#amp; Drop - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">
+                            Dapper with SQLite
+                            <a href="https://github.com/StackExchange/Dapper" rel="nofollow" target="_blank" title="Dapper library on Github">
+                                <i class="far fa-external-link" style="color: dodgerblue;"></i>
+                            </a>
+                        </div>
+                        <div class="language csharp">C#</div>
+                    </div>
+                    <div class="body">
+                        <p>Dapper.net and SQLite sample </p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/DapperSample" target="_blank" class="btn btn-primary footer" title="Dapper with SQLite - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">
+                            Microsoft Sync Framework
+                            <a href="https://code.msdn.microsoft.com/Sync-Framework-Toolkit-4dc10f0e" rel="nofollow" target="_blank" title="Sync Framework Toolkit">
+                                <i class="far fa-external-link" style="color: dodgerblue;"></i>
+                            </a>
+                        </div>
+                        <div class="language csharp">C#</div>
+                    </div>
+                    <div class="body">
+                        <p>Sample to know how the SyncFramework works with databases</p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/SyncFrameworkSample" target="_blank" class="btn btn-primary footer" title="Sync Framework - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">Node Finance</div>
+                        <div class="language javascript">JavaScript</div>
+                    </div>
+                    <div class="body">
+                        <p>Get a stock value from Google Finance service</p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/NodeFinanceSample" target="_blank" class="btn btn-primary footer" title="Node Finance - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="header">
+                        <div class="title">
+                            Chat Mqtt
+                            <a href="http://mqtt.org/" rel="nofollow" target="_blank" title="MQTT">
+                                <i class="far fa-external-link" style="color: dodgerblue;"></i>
+                            </a>
+                        </div>
+                        <div class="language csharp">C#</div>
+                    </div>
+                    <div class="body">
+                        <p>Basic chat using Mqtt protocol to share messages</p>
+                    </div>
+                    <div class="card-footer footer">
+                        <a href="https://github.com/davamix/ChatMqtt" target="_blank" class="btn btn-primary footer" title="Chat Mqtt - View on Github">
+                            <i class="fab fa-github fa-2x" style="vertical-align: middle;"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            <!-- row -->
+        </div>
+        <!-- section-->
+    </div>
+    <!-- container -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    <script defer src="https://pro.fontawesome.com/releases/v5.2.0/js/all.js" integrity="sha384-yBZ34R8uZDBb7pIwm+whKmsCiRDZXCW1vPPn/3Gz0xm4E95frfRNrOmAUfGbSGqN"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

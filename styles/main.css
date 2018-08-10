@@ -111,16 +111,6 @@ pre code {
     white-space: pre;
 }
 
-/* .comments-header button{
-    background-color:dodgerblue;
-    color: rgba(255, 255, 255, 1);
-    
-} */
-/* .comments-header button:hover,
-.comments-header button:focus{
-    color: rgba(255, 255, 255, 1);
-} */
-
 .btn.btn-primary{
     background-color:dodgerblue;
     color: rgba(255, 255, 255, 1);
@@ -129,7 +119,6 @@ pre code {
 .btn.btn-primary:hover{
     color: rgba(255, 255, 255, 1);
 }
-
 
 .comments-section{
     padding-top: 1rem;
