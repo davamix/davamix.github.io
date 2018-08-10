@@ -128,8 +128,6 @@ pre code {
     background-color: rgba(30, 144, 255, .1);
     margin-top: 1rem;
     margin-bottom: 1rem;
-    border-radius: 5px;
-    border:1px solid rgba(30, 144, 255, .1);
 }
 
 .comment-data-box{
@@ -154,8 +152,7 @@ pre code {
 
 .comment-value{
     padding: 1rem;
-    background-color: #fff;
-    border-radius: 5px;
+    background-color: rgba(244, 244, 244, 1);
 }
 
 
