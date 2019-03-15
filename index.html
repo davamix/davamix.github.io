@@ -123,6 +123,76 @@
     <main>
         <div class="blog">
             <div class="container">
+                <!-- POST: Save video frames as images with OpenCV -->
+                <div class="post">
+                    <div class="title">
+                        <a href="https://davamix.net/posts/save-video-frames-as-images-with-opencv.html">
+                            <h1>Save video frames as images with OpenCV</h1>
+                        </a>
+                        <span class="d-flex p-2 date">15-03-2019</span>
+                        <hr />
+                    </div>
+
+                    <p>
+                        To read a frame we'll use the method <a href="https://docs.opencv.org/4.0.1/d8/dfe/classcv_1_1VideoCapture.html#a473055e77dd7faa4d26d686226b292c1">read()</a> 
+                            from the <a href="https://docs.opencv.org/4.0.1/d8/dfe/classcv_1_1VideoCapture.html">VideoCapture</a> class then this frame can be saved with the 
+                            <a href="https://docs.opencv.org/4.0.1/d4/da8/group__imgcodecs.html#gabbc7ef1aa2edfaa87772f1202d67e0ce">imwrite</a> method.
+                    </p>
+
+                    <div class="code">
+                        <code>
+                            import cv2<br/><br/>
+
+                            video = cv2.VideoCapture("./video_file.mp4")<br/><br/>
+                            
+                            success, image = video.read()<br/><br/>
+                            
+                            if success:<br/>
+                            &emsp;&emsp;&emsp;&emsp;cv2.imwrite("frame.jpg", image)
+                        </code>
+                    </div>
+                    
+                    <p>
+                        The method <em>read()</em> returns two values, <em>success</em> is a boolean that tell us if a frame has been grabbed.
+                        <em>image</em> is the frame itself.
+                        
+                        Then using the method <em>imwrite</em> we'll save that frame as an image file.
+                    </p>
+                    <p>
+                            To save more than one frame or even all frames as images we need to put the read() into a loop, for instance:
+                    </p>
+
+                    <div class="code">
+                        <code>
+                            import cv2<br/><br/>
+
+                            video = cv2.VideoCapture("./video_file.mp4")<br/><br/>
+
+                            # Read the first frame<br/>
+                            success, image = video.read()<br/>
+                            frame_id = 0<br/><br/>
+
+                            while success:<br/>
+                            &emsp;&emsp;&emsp;&emsp;cv2.imwrite("frame{}.jpg".format(frame_id), image)<br/>
+                            &emsp;&emsp;&emsp;&emsp;success, image = video.read()<br/>
+                            &emsp;&emsp;&emsp;&emsp;frame_id += 1<br/>
+                        </code>
+                    </div>
+
+                    <p>I created a script to save a percentage of the video frames as images. Check it out the <a href="https://github.com/davamix/frames-extractor">frames-extractor script</a>.</p>
+
+                </div> <!-- post -->
+                <div class="footer mt-4">
+                    <a class="comments" href="https://davamix.net/posts/save-video-frames-as-images-with-opencv.html#post-comments">
+                        <div id="blog-post-date4"></div>
+                    </a>
+                    <hr />
+                    <script type="text/javascript">
+                        GetTotalComments(4);
+                    </script>
+                </div>
+                
+                
                 <!-- POST: Configure a self-signed certificate in Ubuntu to allow HTTPS access with an ASP.NET Core 2.1 application -->
                 <div class="post">
 
@@ -411,15 +481,20 @@
                             <a href="http://docs.nuget.org/create/Creating-and-Publishing-a-Package" target="_blank">Creating and Publishing a Package</a>
                         </div>
                     </div> <!-- post -->
-                        <div class="footer mt-4">
-                            <a class="comments" href="https://davamix.net/posts/create-local-nuget-server.html#post-comments">
-                                <div id="blog-post-date3"></div>
-                            </a>
-                            <hr />
-                            <script type="text/javascript">
-                                GetTotalComments(3);
-                            </script>
-                        </div>
+                    <div class="footer mt-4">
+                        <a class="comments" href="https://davamix.net/posts/create-local-nuget-server.html#post-comments">
+                            <div id="blog-post-date3"></div>
+                        </a>
+                        <hr />
+                        <script type="text/javascript">
+                            GetTotalComments(3);
+                        </script>
+                    </div>
+
+
+                    
+        
+                
 
             </div>
         </div> <!-- blog -->
