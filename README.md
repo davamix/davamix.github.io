@@ -1,3 +1,3 @@
 # Personal web
 
-Visit [https://davamix.net](davamix.net)
+Visit [davamix.net](https://davamix.net/)
