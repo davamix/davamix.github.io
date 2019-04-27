@@ -47,6 +47,10 @@
     background-color: rgba(241, 224, 90, .2);
 }
 
+.card .header .language.python{
+    background-color: rgba(253, 176, 88, .4)
+}
+
 .card .body{
     padding-left: 1rem;
     padding-top: 1rem;
