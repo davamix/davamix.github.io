@@ -75,6 +75,10 @@ span.tag{
     background-color: rgba(253, 176, 88, .4)
 }
 
+.card .header .language.elixir{
+    background-color: rgba(204, 153, 255, .2)
+}
+
 .card .body{
     padding-left: 1rem;
     padding-top: 1rem;
