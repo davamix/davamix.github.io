@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Detecting my cats with Detectron2">
+    <meta name="author" content="Daniel Valcarce">
+    <meta name="og:tile" content="Detecting my cats with Detectron2">
+    <meta name="og:description" content="In this post I'll show you how to train a model with a custom dataset using Detectron2.">
+    <meta name="og:image" content="https://raw.githubusercontent.com/davamix/davamix.github.io/master/images/binary.png">
+    <meta name="og:url" content="https://davamix.github.io/posts/detecting-my-cats-with-Detectron2.html">
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:domain" content="davamix.net"/>
+    <meta name="twitter:title" content="Detecting my cats with Detectron2">
+    <meta name="twitter:description" content="In this post I'll show you how to train a model with a custom dataset using Detectron2.">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/davamix/davamix.github.io/master/images/binary.png">
+
+    <!-- Load JQuery at the beginning in order to run functions in comments.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="https://davamix.net/styles/main.css">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg fixed-top" style="background-color: dodgerblue">
+        <a class="navbar-brand" href="https://davamix.net/index.html">Daniel Valcarce - Software Developer</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarLinks" aria-controls="navbarLinks"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <i class="far fa-bars fa-2x" style="color:white"></i>
+        </button>
+
+        <!-- Section links -->
+        <div class="collapse navbar-collapse" id="navbarLinks">
+            <ul class="navbar-nav mr-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="https://davamix.net" title="Home - Blog">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fas fa-home fa-2x"></i>
+                            <span>Home - Blog</span>
+                        </div>
+                        <i class="fas fa-home fa-3x d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav mr-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="https://davamix.net/sections/code.html" title="Code examples and Katas">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fal fa-code fa-2x"></i>
+                            <span>Code</span>
+                        </div>
+                        <i class="fal fa-code fa-3x d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+            </ul>
+            <!-- <ul class="navbar-nav mr-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="https://davamix.net/sections/projects.html" title="Personal projects">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fal fa-lightbulb fa-2x"></i>
+                            <span>Personal projects</span>
+                        </div>
+                        <i class="fal fa-lightbulb fa-3x d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+            </ul> -->
+        </div>
+
+        <!-- Social links -->
+        <div class="collapse navbar-collapse" id="navbarLinks">
+            <ul class="navbar-nav mr-4">
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://github.com/davamix">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-github-square fa-2x"></i>
+                            <span>Github</span>
+
+                        </div>
+                        <i class="fab fa-github-square fa-3x d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://twitter.com/davamix">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-twitter-square fa-2x"></i>
+                            <span>Twitter</span>
+
+                        </div>
+                        <i class="fab fa-twitter-square fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://www.linkedin.com/in/danielvalcarce/">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-linkedin fa-2x"></i>
+                            <span>Linkedin</span>
+
+                        </div>
+                        <i class="fab fa-linkedin fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://davamix.wordpress.com/" title="Old blog on Wordpress">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-wordpress fa-2x"></i>
+                            <span>Old blog</span>
+
+                        </div>
+                        <i class="fab fa-wordpress fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="mailto:davamix@gmail.com?subject=[DavamixNet]" title="Contact me at davamix@gmail.com">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="far fa-at fa-2x"></i>
+                            <span>Contact me at davamix@gmail.com</span>
+
+                        </div>
+                        <i class="far fa-at fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="blog">
+            <div class="container">
+                <div class="post">
+
+                    <div class="title">
+                        <h1>Detecting my cats with Detectron2</h1>        
+                        <span class="d-flex p-2 date">22-01-2020</span>
+                        <hr />
+                    </div>
+
+                    <p>
+                        In this post I'll show how train a model with Detectron2 with a custom dataset and then apply it detect my cats in a picture or video.
+                    </p>
+
+                    <h3>Install Detectron2</h3>
+                    <p>
+                        I use the docker version of Detectron2 that installs all the requirements in a few steps:<br/>
+                        <strong>1.</strong> Take the required files, <em>Dockerfile</em>, <em>Dockerfile-circleci</em>, <em>docker-compose.yml</em> from <a href="https://github.com/facebookresearch/detectron2/tree/master/docker">https://github.com/facebookresearch/detectron2/tree/master/docker</a><br/>
+                        <strong>2.</strong> Create and run the container with the command:
+                        <div class="code">
+                            <code class="prompt">
+                                docker-compose run --volume=/local/path/to/save/your/files:/tmp:rw detectron2
+                            </code>
+                        </div>
+                    </p>
+
+                    <div class="note">
+                        <strong>Note</strong><br/>
+                        The installed version of <mark>Pillow</mark> package is 7.0.0, this could fail when you try to train your model showing an error similiar to:<br/>
+                        <!-- <img src="../images/train-Detectron2-with-custom-dataset/Pillow-version-error.png" title="Error due the Pillow version"><br/> -->
+                        <code>
+                            &nbsp;&nbsp;&nbsp;&nbsp;from PIL import Image, ImageOps, ImageEnhance, PILLOW_VERSION <br/>
+                            ImportError: cannot import name 'PILLOW_VERSION'
+                        </code><br/>
+                        The solution is to downgrade the version to 6.2.2:<br/>
+                        <div class="code">
+                            <code class="prompt">
+                                pip install --user Pillow==6.2.2
+                            </code>
+                        </div>
+                    </div>
+
+                    <p>
+                        Check the <a href="https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md">installation guide</a> to install Detectron2 using other methods.
+                    </p>
+
+                    <h3>Create your own dataset</h3>
+                    <p>
+                        The first (and most tedious) step is to annotate the images. For this examples I will use a set of images of my cats, Blacky and Niche:<br/>
+
+                        <div class="image-box">
+                            <img src="../images/train-Detectron2-with-custom-dataset/blacky-sample.png" width="400" height="330" title="Blacky">
+                            <img src="../images/train-Detectron2-with-custom-dataset/niche-sample.png" width="400"  height="330" title="Niche">
+                        </div>
+
+                        and I'll use <a href="http://www.robots.ox.ac.uk/~vgg/software/via/">VIA 2.0.8</a>, it's an easy tool to make the annotations. This is an example of how an annotation looks like:<br/>
+                        <div class="image-box">
+                            <img src="../images/train-Detectron2-with-custom-dataset/niche-annotation.png" width="400" height="330" title="Image of a region draw around Niche">
+                        </div>
+                    </p>
+
+                    <h3>Steps to annotate an image</h3>
+                    <div class="note">
+                        <strong>Note</strong><br/>
+                        - The instructions below are for VIA tool, if you are using a different tool, then jump to the next section.<br/>
+                        - Follow this process twice, once for training images, another for validation images.<br/>
+                    </div>
+
+                    <p>
+                        Before start to annotating the images you must create a region attribute named <mark>Class</mark>, you can change the name if you want, in order to choose which region your are drawing.<br/>
+                        <div class="image-box">
+                            <img src="../images/train-Detectron2-with-custom-dataset/via-attributes.png" title="VIA - Attributes panel">
+                        </div>
+                    </p>
+
+                    <p>
+                        Looking the image above, follow these steps:<br/>
+                        <strong>1.</strong> Expand the <em>Attributes</em> panel.<br/>
+                        <strong>2.</strong> Type the attribute name <mark>Class</mark> on textbox and click on plus symbol.<br/>
+                        <strong>3.</strong> Change the <em>Type</em> of the attribute from <mark>text</mark> to <mark>radio</mark>.<br/>
+                        <strong>4.</strong> Write all classes available for the dataset, <em>Blacky</em> and <em>Niche</em> in my case, in the <mark>id</mark> field.<br/>
+                    </p>
+
+                    <p>
+                        Next, the basics steps to annotate the images:<br/>
+                        <strong>1.</strong> Add the images to the project clicking on the <em>Add Files</em> button in the <em>Project panel</em>.<br/>
+                        <strong>2.</strong> Select one image and start drawing the region using the <em>Poligon region shape</em>.<br/>
+                        <strong>3.</strong> To apply the changes press <em>Enter</em> and the region will be saved.<br/>
+                        <strong>4.</strong> Click outside of the region, click again on the region and select the class you are annotating.<br/>
+                        <div class="note">
+                            Sometimes you will need to scroll down / right to see the option list
+                        </div>
+                        <strong>5.</strong> Once all images are annotated, export the annotations as json. Go <em>Annotation</em> menu, then <em>Export Annotations (as json)</em>.<br/>
+                    </p>
+
+                    <p>
+                        The json file will contains a section by image similar to this one:<br/>
+                        <div class="code">
+                            <code>
+                                "frame80.jpg214814": {<br/>
+                                &nbsp;&nbsp;"filename": "frame80.jpg",<br/>
+                                &nbsp;&nbsp;"size": 214814,<br/>
+                                &nbsp;&nbsp;"regions": [<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;{<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"shape_attributes": {<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"name": "polygon",<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"all_points_x": [<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1096,<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1016,<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;947,<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"all_points_y": [<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;116,<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;191,<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;231,<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"region_attributes": {<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Class": "Blacky"<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                                &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                                &nbsp;&nbsp;],<br/>
+                                &nbsp;&nbsp;"file_attributes": {}<br/>
+                                }<br/>
+                                ...<br/>
+                            </code>
+                        </div>
+                    </p>
+
+                    <h3>Training process</h3>
+
+
+
+                    <p>
+                        From Visual Studio:<br/>
+                        <strong>1.</strong> Create an ASP.NET web project with the <mark>Empty</mark> template. <br/>
+                        <strong>2.</strong> Install the <mark>Nuget.Server</mark> package.<br/>
+                        <span class="anchor" id="nuget-server-note1"></span>
+                        <div class="note">
+                            <strong>Note</strong><br/>
+                            Check the <em>web.config</em> and be sure that the <mark>targetFramework</mark> version from <mark>httpRuntime</mark> entry is the same that <mark>targetFramework</mark> from <mark>compilation</mark> entry<br />
+                            If you have more than once <mark>compilation</mark> entry then remove the different one.
+                        </div>
+                        <strong>3.</strong> Publish the project into your IIS server with the options below:
+                        <div class="note">
+                            <strong>Note</strong><br/>
+                            To publish the project on IIS you need to run Visual Studio as Administrator;
+                        </div>
+                    
+                        <p>Connection:</p>
+                        <div class="code">
+                            <code>
+                                - Publish method: Web deploy<br/>
+                                - Server: localhost (no port number)<br/>
+                                - Site name: NugetServer (site name in IIS)<br/>
+                                - Destination URL: http://localhost:8080 (site address)
+                            </code>
+                        </div>
+
+                        <p>Settings:</p>
+                        <div class="code">
+                            <code>
+                                - Configuration: Release<br/>
+                                - Expand <mark>File Publish Options</mark> and check <mark>Exclude file from the App_Data folder</mark>
+                            </code>
+                        </div>
+                    </p>
+                    
+                    <h3>Nuget Package project</h3>
+                    <p>
+                        In Visual Studio create a new <mark>Class Library</mark> project and add a simple method that returns whatever value in order to test it later in the Sample project.<br/>
+                        Download <em>Nuget.exe</em> from <a href="https://www.nuget.org/downloads" target="_blank">https://www.nuget.org/downloads</a> and run the next command where the <em>.csproj</em> is located in order to create the <mark>.nuspec</mark> file.</p>
+                    <div class="code">
+                        <code class="prompt">
+                            nuget.exe spec
+                        </code>
+                    </div>
+
+                    <div class="note">
+                        <strong>Note</strong><br/>
+                        If you have an error like <br/>
+                        <code>Unexpected token 'spec' in expression or statement. + CategoryInfo : ParserError: (:) [], ParentContainsErrorRecordException + FullyQualifiedErrorId : UnexpectedToken</code><br/>
+                        Try to copy the <em>nuget.exe</em> to the same folder that <em>.csproj</em> file and run it from there.
+                    </div>
+                    
+                    <p>Open the <em>.nuspec</em> file created and complete all information.</p>
+                    <p>Build the project in <mark>Release</mark> mode and generate the nuget package with:</p>
+                    <div class="code">
+                        <code class="prompt">
+                            nuget.exe pack Project_name.csproj -Prop Configuration=Release
+                        </code>
+                    </div>
+                    <div class="note">
+                        <strong>Note</strong><br/>
+                        The previous command could fail if you don't fill correctly the <em>.nuspec</em> file.
+                    </div>
+                    <p>Finally copy the <em>.nupkg</em> file created into the <mark>Packages</mark> folder of the NugetServer.</p>
+
+                    <h3>Sample project</h3>
+                    <p>
+                        Create a new <mark>Console App</mark> project and configure the Nuget repository.
+                        <div class="code">
+                            <code>Tools -> Nuget Package Manager -> Package Manager Settings -> Package Sources</code>
+                        </div>
+                        
+                        <p>Add a new one with this options:</p>
+                        <div class="code">
+                            <code>
+                                    Name: Local Server<br/>
+                                    Source: http://localhost:8080/nuget<br />
+                                    Click on Update then Ok
+                            </code>
+                        </div>
+                        <div class="note">
+                            <strong>Note</strong><br/>
+                            If there is an error getting the list of packages from local server like the image below
+                            <img src="../images/create-local-nuget-server-1.PNG" title="Error ocurred getting the packages list from local Nuget server"><br/>
+                            check the Output console to know more about the error.<br/>
+                            <code>
+                                [Local Server] The V2 feed at 'http://localhost:8080/Search()?$filter=IsLatestVersion&searchTerm=''&targetFramework='net47'&includePrerelease=false&$skip=0&$top=26&semVerLevel=2.0.0' returned an unexpected status code '500 Internal Server Error'.
+                            </code><br/>
+                            In this case the error 500 means that the sever cannot server the packages and is related with the note in the <a href="#nuget-server-note1">Nuget Server project</a> section.
+                        </div>
+                        If all works correctly then you have access to your package and all its classes and methods.
+                    </p>
+                    
+                    <h3>Extra: Automatise the package creation</h3>
+                    <p>
+                        This is an alternative version of the Nuget Package project. Instead of create the package and copy it to the server manually, these tasks are performed by a script when you build the project.
+                        </p>
+                        <p>
+                        Start in the same way creating the <mark>Class Library</mark> project and create a folder <mark>Tools</mark> in the solution folder then copy the <em>nuget.exe</em> file into it.<br/>
+                        Create a <mark>Post-Build event</mark> with the content below to create the nuget package automatically and be moved to the Packages folder of the Nuget server</p>
+                        <div class="code">
+                            <code>
+                                "$(SolutionDir)Tools\nuget.exe" pack "$(ProjectPath)" -Prop Configuration=Release<br/>
+                                <br/>
+                                if exist "$(TargetDir)*.nupkg" (<br/>
+                                &emsp;&emsp;move "$(TargetDir)*.nupkg" "D:\path_to_server\Packages"<br/>
+                                )
+                            </code>
+                        </div>         
+                        Be sure that the version of the library has been incremented after the build. I use <a href="https://visualstudiogallery.msdn.microsoft.com/dd8c5682-58a4-4c13-a0b4-9eadaba919fe/">Automatic Versions</a>
+                        Now if you build several times you can check in the Sample project the latest version available for download.
+                        <div class="note">
+                            <strong>Note</strong><br/>
+                            If you don't see the new versions available that means the new nuget packages has not been generated.<br/>
+                            You can check all versions available of the package in the <em>Packages/package_name</em> folder on Nuget Sever. If there is only one, means that something gone wrong.<br />
+                            If you are reusing the Nuget Package Sample project be sure to remove the <em>.nuspec</em> and <em>.nupkg</em> files from project folder because you don't needed now also remove the <em>.nupkg</em> file from the Nuget Server that you copied manually.
+                        </div>
+                    </p>
+
+                    <div class="post-references-section">
+                        <h2>References</h2>
+                        <a href="http://docs.nuget.org/create/hosting-your-own-nuget-feeds" target="_blank">Hosting Your Own NuGet Feeds</a><br/>
+                        <a href="http://docs.nuget.org/create/Creating-and-Publishing-a-Package" target="_blank">Creating and Publishing a Package</a>
+                    </div>
+                </div> <!-- post -->
+
+                <hr />
+
+                <!-- Comments section (change ID comment on address and function parameter-->
+                <div id="post-comments" class="comments-section">
+                    <div class="comments-header">
+                        <a href="https://github.com/davamix/davamix.github.io/issues/3#new_comment_field" rel="nofollow"  target="_blank">
+                            <button type="button" class="btn btn-primary float-right">
+                                Post a comment on Github
+                            </button>
+                        </a>
+                        <h2>COMMENTS</h2>    
+                    </div>
+                    <div id="gh-comments-list"></div>
+                    <a href="javascript:void(0)" id="gh-load-comments" class="btn" style="display:none">Load more comments</a>
+                </div>
+                
+            </div>
+        </div> <!-- blog -->
+    </main>
+
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    <script defer src="https://pro.fontawesome.com/releases/v5.2.0/js/all.js" integrity="sha384-yBZ34R8uZDBb7pIwm+whKmsCiRDZXCW1vPPn/3Gz0xm4E95frfRNrOmAUfGbSGqN" crossorigin="anonymous"></script>
+    
+
+    <script type="text/javascript" src="https://davamix.net/scripts/comments.js"></script>
+    <script type="text/javascript">
+        DoGithubComments( 3 );
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,100 @@
+## Train Detectron2 with custom dataset ##
+
+# 1. Install Detectron2
+
+- I use the docker version of Detectron2 that installs all requirements in a few steps:
+-> Take the required files from https://github.com/facebookresearch/detectron2/tree/master/docker, Dockerfile, Dockerfile-circleci, docker-compose.yml
+-> Create and run the container with the command:
+    -> docker-compose run --volume=/local/path/to/save/your/files:/tmp:rw detectron2
+
+-----
+NOTE: the installed version of Pillow package is 7.0.0, this could fail when you try to train your model showing an error similiar to: 
+[Pillow-version-error.png]
+
+The solution is to downgrade the version to 6.2.2:
+pip install --user Pillow==6.2.2
+-----
+
+# 2. Create your own dataset
+
+The first (and most tedious) step is to annotate the images. For this examples I will use a set of images of my cats, Blacky and Niche:
+[blacky-sample.png] [niche-sample.png]
+
+and I'll use VIA 2.0.8 (http://www.robots.ox.ac.uk/~vgg/software/via/), it's an easy tool to make the annotations. This is an example of how an annotation looks like:
+[niche-annotation.png]
+
+## Steps to annotate an image
+-----
+NOTE: 
+- These instructions are for VIA tool, if you are using a different tool then jump to the next section. 
+- Follow this process twice, once for training images, another for validation images.
+-----
+
+Before start to annotating the images you must create a region attribute named "Class", you can change the name if you want, in order to choose which region your are drawing.
+[via-attribute.png]
+
+Following the image:
+- Expand the Attributes panel.
+- Type the attribute name "Class" on textbox and click on plus symbol.
+- Change the Type of the attribute from text to radio.
+- Write the all the classes available for the dataset, Blacky and Niche in my case, in the id field.
+    - Write down the id and press Enter in order to apply the change.
+
+The basics steps to annotate the images:
+
+- Add the images to the project clicking on the Add Files button in the Project panel.
+- Select one image and start drawing the region using the Poligon region shape.
+- To apply the changes press Enter and the region will be saved.
+- Click outside of the region, click again on the region and select the class you are annotating.
+    - Sometimes you will need to scroll down / right to see the option list
+- Once all images are annotated, export the annotations as json. 
+    - Annotation -> Export Annotations (as json)
+
+The json file will contains a section by image similar to this one:
+
+"frame80.jpg214814": {
+        "filename": "frame80.jpg",
+        "size": 214814,
+        "regions": [
+            {
+                "shape_attributes": {
+                    "name": "polygon",
+                    "all_points_x": [
+                        1096,
+                        1016,
+                        947,
+                        934,
+                        952,
+                        1067,
+                        1204,
+                        1295,
+                        1426,
+                        1308,
+                        1295,
+                        1189
+                    ],
+                    "all_points_y": [
+                        116,
+                        191,
+                        231,
+                        298,
+                        376,
+                        432,
+                        423,
+                        406,
+                        393,
+                        104,
+                        0,
+                        100
+                    ]
+                },
+                "region_attributes": {
+                    "Class": "Blacky"
+                }
+            }
+        ],
+        "file_attributes": {}
+    }
+
+# 3. Training process
+
