@@ -88,7 +88,7 @@
 /* To avoid to have the content behind the fixed navbar */
 span.anchor::before{
     content: '';
-    float: left;
+    display: block;
     position: relative;
     width: 0;
     height: 5rem;
