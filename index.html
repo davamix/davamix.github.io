@@ -132,6 +132,489 @@
     <main>
         <div class="blog">
             <div class="container">
+                <!-- POST: -->
+                <div class="post">
+                    <div class="title">
+                        <a href="https://davamix.net/posts/detecting-my-cats-with-Detectron2.html">
+                            <h1>Detecting my cats with Detectron2</h1>
+                        </a>
+                        <span class="d-flex p-2 date">24-01-2020</span>
+                        <hr />
+                    </div>
+
+                    <p>
+                        In this post I'll show how train a model with Detectron2 with a custom dataset and then apply it detect my cats in a picture or video.
+                    </p>
+                    
+                    <h4>Table of content</h4><br>
+                    <ul>
+                        <li>Install Detectron2</li>
+                        <li>Create your own dataset</li>
+                        <li>Steps to annotate an image</li>
+                        <li>Training process</li>
+                        <li>Data loader</li>
+                        <li>Inference</li>
+                        <li>References</li>
+                    </ul>
+                    
+
+                    <span class="anchor" id="install-detectron2"></span>
+                    <h3>Install Detectron2</h3>
+                    <p>
+                        I use the docker version of Detectron2 that installs all the requirements in a few steps:<br/>
+                        <strong>1.</strong> Take the required files, <em>Dockerfile</em>, <em>Dockerfile-circleci</em>, <em>docker-compose.yml</em> from <a href="https://github.com/facebookresearch/detectron2/tree/master/docker">https://github.com/facebookresearch/detectron2/tree/master/docker</a><br/>
+                        <strong>2.</strong> Create and run the container with the command:
+                        <div class="code">
+                            <code class="prompt">
+                                docker-compose run --volume=/local/path/to/save/your/files:/tmp:rw detectron2
+                            </code>
+                        </div>
+                    </p>
+
+                    <div class="note">
+                        <strong>Note</strong><br/>
+                        The installed version of <mark>Pillow</mark> package is 7.0.0, this could fail when you try to train your model showing an error similiar to:<br/>
+                        <!-- <img src="../images/train-Detectron2-with-custom-dataset/Pillow-version-error.png" title="Error due the Pillow version"><br/> -->
+                        <code>
+                            &nbsp;&nbsp;&nbsp;&nbsp;from PIL import Image, ImageOps, ImageEnhance, PILLOW_VERSION <br/>
+                            ImportError: cannot import name 'PILLOW_VERSION'
+                        </code><br/>
+                        The solution is to downgrade the version to 6.2.2:<br/>
+                        <div class="code">
+                            <code class="prompt">
+                                pip install --user Pillow==6.2.2
+                            </code>
+                        </div>
+                    </div>
+
+                    <p>
+                        Check the <a href="https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md">installation guide</a> to install Detectron2 using other methods.
+                    </p>
+
+                    <h3>Create your own dataset</h3>
+                    <p>
+                        The first (and most tedious) step is to annotate the images. For this examples I will use a set of images of my cats, Blacky and Niche:<br/>
+
+                        <div class="image-box">
+                            <img src="../images/train-Detectron2-with-custom-dataset/blacky-sample.jpg" width="400" height="330" title="Blacky">
+                            <img src="../images/train-Detectron2-with-custom-dataset/niche-sample.jpg" width="400"  height="330" title="Niche">
+                        </div>
+
+                        and I'll use <a href="http://www.robots.ox.ac.uk/~vgg/software/via/">VIA 2.0.8</a>, it's an easy tool to make the annotations. This is an example of how an annotation looks like:<br/>
+                        <div class="image-box">
+                            <img src="../images/train-Detectron2-with-custom-dataset/niche-annotation.jpg" width="400" height="330" title="Image of a region draw around Niche">
+                        </div>
+                    </p>
+
+                    <h3>Steps to annotate an image</h3>
+                    <div class="note">
+                        <strong>Note</strong><br/>
+                        - The instructions below are for VIA tool, if you are using a different tool, then jump to the next section.<br/>
+                        - Follow this process twice, once for training images, another for validation images.<br/>
+                    </div>
+
+                    <p>
+                        Before start to annotating the images you must create a region attribute named <mark>Class</mark>, you can change the name if you want, in order to choose which region your are drawing.<br/>
+                        <div class="image-box">
+                            <img src="../images/train-Detectron2-with-custom-dataset/via-attributes.jpg" title="VIA - Attributes panel">
+                        </div>
+                    </p>
+
+                    <p>
+                        Looking the image above, follow these steps:<br/>
+                        <strong>1.</strong> Expand the <em>Attributes</em> panel.<br/>
+                        <strong>2.</strong> Type the attribute name <mark>Class</mark> on textbox and click on plus symbol.<br/>
+                        <strong>3.</strong> Change the <em>Type</em> of the attribute from <mark>text</mark> to <mark>radio</mark>.<br/>
+                        <strong>4.</strong> Write all classes available for the dataset, <em>Blacky</em> and <em>Niche</em> in my case, in the <mark>id</mark> field.<br/>
+                    </p>
+
+                    <p>
+                        Next, the basics steps to annotate the images:<br/>
+                        <strong>1.</strong> Add the images to the project clicking on the <em>Add Files</em> button in the <em>Project panel</em>.<br/>
+                        <strong>2.</strong> Select one image and start drawing the region using the <em>Poligon region shape</em>.<br/>
+                        <strong>3.</strong> To apply the changes press <em>Enter</em> and the region will be saved.<br/>
+                        <strong>4.</strong> Click outside of the region, click again on the region and select the class you are annotating.<br/>
+                        <div class="note">
+                            Sometimes you will need to scroll down / right to see the option list
+                        </div>
+                        <strong>5.</strong> Once all images are annotated, export the annotations as json. Go <em>Annotation</em> menu, then <em>Export Annotations (as json)</em>.<br/>
+                    </p>
+
+                    <p>
+                        The json file will contains a section by image similar to this one:
+                    </p>
+
+                    <div class="code">
+                        <code>
+                            "frame80.jpg214814": {<br/>
+                            &nbsp;&nbsp;"filename": "frame80.jpg",<br/>
+                            &nbsp;&nbsp;"size": 214814,<br/>
+                            &nbsp;&nbsp;"regions": [<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;{<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"shape_attributes": {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"name": "polygon",<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"all_points_x": [<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1096,<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1016,<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;947,<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"all_points_y": [<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;116,<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;191,<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;231,<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"region_attributes": {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Class": "Blacky"<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                            &nbsp;&nbsp;],<br/>
+                            &nbsp;&nbsp;"file_attributes": {}<br/>
+                            }<br/>
+                            ...<br/>
+                        </code>
+                    </div>
+                    <p></p>
+                    <h3>Training process</h3>
+                    
+                    <p>Before to start to explain the code, let me show the folder structure in order to have an idea of where are the code, the data and all this stuff.</p>
+
+                    <div class="image-box">
+                        <img src="../images/train-Detectron2-with-custom-dataset/folder_structure.jpg" title="folder structe of the project">
+                    </div>
+
+                    <p>
+                        The <em>data</em> folder contains two folders, <em>train</em> and <em>validation</em>, which contain one folder per class (of course, there are more than one image in the class folder). Also, the <em>train</em> and <em>validation</em> folders have its respective annotation files. The <em>src</em> folder contains the code sepated in different files.
+                    </p>
+
+                    <p>
+                        Ok, now we are ready to write the code. First things first, we need to import the functions required from detectron2.
+                    </p>
+
+                    <div class="code">
+                        <code>
+                            # train.py<br/>
+                            <br/>
+                            import os<br/>
+                            <br/>
+                            from detectron2.data import MetadataCatalog, DatasetCatalog<br/>
+                            from detectron2.config import get_cfg<br/>
+                            from detectron2 import model_zoo<br/>
+                            from detectron2.engine import DefaultTrainer<br/>
+                            from loader import get_data_dicts<br/>
+                        </code>
+                    </div>
+
+                    <p>
+                        Next, we'll register both datasets, train and validation, and indicate the name of the classes that we are using.
+                    </p>
+
+                    <div class="code">
+                        <code>
+                            for d in ["train", "val"]:<br/>
+                            &nbsp;&nbsp;DatasetCatalog.register("cats_" + d, lambda d=d: get_data_dicts("../data/" + d))<br/>
+                            &nbsp;&nbsp;MetadataCatalog.get("cats_" + d).set(thing_classes=["Blacky", "Niche"])<br/>
+                            <br/>
+                            cats_metadata = MetadataCatalog.get("cats_train")<br/>
+                        </code>
+                    </div>
+                    
+                    <p>
+                        The <mark>DatasetCatalog.register</mark> function expects two parameters, the name of the dataset, and the function to get the data.<br/>
+                        With <mark>MetadataCatalog</mark> we specify which classes are present in the dataset using the attribute thing_classes. To know more about the metadata check the <a href="https://detectron2.readthedocs.io/tutorials/datasets.html#metadata-for-datasets">documentation</a>.
+                    </p>
+
+                    <p>
+                        Now let's configure the model:
+                    </p>
+
+                    <div class="code">
+                        <code>
+                            cfg = get_cfg()<br/>
+                            cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))<br/>
+                            cfg.DATASETS.TRAIN = ("cats_train",)<br/>
+                            cfg.DATASETS.TEST = ()<br/>
+                            cfg.DATALOADER.NUM_WORKERS = 4<br/>
+                            cfg.MODEL.WEIGHTS = "detectron2://COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x/137849600/model_final_f10217.pkl"<br/>
+                            cfg.SOLVER.IMS_PER_BATCH = 2<br/>
+                            cfg.SOLVER.BASE_LR = 0.00025<br/>
+                            cfg.SOLVER.MAX_ITER = 700<br/>
+                            cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128<br/>
+                            cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2<br/>
+                        </code>
+                    </div>
+
+                    <br/>
+                    <ul>
+                        <li><strong>get_cfg()</strong>: returns an instance of CfgNode class that allow us to modify the configuration of the model.</li>
+                        <li><strong>cfg.merge_from_file</strong>: we use this to apply the original configuration from <em>mask_rcnn_R_50_FPN_3x</em> model to our configuration.</li>
+                        <li><strong>cfg.DATASETS.TRAIN</strong>: This is the list of dataset names for training. Important to note the comma at the end.</li>
+                        <li><strong>cfg.DATASETS.TEST</strong>: This remains empty for the training purposes.</li>
+                        <li><strong>cfg.DATALOADER.NUM_WORKERS</strong>: Number of data loading threads.</li>
+                        <li><strong>cfg.MODEL.WEIGHTS</strong>: Pick the weights from <em>mask_rcnn_R_50_FPN_3x</em> model.</li>
+                        <li><strong>cfg.SOLVER.IMS_PER_BATCH</strong>: Number of images per batch.</li>
+                        <li><strong>cfg.SOLVER.BASE_LR</strong>: Learning rate.</li>
+                        <li><strong>cfg.SOLVER.MAX_ITER</strong>: Total iterations (Detectron2 don't use epochs).</li>
+                        <li><strong>cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE</strong>: Indicate the number of ROI's (Region of Interest) per training minibatch.</li>
+                        <li><strong>cfg.MODEL.ROI_HEADS.NUM_CLASSES</strong>: Number of classes.</li>
+                    </ul>                        
+                    
+                    <p>
+                        Basically what we are doing here is to get configuration from an existing model, <em>mask_rcnn_R_50_FPN_3x</em>, then we overwrite some of the values like learning rate, iterations, etc...<br/>
+                        Check the <a href="https://detectron2.readthedocs.io/modules/config.html#config-references">documentation</a> about the configuration to know all available options that you can change.
+                    </p>
+                    
+                    <p>
+                        And finally it's time to call the training process:
+                    </p>
+
+                    <div class="code">
+                        <code>
+                            os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)<br/>
+                            trainer = DefaultTrainer(cfg)<br/>
+                            trainer.resume_or_load(resume=False)<br/>
+                            trainer.train()<br/>
+                        </code>
+                    </div>
+
+                    <p></p>
+                    <h3>Data loader</h3>
+                    
+                    <p>
+                        Now it's time to implement the function to let Detectron2 know how to obtain the data from the dataset that we registered before with:
+                    </p>
+                    <div class="code">
+                        <code>
+                            DatasetCatalog.register("cats_" + d, lambda d=d: get_data_dicts("../data/" + d))
+                        </code>
+                    </div>
+
+                    <p>
+                        The code of <em>loader.py</em> is pretty similar to the function shown in the <a href="https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5#scrollTo=tjbUIhSxUdm_" target="blank"> Colab notebook</a>
+                    </p>
+
+                    <div class="code">
+                        <code>
+                            # loader.py <br/>
+                            <br/>
+                            def get_data_dicts(img_dir):<br/>
+                            &nbsp;&nbsp;classes = ["Blacky", "Niche"]<br/>
+                            <br/>
+                            &nbsp;&nbsp;json_file = os.path.join(img_dir, "cats-annotations.json")<br/>
+                            &nbsp;&nbsp;with open(json_file) as f:<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;imgs_anns = json.load(f)<br/>
+                            <br/>
+                            &nbsp;&nbsp;dataset_dicts = []<br/>
+                            &nbsp;&nbsp;for idx, v in enumerate(imgs_anns.values()):<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;record = {}<br/>
+                            <br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;if "regions" not in v: continue<br/>
+                            <br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;# Extract info from regions<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;annos = v["regions"]<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;objs = []<br/>
+                            <br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;for anno in annos:<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;shape_attr = anno["shape_attributes"]<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;px = shape_attr["all_points_x"]<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;py = shape_attr["all_points_y"]<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;poly = [(x + 0.5, y + 0.5) for x, y in zip(px, py)]<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;poly = [p for x in poly for p in x]<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;region_attr = anno["region_attributes"]<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;current_class = region_attr["Class"]<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;obj = {<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"bbox": [np.min(px), np.min(py), np.max(px), np.max(py)],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"bbox_mode": BoxMode.XYXY_ABS,<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"segmentation": [poly],<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"category_id": classes.index(current_class),<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"iscrowd": 0<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;objs.append(obj)<br/>
+                            <br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;record["annotations"] = objs<br/>
+                            <br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;# Get info of the image<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;filename = os.path.join(img_dir, current_class, v["filename"])<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;height, width = cv2.imread(filename).shape[:2]<br/>
+                            <br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;record["file_name"] = filename<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;record["image_id"] = idx<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;record["height"] = height<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;record["width"] = width<br/>
+                            <br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;dataset_dicts.append(record)<br/>
+                            &nbsp;&nbsp;return dataset_dicts<br/>
+                        </code>
+                    </div>
+
+                    <p>
+                        The function loops through all annotations in the json file and extract the information related with the region, category, etc... of the image.
+                    </p>
+                    <p>
+                        The annotation itself is represented by the dictionary <mark>obj</mark> that contains some specific keys:
+                    </p>
+
+                    <ul>
+                        <li><strong>bbox</strong>: list of 4 numbers representing the bounding box of the instance.</li>
+                        <li><strong>bbox_mode</strong>: the format of the bbox.</li>
+                        <li><strong>category_id</strong>: number that represents the category label.</li>
+                        <li><strong>iscrowd</strong>: 0 or 1. Whether the instance is labeled as COCO's format.</li>
+                    </ul>
+
+                    <p>
+                        Also, some extra information is saved in the record dictionary:
+                    </p>
+                    <ul>
+                        <li><strong>file_name</strong>: the fullpath of the image.</li>
+                        <li><strong>image_id</strong>: a unique id to identify the image.</li>
+                        <li><strong>height</strong>: self explanatory.</li>
+                        <li><strong>width</strong>: self explanatory.</li>
+                    </ul>
+
+                    <p>
+                        To know more about of the dictionary check the <a href="https://detectron2.readthedocs.io/tutorials/datasets.html#register-a-dataset" target="_blank"> documentation</a>.
+                    </p>
+
+                    <h3>Inference</h3>
+                    
+                    <p>
+                        It's time to do some predictions and we start with the imports:
+                    </p>
+
+                    <div class="code">
+                        <code>
+                            # inference.py<br/>
+                            <br/>
+                            import os<br/>
+                            import random<br/>
+                            import cv2<br/>
+                            <br/>
+                            from detectron2.config import get_cfg<br/>
+                            from detectron2 import model_zoo<br/>
+                            from detectron2.engine import DefaultPredictor<br/>
+                            from detectron2.utils.visualizer import Visualizer, ColorMode<br/>
+                            from detectron2.data import MetadataCatalog<br/>
+                            from loader import get_data_dicts<br/>
+                        </code>
+                    </div>
+
+                    <p>
+                        For inference we use a few different functions: <mark>DefaultPredictor</mark>, <mark>Visualizer</mark> and <mark>ColorMode</mark>.
+                    </p>
+                    <p>
+                        Next, we configure the model as we did on the training process, then create the predictor: 
+                    </p>
+                    
+                    <div class="code">
+                        <code>
+                            classes = ["Blacky", "Niche"]<br/>
+                            <br/>
+                            cfg = get_cfg()<br/>
+                            cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))<br/>
+                            cfg.DATASETS.TEST = ("cats_val",)<br/>
+                            cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")<br/>
+                            cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2<br/>
+                            cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7<br/>
+                            <br/>
+                            predictor = DefaultPredictor(cfg)<br/>
+                        </code>
+                    </div>
+
+                    <p>
+                        This configuration is similar to the configuration we used in the training but this time the <mark>WEIGHTS</mark> come from our trained model <em>model_final.pth</em>.
+                    </p>
+
+                    <div class="code">
+                        <code>
+                            dataset_dicts = get_data_dicts("../data/validation")<br/>
+                            <br/>
+                            for idx, d in enumerate(random.sample(dataset_dicts, 3)):<br/>
+                            &nbsp;&nbsp;im = cv2.imread(d["file_name"])<br/>
+                            &nbsp;&nbsp;outputs = predictor(im)<br/>
+                            <br/>
+                            &nbsp;&nbsp;v = Visualizer(im[:, :, ::-1], <br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;metadata = MetadataCatalog.get("cats_val").set(<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;thing_classes=classes,<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;thing_colors=[(177, 205, 223), (223, 205, 177)]),<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;scale = 0.8,<br/>
+                            &nbsp;&nbsp;&nbsp;&nbsp;instance_mode = ColorMode.IMAGE_BW<br/>
+                            &nbsp;&nbsp;)<br/>
+                            <br/>
+                            &nbsp;&nbsp;pred_class = (outputs['instances'].pred_classes).detach()[0]<br/>
+                            &nbsp;&nbsp;pred_score = (outputs['instances'].scores).detach()[0]<br/>
+                            <br/>
+                            &nbsp;&nbsp;print(f"File: {d['file_name']}")<br/>
+                            &nbsp;&nbsp;print(f"--> Class: {classes[pred_class]}, {pred_score * 100:.2f}%")<br/>
+                            <br/>
+                            &nbsp;&nbsp;# Save image predictions<br/>
+                            &nbsp;&nbsp;v = v.draw_instance_predictions(outputs["instances"].to("cpu"))<br/>
+                            &nbsp;&nbsp;image_name = f"inference_{idx}.jpg"<br/>
+                            &nbsp;&nbsp;cv2.imwrite(image_name, v.get_image()[:, :, ::-1])<br/>
+                        </code>
+                    </div>
+
+                    <p>
+                        To make the predicitions we use 3 random images from the validation dataset.
+                    </p>
+                    <p>
+                        The predictor receive the image in format BGR, the same format that cv2 returns when reads the image. 
+                        Once we have the predictions then we create and configure the <mark>Visualizer</mark> that we'll use to show the regions predicted over the original image. 
+                    </p>
+                    <p>
+                        The <mark>Visualizer</mark> accepts as the first parameter the original image but this time in RGB format, that's why we have to reverse the array that cv2 returns when reads the image.<br/>
+                        The second parameter is the metadata, which in this case consists of the name of the classes, <em>Blacky</em> and <em>Niche</em>, and the colors applied to the regions of each class.<br/>
+                        The <mark>ColorMode.IMAGE_BW</mark> value is used to remove the color of unsegmented pixels (the pixels that don't belong to the predicted region).<br/>
+                    </p>
+
+                    <p>
+                        At the end we apply the regions predicted over the original image with <mark>v.draw_instance_predictions(outputs["instances"].to("cpu"))</mark>
+                    </p>
+                    <p>
+                        In this case I save the image on disk because I don't have access to XServer from inside Docker, so OpenCV cannot open any window to show the image. In case we worked from our local system we could use:
+                    </p>
+                    <div class="code">
+                        <code>
+                            v = v.draw_instance_predictions(outputs["instances"].to("cpu"))<br/>
+                            cv2.imshow(v.get_image()[:, :, ::-1])<br/>
+                        </code>
+                    </div>
+
+                    <div class="image-box">
+                        <img src="../images/train-Detectron2-with-custom-dataset/inference_blacky.jpg" width="400" height="330" title="Inference Blacky">
+                        <img src="../images/train-Detectron2-with-custom-dataset/inference_niche.jpg" width="400" height="330" title="Inference Niche">
+                    </div>
+                    <div class="image-box">
+                        <img src="../images/train-Detectron2-with-custom-dataset/inference_both.jpg" width="400" height="330" title="Inference Blacky and Niche">
+                    </div>
+                    
+                    <p>
+                        Check the <a href="https://github.com/davamix/cats-localization/blob/master/src/test.py">test.py</a> file in the repository to know how to make inference in a video. Spoiler alert: predicting every frame xD.
+                    </p>
+
+                    <div class="post-references-section">
+                        <h2 id="references">References</h2>
+                        <a href="https://github.com/davamix/cats-localization" target="_blank">Code repository</a><br/>
+                        <a href="https://drive.google.com/open?id=1o9zyd51QCqWG3DlArQnfH4q4clMVQmTY" target="_blank">Cats dataset</a> (zip file ~39MB)<br/>
+                        <a href="https://github.com/facebookresearch/detectron2" target="_blank">Detectron2 GitHub repository</a><br/>
+                        <a href="https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5" target="_blank">Detectron2 Colab Notebook</a><br/>
+                        <a href="https://detectron2.readthedocs.io/tutorials/datasets.html" target="_blank">Documentation - Use Custom Datasets</a><br/>
+                        <a href="https://detectron2.readthedocs.io/modules/config.html#config-references" target="_blank">Documentation - Config References</a><br/>
+                        <a href="https://detectron2.readthedocs.io/tutorials/models.html" target="_blank">Documentation - Use Models</a><br/>
+                    </div>
+                </div> <!-- post -->
+                <div class="footer mt-4">
+                    <a class="comments" href="https://davamix.net/posts/detecting-my-cats-with-Detectron2.html#post-comments">
+                        <div id="blog-post-date4"></div>
+                    </a>
+                    <hr />
+                    <script type="text/javascript">
+                        GetTotalComments(5);
+                    </script>
+                </div>
+
                 <!-- POST: Save video frames as images with OpenCV -->
                 <div class="post">
                     <div class="title">
