@@ -160,7 +160,7 @@
                     <h3>Install Detectron2</h3>
                     <p>
                         I use the docker version of Detectron2 that installs all the requirements in a few steps:<br/>
-                        <strong>1.</strong> Take the required files, <em>Dockerfile</em>, <em>Dockerfile-circleci</em>, <em>docker-compose.yml</em> from <a href="https://github.com/facebookresearch/detectron2/tree/master/docker">https://github.com/facebookresearch/detectron2/tree/master/docker</a><br/>
+                        <strong>1.</strong> Take the required files, <em>Dockerfile</em>, <em>Dockerfile-circleci</em>, <em>docker-compose.yml</em> from <a href="https://github.com/facebookresearch/detectron2/tree/master/docker" rel=”nofollow”>https://github.com/facebookresearch/detectron2/tree/master/docker</a><br/>
                         <strong>2.</strong> Create and run the container with the command:
                         <div class="code">
                             <code class="prompt">
@@ -186,7 +186,7 @@
                     </div>
 
                     <p>
-                        Check the <a href="https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md">installation guide</a> to install Detectron2 using other methods.
+                        Check the <a href="https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md" rel=”nofollow”>installation guide</a> to install Detectron2 using other methods.
                     </p>
 
                     <h3>Create your own dataset</h3>
@@ -198,7 +198,7 @@
                             <img src="../images/train-Detectron2-with-custom-dataset/niche-sample.webp" width="400"  height="330" title="Niche">
                         </div>
 
-                        and I'll use <a href="http://www.robots.ox.ac.uk/~vgg/software/via/">VIA 2.0.8</a>, it's an easy tool to make the annotations. This is an example of how an annotation looks like:<br/>
+                        and I'll use <a href="http://www.robots.ox.ac.uk/~vgg/software/via/" rel=”nofollow”>VIA 2.0.8</a>, it's an easy tool to make the annotations. This is an example of how an annotation looks like:<br/>
                         <div class="image-box">
                             <img src="../images/train-Detectron2-with-custom-dataset/niche-annotation.webp" width="400" height="330" title="Image of a region draw around Niche">
                         </div>
@@ -321,7 +321,7 @@
                     
                     <p>
                         The <mark>DatasetCatalog.register</mark> function expects two parameters, the name of the dataset, and the function to get the data.<br/>
-                        With <mark>MetadataCatalog</mark> we specify which classes are present in the dataset using the attribute thing_classes. To know more about the metadata check the <a href="https://detectron2.readthedocs.io/tutorials/datasets.html#metadata-for-datasets">documentation</a>.
+                        With <mark>MetadataCatalog</mark> we specify which classes are present in the dataset using the attribute thing_classes. To know more about the metadata check the <a href="https://detectron2.readthedocs.io/tutorials/datasets.html#metadata-for-datasets" rel=”nofollow”>documentation</a>.
                     </p>
 
                     <p>
@@ -361,7 +361,7 @@
                     
                     <p>
                         Basically what we are doing here is to get configuration from an existing model, <em>mask_rcnn_R_50_FPN_3x</em>, then we overwrite some of the values like learning rate, iterations, etc...<br/>
-                        Check the <a href="https://detectron2.readthedocs.io/modules/config.html#config-references">documentation</a> about the configuration to know all available options that you can change.
+                        Check the <a href="https://detectron2.readthedocs.io/modules/config.html#config-references" rel=”nofollow”>documentation</a> about the configuration to know all available options that you can change.
                     </p>
                     
                     <p>
@@ -390,7 +390,7 @@
                     </div>
 
                     <p>
-                        The code of <em>loader.py</em> is pretty similar to the function shown in the <a href="https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5#scrollTo=tjbUIhSxUdm_" target="blank"> Colab notebook</a>
+                        The code of <em>loader.py</em> is pretty similar to the function shown in the <a href="https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5#scrollTo=tjbUIhSxUdm_" target="blank" rel=”nofollow”> Colab notebook</a>
                     </p>
 
                     <div class="code">
@@ -473,7 +473,7 @@
                     </ul>
 
                     <p>
-                        To know more about of the dictionary check the <a href="https://detectron2.readthedocs.io/tutorials/datasets.html#register-a-dataset" target="_blank"> documentation</a>.
+                        To know more about of the dictionary check the <a href="https://detectron2.readthedocs.io/tutorials/datasets.html#register-a-dataset" target="_blank" rel=”nofollow”> documentation</a>.
                     </p>
 
                     <h3>Inference</h3>
@@ -589,18 +589,18 @@
                     </div>
                     
                     <p>
-                        Check the <a href="https://github.com/davamix/cats-localization/blob/master/src/test.py">test.py</a> file in the repository to know how to make inference in a video. Spoiler alert: predicting every frame xD.
+                        Check the <a href="https://github.com/davamix/cats-localization/blob/master/src/test.py" rel=”nofollow”>test.py</a> file in the repository to know how to make inference in a video. Spoiler alert: predicting every frame xD.
                     </p>
 
                     <div class="post-references-section">
                         <h2 id="references">References</h2>
-                        <a href="https://github.com/davamix/cats-localization" target="_blank">Code repository</a><br/>
-                        <a href="https://drive.google.com/open?id=1o9zyd51QCqWG3DlArQnfH4q4clMVQmTY" target="_blank">Cats dataset</a> (zip file ~39MB)<br/>
-                        <a href="https://github.com/facebookresearch/detectron2" target="_blank">Detectron2 GitHub repository</a><br/>
-                        <a href="https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5" target="_blank">Detectron2 Colab Notebook</a><br/>
-                        <a href="https://detectron2.readthedocs.io/tutorials/datasets.html" target="_blank">Documentation - Use Custom Datasets</a><br/>
-                        <a href="https://detectron2.readthedocs.io/modules/config.html#config-references" target="_blank">Documentation - Config References</a><br/>
-                        <a href="https://detectron2.readthedocs.io/tutorials/models.html" target="_blank">Documentation - Use Models</a><br/>
+                        <a href="https://github.com/davamix/cats-localization" target="_blank" rel=”nofollow”>Code repository</a><br/>
+                        <a href="https://drive.google.com/open?id=1o9zyd51QCqWG3DlArQnfH4q4clMVQmTY" target="_blank" rel=”nofollow”>Cats dataset</a> (zip file ~39MB)<br/>
+                        <a href="https://github.com/facebookresearch/detectron2" target="_blank" rel=”nofollow”>Detectron2 GitHub repository</a><br/>
+                        <a href="https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5" target="_blank" rel=”nofollow”>Detectron2 Colab Notebook</a><br/>
+                        <a href="https://detectron2.readthedocs.io/tutorials/datasets.html" target="_blank" rel=”nofollow”>Documentation - Use Custom Datasets</a><br/>
+                        <a href="https://detectron2.readthedocs.io/modules/config.html#config-references" target="_blank" rel=”nofollow”>Documentation - Config References</a><br/>
+                        <a href="https://detectron2.readthedocs.io/tutorials/models.html" target="_blank" rel=”nofollow”>Documentation - Use Models</a><br/>
                     </div>
                 </div> <!-- post -->
 

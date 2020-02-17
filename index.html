@@ -162,7 +162,7 @@
                     <h3>Install Detectron2</h3>
                     <p>
                         I use the docker version of Detectron2 that installs all the requirements in a few steps:<br/>
-                        <strong>1.</strong> Take the required files, <em>Dockerfile</em>, <em>Dockerfile-circleci</em>, <em>docker-compose.yml</em> from <a href="https://github.com/facebookresearch/detectron2/tree/master/docker">https://github.com/facebookresearch/detectron2/tree/master/docker</a><br/>
+                        <strong>1.</strong> Take the required files, <em>Dockerfile</em>, <em>Dockerfile-circleci</em>, <em>docker-compose.yml</em> from <a href="https://github.com/facebookresearch/detectron2/tree/master/docker" rel=”nofollow”>https://github.com/facebookresearch/detectron2/tree/master/docker</a><br/>
                         <strong>2.</strong> Create and run the container with the command:
                         <div class="code">
                             <code class="prompt">
@@ -188,7 +188,7 @@
                     </div>
 
                     <p>
-                        Check the <a href="https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md">installation guide</a> to install Detectron2 using other methods.
+                        Check the <a href="https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md" rel=”nofollow”>installation guide</a> to install Detectron2 using other methods.
                     </p>
 
                     <h3>Create your own dataset</h3>
@@ -200,7 +200,7 @@
                             <img src="../images/train-Detectron2-with-custom-dataset/niche-sample.webp" width="400"  height="330" title="Niche">
                         </div>
 
-                        and I'll use <a href="http://www.robots.ox.ac.uk/~vgg/software/via/">VIA 2.0.8</a>, it's an easy tool to make the annotations. This is an example of how an annotation looks like:<br/>
+                        and I'll use <a href="http://www.robots.ox.ac.uk/~vgg/software/via/" rel=”nofollow”>VIA 2.0.8</a>, it's an easy tool to make the annotations. This is an example of how an annotation looks like:<br/>
                         <div class="image-box">
                             <img src="../images/train-Detectron2-with-custom-dataset/niche-annotation.webp" width="400" height="330" title="Image of a region draw around Niche">
                         </div>
@@ -323,7 +323,7 @@
                     
                     <p>
                         The <mark>DatasetCatalog.register</mark> function expects two parameters, the name of the dataset, and the function to get the data.<br/>
-                        With <mark>MetadataCatalog</mark> we specify which classes are present in the dataset using the attribute thing_classes. To know more about the metadata check the <a href="https://detectron2.readthedocs.io/tutorials/datasets.html#metadata-for-datasets">documentation</a>.
+                        With <mark>MetadataCatalog</mark> we specify which classes are present in the dataset using the attribute thing_classes. To know more about the metadata check the <a href="https://detectron2.readthedocs.io/tutorials/datasets.html#metadata-for-datasets" rel=”nofollow”>documentation</a>.
                     </p>
 
                     <p>
@@ -363,7 +363,7 @@
                     
                     <p>
                         Basically what we are doing here is to get configuration from an existing model, <em>mask_rcnn_R_50_FPN_3x</em>, then we overwrite some of the values like learning rate, iterations, etc...<br/>
-                        Check the <a href="https://detectron2.readthedocs.io/modules/config.html#config-references">documentation</a> about the configuration to know all available options that you can change.
+                        Check the <a href="https://detectron2.readthedocs.io/modules/config.html#config-references" rel=”nofollow”>documentation</a> about the configuration to know all available options that you can change.
                     </p>
                     
                     <p>
@@ -392,7 +392,7 @@
                     </div>
 
                     <p>
-                        The code of <em>loader.py</em> is pretty similar to the function shown in the <a href="https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5#scrollTo=tjbUIhSxUdm_" target="blank"> Colab notebook</a>
+                        The code of <em>loader.py</em> is pretty similar to the function shown in the <a href="https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5#scrollTo=tjbUIhSxUdm_" target="blank" rel=”nofollow”> Colab notebook</a>
                     </p>
 
                     <div class="code">
@@ -475,7 +475,7 @@
                     </ul>
 
                     <p>
-                        To know more about of the dictionary check the <a href="https://detectron2.readthedocs.io/tutorials/datasets.html#register-a-dataset" target="_blank"> documentation</a>.
+                        To know more about of the dictionary check the <a href="https://detectron2.readthedocs.io/tutorials/datasets.html#register-a-dataset" target="_blank" rel=”nofollow”> documentation</a>.
                     </p>
 
                     <h3>Inference</h3>
@@ -591,18 +591,18 @@
                     </div>
                     
                     <p>
-                        Check the <a href="https://github.com/davamix/cats-localization/blob/master/src/test.py">test.py</a> file in the repository to know how to make inference in a video. Spoiler alert: predicting every frame xD.
+                        Check the <a href="https://github.com/davamix/cats-localization/blob/master/src/test.py" rel=”nofollow”>test.py</a> file in the repository to know how to make inference in a video. Spoiler alert: predicting every frame xD.
                     </p>
 
                     <div class="post-references-section">
                         <h2 id="references">References</h2>
-                        <a href="https://github.com/davamix/cats-localization" target="_blank">Code repository</a><br/>
-                        <a href="https://drive.google.com/open?id=1o9zyd51QCqWG3DlArQnfH4q4clMVQmTY" target="_blank">Cats dataset</a> (zip file ~39MB)<br/>
-                        <a href="https://github.com/facebookresearch/detectron2" target="_blank">Detectron2 GitHub repository</a><br/>
-                        <a href="https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5" target="_blank">Detectron2 Colab Notebook</a><br/>
-                        <a href="https://detectron2.readthedocs.io/tutorials/datasets.html" target="_blank">Documentation - Use Custom Datasets</a><br/>
-                        <a href="https://detectron2.readthedocs.io/modules/config.html#config-references" target="_blank">Documentation - Config References</a><br/>
-                        <a href="https://detectron2.readthedocs.io/tutorials/models.html" target="_blank">Documentation - Use Models</a><br/>
+                        <a href="https://github.com/davamix/cats-localization" target="_blank" rel=”nofollow”>Code repository</a><br/>
+                        <a href="https://drive.google.com/open?id=1o9zyd51QCqWG3DlArQnfH4q4clMVQmTY" target="_blank" rel=”nofollow”>Cats dataset</a> (zip file ~39MB)<br/>
+                        <a href="https://github.com/facebookresearch/detectron2" target="_blank" rel=”nofollow”>Detectron2 GitHub repository</a><br/>
+                        <a href="https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5" target="_blank" rel=”nofollow”>Detectron2 Colab Notebook</a><br/>
+                        <a href="https://detectron2.readthedocs.io/tutorials/datasets.html" target="_blank" rel=”nofollow”>Documentation - Use Custom Datasets</a><br/>
+                        <a href="https://detectron2.readthedocs.io/modules/config.html#config-references" target="_blank" rel=”nofollow”>Documentation - Config References</a><br/>
+                        <a href="https://detectron2.readthedocs.io/tutorials/models.html" target="_blank" rel=”nofollow”>Documentation - Use Models</a><br/>
                     </div>
                 </div> <!-- post -->
                 <div class="footer mt-4">
@@ -626,9 +626,9 @@
                     </div>
 
                     <p>
-                        To read a frame we'll use the method <a href="https://docs.opencv.org/4.0.1/d8/dfe/classcv_1_1VideoCapture.html#a473055e77dd7faa4d26d686226b292c1">read()</a> 
-                            from the <a href="https://docs.opencv.org/4.0.1/d8/dfe/classcv_1_1VideoCapture.html">VideoCapture</a> class then this frame can be saved with the 
-                            <a href="https://docs.opencv.org/4.0.1/d4/da8/group__imgcodecs.html#gabbc7ef1aa2edfaa87772f1202d67e0ce">imwrite</a> method.
+                        To read a frame we'll use the method <a href="https://docs.opencv.org/4.0.1/d8/dfe/classcv_1_1VideoCapture.html#a473055e77dd7faa4d26d686226b292c1" rel=”nofollow”>read()</a> 
+                            from the <a href="https://docs.opencv.org/4.0.1/d8/dfe/classcv_1_1VideoCapture.html" rel=”nofollow”>VideoCapture</a> class then this frame can be saved with the 
+                            <a href="https://docs.opencv.org/4.0.1/d4/da8/group__imgcodecs.html#gabbc7ef1aa2edfaa87772f1202d67e0ce" rel=”nofollow”>imwrite</a> method.
                     </p>
 
                     <div class="code">
@@ -671,7 +671,7 @@
                         </code>
                     </div>
 
-                    <p>I created a script to save a percentage of the video frames as images. Check it out the <a href="https://github.com/davamix/frames-extractor">frames-extractor script</a>.</p>
+                    <p>I created a script to save a percentage of the video frames as images. Check it out the <a href="https://github.com/davamix/frames-extractor" rel=”nofollow”>frames-extractor script</a>.</p>
 
                 </div> <!-- post -->
                 <div class="footer mt-4">
@@ -705,7 +705,7 @@
                     </div>
                     <p>
                         1.1 Navigate to
-                        <a href="https://localhost:5001">https://localhost:5001</a>. Can you read the message
+                        <a href="https://localhost:5001" rel=”nofollow”>https://localhost:5001</a>. Can you read the message
                         <mark>Hello World!</mark>? Congrats, you can stop reading this guide. If Firefox shows you a
                         <mark>Secure Connection Failed</mark> message or you have an error message in console like this:
                     </p>
@@ -760,14 +760,14 @@
                         </code>
                     </div>
                     <p>
-                        Navigate to <a href="https://localhost:5001">https://localhost:5001</a>. If you have any error, you can check the links below to know more about each step.
+                        Navigate to <a href="https://localhost:5001" rel=”nofollow”>https://localhost:5001</a>. If you have any error, you can check the links below to know more about each step.
                     </p>
                     <div class="post-links-section">
                         <h2>LINKS</h2>
-                        <span id="link1">[1] <a href="https://github.com/dotnet/dotnet-docker/blob/master/samples/aspnetapp/aspnetcore-docker-https.md">https://github.com/dotnet/dotnet-docker/blob/master/samples/aspnetapp/aspnetcore-docker-https.md</a></span><br />
-                        <span id="link2">[2] <a href="https://www.markbrilman.nl/2011/08/howto-convert-a-pfx-to-a-seperate-key-crt-file/">https://www.markbrilman.nl/2011/08/howto-convert-a-pfx-to-a-seperate-key-crt-file/</a></span><br />
-                        <span id="link3">[3] <a href="https://stackoverflow.com/a/44160125">https://stackoverflow.com/a/44160125</a></span><br />
-                        <span id="link4">[4] <a href="https://github.com/dotnet/cli/issues/9376#issuecomment-393954876">https://github.com/dotnet/cli/issues/9376#issuecomment-393954876</a></span><br />
+                        <span id="link1">[1] <a href="https://github.com/dotnet/dotnet-docker/blob/master/samples/aspnetapp/aspnetcore-docker-https.md" rel=”nofollow”>https://github.com/dotnet/dotnet-docker/blob/master/samples/aspnetapp/aspnetcore-docker-https.md</a></span><br />
+                        <span id="link2">[2] <a href="https://www.markbrilman.nl/2011/08/howto-convert-a-pfx-to-a-seperate-key-crt-file/" rel=”nofollow”>https://www.markbrilman.nl/2011/08/howto-convert-a-pfx-to-a-seperate-key-crt-file/</a></span><br />
+                        <span id="link3">[3] <a href="https://stackoverflow.com/a/44160125" rel=”nofollow”>https://stackoverflow.com/a/44160125</a></span><br />
+                        <span id="link4">[4] <a href="https://github.com/dotnet/cli/issues/9376#issuecomment-393954876" rel=”nofollow”>https://github.com/dotnet/cli/issues/9376#issuecomment-393954876</a></span><br />
                     </div>
                 </div> <!-- post -->
 
@@ -795,7 +795,7 @@
                             On Windows 10 is not possible to install .NET Framework 3.5 using the <mark>Turn Windows features on or off</mark> option because the error <mark>0x800F081F</mark>.
                             In my case I installed it following the steps below:
                         </p>
-                        <p>1. Go to <a href="https://my.visualstudio.com">https://my.visualstudio.com</a> and download <mark>Windows 10 Features on Demand</mark> iso (x86 or x64).</p>
+                        <p>1. Go to <a href="https://my.visualstudio.com" rel=”nofollow”>https://my.visualstudio.com</a> and download <mark>Windows 10 Features on Demand</mark> iso (x86 or x64).</p>
                         <p>2. Mount the iso</p>
                         <p>3. Open a PowerShell command line as Administrator and run the next command</p>
                         <div class="code">
@@ -886,7 +886,7 @@
                         <h3>Nuget Package project</h3>
                         <p>
                             In Visual Studio create a new <mark>Class Library</mark> project and add a simple method that returns whatever value in order to test it later in the Sample project.<br/>
-                            Download <em>Nuget.exe</em> from <a href="https://www.nuget.org/downloads" target="_blank">https://www.nuget.org/downloads</a> and run the next command where the <em>.csproj</em> is located in order to create the <mark>.nuspec</mark> file.</p>
+                            Download <em>Nuget.exe</em> from <a href="https://www.nuget.org/downloads" target="_blank" rel=”nofollow”>https://www.nuget.org/downloads</a> and run the next command where the <em>.csproj</em> is located in order to create the <mark>.nuspec</mark> file.</p>
                         <div class="code">
                             <code class="prompt">
                                 nuget.exe spec
@@ -957,7 +957,7 @@
                                     )
                                 </code>
                             </div>         
-                            Be sure that the version of the library has been incremented after the build. I use <a href="https://visualstudiogallery.msdn.microsoft.com/dd8c5682-58a4-4c13-a0b4-9eadaba919fe/">Automatic Versions</a>
+                            Be sure that the version of the library has been incremented after the build. I use <a href="https://visualstudiogallery.msdn.microsoft.com/dd8c5682-58a4-4c13-a0b4-9eadaba919fe/" rel=”nofollow”>Automatic Versions</a>
                             Now if you build several times you can check in the Sample project the latest version available for download.
                             <div class="note">
                                 <strong>Note</strong><br/>
@@ -969,8 +969,8 @@
     
                         <div class="post-references-section">
                             <h2>References</h2>
-                            <a href="http://docs.nuget.org/create/hosting-your-own-nuget-feeds" target="_blank">Hosting Your Own NuGet Feeds</a><br/>
-                            <a href="http://docs.nuget.org/create/Creating-and-Publishing-a-Package" target="_blank">Creating and Publishing a Package</a>
+                            <a href="http://docs.nuget.org/create/hosting-your-own-nuget-feeds" target="_blank" rel=”nofollow”>Hosting Your Own NuGet Feeds</a><br/>
+                            <a href="http://docs.nuget.org/create/Creating-and-Publishing-a-Package" target="_blank" rel=”nofollow”>Creating and Publishing a Package</a>
                         </div>
                     </div> <!-- post -->
                     <div class="footer mt-4">
