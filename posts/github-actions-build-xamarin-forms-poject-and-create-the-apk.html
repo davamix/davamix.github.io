@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="GitHub Actions: Build a Xamarin.Forms project and create the APK">
+    <meta name="author" content="Daniel Valcarce">
+    <meta name="og:tile" content="GitHub Actions: Build a Xamarin.Forms project and create the APK">
+    <meta name="og:description" content="In this post I'll show a way to configure a basic workflow in order to build a Xaramin.Forms application and create the APK">
+    <meta name="og:image" content="https://raw.githubusercontent.com/davamix/davamix.github.io/master/images/binary.webp">
+    <meta name="og:url" content="https://davamix.github.io/posts/detecting-my-cats-with-Detectron2.html">
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:domain" content="davamix.net"/>
+    <meta name="twitter:title" content="GitHub Actions: Build a Xamarin.Forms project and create the APK">
+    <meta name="twitter:description" content="In this post I'll show a way to configure a basic workflow in order to build a Xaramin.Forms application and create the APK">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/davamix/davamix.github.io/master/images/binary.webp">
+
+    <title>GitHub Actions: Build a Xamarin.Forms project and create the APK</title>
+
+    <!-- Load JQuery at the beginning in order to run functions in comments.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+        crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="https://davamix.net/styles/main.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top" style="background-color: dodgerblue">
+        <a class="navbar-brand" href="https://davamix.net/index.html">Daniel Valcarce - Software Developer</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarLinks" aria-controls="navbarLinks"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <i class="far fa-bars fa-2x" style="color:white"></i>
+        </button>
+
+        <!-- Section links -->
+        <div class="collapse navbar-collapse" id="navbarLinks">
+            <ul class="navbar-nav mr-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="https://davamix.net" title="Home - Blog">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fas fa-home fa-2x"></i>
+                            <span>Home - Blog</span>
+                        </div>
+                        <i class="fas fa-home fa-3x d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-nav mr-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="https://davamix.net/sections/code.html" title="Code examples and Katas">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fal fa-code fa-2x"></i>
+                            <span>Code</span>
+                        </div>
+                        <i class="fal fa-code fa-3x d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+            </ul>
+            <!-- <ul class="navbar-nav mr-2">
+                <li class="nav-item">
+                    <a class="nav-link" href="https://davamix.net/sections/projects.html" title="Personal projects">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fal fa-lightbulb fa-2x"></i>
+                            <span>Personal projects</span>
+                        </div>
+                        <i class="fal fa-lightbulb fa-3x d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+            </ul> -->
+        </div>
+
+        <!-- Social links -->
+        <div class="collapse navbar-collapse" id="navbarLinks">
+            <ul class="navbar-nav mr-4">
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://github.com/davamix">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-github-square fa-2x"></i>
+                            <span>Github</span>
+
+                        </div>
+                        <i class="fab fa-github-square fa-3x d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://twitter.com/davamix">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-twitter-square fa-2x"></i>
+                            <span>Twitter</span>
+
+                        </div>
+                        <i class="fab fa-twitter-square fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://www.linkedin.com/in/danielvalcarce/">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-linkedin fa-2x"></i>
+                            <span>Linkedin</span>
+
+                        </div>
+                        <i class="fab fa-linkedin fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="https://davamix.wordpress.com/" title="Old blog on Wordpress">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="fab fa-wordpress fa-2x"></i>
+                            <span>Old blog</span>
+
+                        </div>
+                        <i class="fab fa-wordpress fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" target="_blank" href="mailto:davamix@gmail.com?subject=[DavamixNet]" title="Contact me at davamix@gmail.com">
+                        <div class="d-inline-block d-lg-none">
+                            <i class="far fa-at fa-2x"></i>
+                            <span>Contact me at davamix@gmail.com</span>
+
+                        </div>
+                        <i class="far fa-at fa-3x  d-lg-inline-block d-none"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="blog">
+            <div class="container">
+                <div class="post">
+                    <div class="title">
+                        <h1>GitHub Actions: Build a Xamarin.Forms project and create the APK</h1>
+                        <span class="d-flex p-2 date">09-06-2020</span>
+                        <hr />
+                    </div>
+
+                    <p>In this post I'll show a way to configure a basic workflow in order to build a Xaramin.Forms application and create the APK, only Android at the moment.</p>
+
+                    <p>First of all, the workflow:</p>
+                    
+                    <div class="code">
+                        <code>
+                            name: Build<br />
+                            <br />
+                            on:<br />
+                            &nbsp;&nbsp;push:<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;branches: [ master ]<br />
+                            &nbsp;&nbsp;pull_request:<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;branches: [ master ]<br />
+                            <br />
+                            jobs:<br />
+                            &nbsp;&nbsp;# Build App<br />
+                            &nbsp;&nbsp;build:<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;runs-on: windows-latest<br />
+                            <br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;env:<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SERVICE_APP_KEY: ${{ secrets.SERVICE_APP_KEY }}<br />
+                            <br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;steps:<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- uses: actions/checkout@v2<br />
+                            <br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- name: Setup MSBuild<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;uses: microsoft/setup-msbuild@v1.0.0<br />
+                            <br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- name: Build Solution<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;run: msbuild ./MyApplication.sln /restore /p:Configuration=Release<br />
+                            <br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- name: Create and Sign the APK<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;run: msbuild MyApplication\MyApplication.Android\MyApplication.Android.csproj /t:SignAndroidPackage /p:Configuration=Release /p:OutputPath=bin\Release\<br />
+                            <br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- name: Upload artifact<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;uses: actions/upload-artifact@v2<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with:<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name: MyApplication.apk<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;path: MyApplication\MyApplication.Android\bin\Release\com.companyname.myapplication-Signed.apk<br />
+
+
+                        </code>
+                    </div>
+
+                    <p></p>
+                    <h3>Step by step</h3>
+
+                    <p>
+                        The first lines are self-explanatory so I'll jump to the <mark>build</mark> section.
+                    </p>
+
+                    <div class="code">
+                        <code>
+                            build:<br />
+                            &nbsp;&nbsp;runs-on: windows-latest<br />
+                        </code>
+                    </div>
+                    <p>This will configure a Windows machine and all steps for this job will run in this environment. The default shell will be a <em>PowerShell</em>, so we can run scripts in this language.</p>
+                    
+                    <div class="code">
+                        <code>
+                            env:<br />
+                            &nbsp;&nbsp;SERVICE_APP_KEY: ${{ secrets.SERVICE_APP_KEY }}<br />
+                        </code>
+                    </div>
+                    <p>With this line we create an environment variable, <mark>SERVICE_APP_KEY</mark> with the content of the GitHub secret <mark>secrets.SERVICE_APP_KEY</mark>. The variables created in an upper level can be accessed by its children elements but a variable created in a <em>step</em> level, for example, cannot be accessed from other step or a parent element.</p>
+
+                    <div class="note">
+                        A secret in GitHub is a piece of encrypted information that belongs to the repository. To create a secret go to your repository <em>Settings -> Secrets</em>.<br />
+                        If you try to print the value of a secret during the build process you will only see something like: SERVICE_APP_KEY: ****
+                    </div>
+                    <p>Now let's explain the steps.</p>
+
+                    <div class="code">
+                        <code>
+                            steps:<br />
+                            &nbsp;&nbsp;- uses: actions/checkout@v2<br />
+                        </code>
+                    </div>
+                    <p>The first step is the checkout. This action will download all the code to the current machine.</p>
+
+                    <div class="code">
+                        <code>
+                            - name: Setup MSBuild<br />
+                            &nbsp;&nbsp;uses: microsoft/setup-msbuild@v1.0.0<br />
+                        </code>
+                    </div>
+                    <p>The next steps is to use the action <a href="https://github.com/microsoft/setup-msbuild">microsoft/setup-msbuild@v1.0.0</a> in order to configure the environment that allow us to use the <em>msbuild</em> tool.</p>
+
+                    <div class="code">
+                        <code>
+                            - name: Build Solution<br />
+                            &nbsp;&nbsp;run: msbuild ./MyApplication.sln /restore /p:Configuration=Release<br />
+                        </code>
+                    </div>
+                    <p>Build the solution in <em>Release</em> mode.</p>
+
+                    <div class="code">
+                        <code>
+                            - name: Create and Sign the APK<br />
+                            &nbsp;&nbsp;run: msbuild MyApplication\MyApplication.Android\MyApplication.Android.csproj /t:SignAndroidPackage /p:Configuration=Release /p:OutputPath=bin\Release\<br />
+                        </code>
+                    </div>
+                    <p>In order to create and sign the package we will execute the <em>msbuild</em> command over the Android project with the target <mark>/t:SignAndroidPackage</mark>. The configuration should be <mark>Release</mark> and the generated <em>.apk</em> file will be located in <em>{project_folder}\</em><mark>bin\Release</mark></p>
+                    <p>The name of the file will be <em>com.companyname.myapplication-Signed.apk</em>. The default name of the package is <em>com.companyname.myapplication</em>, you can change it in the <em>AndroidManifest.xml</em> file or in the properties of the Android project in Visual Studio.</p>
+                    <p>This process attach the <em>-Signed</em> suffix to the name.</p>
+
+                    <div class="code">
+                        <code>
+                            - name: Upload artifact<br />
+                            &nbsp;&nbsp;uses: actions/upload-artifact@v2<br />
+                            &nbsp;&nbsp;with:<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;name: MyApplication.apk<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;path: MyApplication\MyApplication.Android\bin\Release\com.companyname.myapplication-Signed.apk<br />
+                        </code>
+                    </div>
+                    <p>The last step is to make available the artifact to be downloaded. We will use the action <mark>actions/upload-artifact@v2</mark> with the parameters <mark>name</mark> as the name of the artifact, and the <mark>path</mark>, the path where the package is located.</p>
+
+                    <h3>How to manage the secret keys</h3>
+
+                    <p>The hardcoded keys are not a good practice ;) A better solution could be create an environment variable in your local system, but, how to access from code? One approach I follow is to create a class to manage the secrets and populate it with placeholders, something like:</p>
+
+                    <div class="code">
+                        <code>
+                            public static class Secrets{<br />
+                                &nbsp;&nbsp;public static string ServiceID => "#KEY1#"<br />
+                                &nbsp;&nbsp;public static string OtherKey => "#KEY2#"<br />
+                            }<br />
+                        </code>
+                    </div>
+
+                    <p>To replace the placeholders by the valid keys I have a <em>PowerShell</em> script that runs in the <em>pre-build</em> event on Visual Studio.</p>
+
+                    <div class="code">
+                        <code>
+                            function Replace-Text{<br />
+                            &nbsp;&nbsp;<#<br />
+                            &nbsp;&nbsp;.SYNOPSIS<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;Replace the $placeholder value by $key value in $file<br />
+                            &nbsp;&nbsp;.PARAMETER $file<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;File to replace values. Mandatory<br />
+                            &nbsp;&nbsp;.PARAMETER $placeholder<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;Value to be replaced. Mandatory<br />
+                            &nbsp;&nbsp;.PARAMETER $key<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;The new value to replace the $placeholder. Mandatory<br />
+                            &nbsp;&nbsp;.EXAMPLE<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;Replace-Text file_path "#TEXT TO REPLACE#" "KEY VALUE"<br />
+                            &nbsp;&nbsp;#><br />
+                            &nbsp;&nbsp;Param(<br />
+                                &nbsp;&nbsp;&nbsp;&nbsp;[Parameter(Mandatory=$true)]<br />
+                                &nbsp;&nbsp;&nbsp;&nbsp;[string]$file,<br />
+                                &nbsp;&nbsp;&nbsp;&nbsp;[Parameter(Mandatory=$true)]<br />
+                                &nbsp;&nbsp;&nbsp;&nbsp;[string]$placeholder,<br />
+                                &nbsp;&nbsp;&nbsp;&nbsp;[Parameter(Mandatory=$true)]<br />
+                                &nbsp;&nbsp;&nbsp;&nbsp;[string]$key<br />
+                            &nbsp;&nbsp;)<br />
+                            &nbsp;&nbsp;((Get-Content -path $file -Raw) -replace $placeholder, $key) | Set-Content -Path $file<br />
+                            }<br />
+                            
+                            $file = $args[0]<br />
+                            $placeholder = $args[1]<br />
+                            $key_value = $args[2]<br />
+                            
+                            Replace-Text $file $placeholder $key_value<br />
+                        </code>
+                    </div>
+
+                    <p>This script have three parameters:</p>
+                    <ul>
+                        <li>the <mark>$file</mark> where the placeholder are</li>
+                        <li>the <mark>$placeholder</mark> to be replaced</li>
+                        <li>the <mark>$key_value</mark> from the environment variable</li>
+                    </ul>
+                    <p>This script is called from the <em>Pre-build event command line</em>. <em>Project properties -> Build Events</em>:</p>
+
+                    <div class="code">
+                        <code>
+                            powershell.exe -ExecutionPolicy Unrestricted $(ProjectDir)..\..\Tools\replace-keys-script.ps1 $(ProjectDir)Secrets.cs "`#KEY1`#" $env:SERVICE_APP_KEY<br />
+                            <br />
+                            powershell.exe -ExecutionPolicy Unrestricted $(ProjectDir)..\..\Tools\replace-keys-script.ps1 $(ProjectDir)Secrets.cs "`#KEY2`#" $env:OTHER_KEY<br />
+                        </code>
+                    </div>
+
+                    <div class="note">
+                        If the placeholder has # characters like #INSERT_KEY_HERE# they must be escaped with grave-accents: "`#INSERT_KEY_HERE`#" in order to escape the comment symbol.
+                    </div>
+
+                    <p>Let me show the folder structure:</p>
+
+                    <div class="code">
+                        <code>
+                            /<br />
+                            |- Solution.sln<br />
+                            |- Project/<br />
+                            |- Project.Android/<br />
+                            |- Tools/<br />
+                            &nbsp;&nbsp;&nbsp;&nbsp;|- replace-keys-script.ps1<br />
+                        </code>
+                    </div>
+
+                    <p>Why to use <mark>$(ProjectDir)..\..\Tools</mark> instead of <mark>$(SolutionDir)Tools</mark>? Because <mark>$(SolutionDir)</mark> does not works on GitHub Actions for wharever reason.</p>
+
+                    <p>As you may notice, this process change the content of the files and Git wil mark them. To fix this I do a <em>checkout</em> for all files in the <em>Post-build</em> event:</p>
+                    
+                    <div class="code">
+                        <code>
+                            git checkout $(ProjectDir)Secrets.cs<br />
+                        </code>
+                    </div>
+
+                    <p>After the build process the application will work with correct values and the code remains intact.</p>
+                    <p>The only thing we need to do in GitHub is to create the secrets we need for the keys and create the environment variables in the workflow with the same name as we have in out system.</p>
+
+                    <div class="post-references-section">
+                        <h2>References</h2>
+                        <a href="https://docs.microsoft.com/en-us/xamarin/android/deploy-test/building-apps/build-process" target="_blank" rel="nofollow">Xamarin Android - Build Process</a><br/>
+                        <a href="https://github.com/marketplace/actions/setup-msbuild" target="_blank" rel="nofollow">GitHub Action - setup-msbuild</a><br/>
+                        <a href="https://stackoverflow.com/a/20638116/844372" target="_blank" rel="nofollow">Prebuild event in Visual Studio replacing $(SolutionDir) with *Undefined*</a><br/>
+                        <a href="https://stackoverflow.com/a/56646415/844372" target="_blank" rel="nofollow">How to use VisualStudio SignAndroidPackage in TeamCity?</a><br/>
+                    </div>
+                </div><!-- post -->
+
+                <hr />
+
+                <!-- Comments section (change ID comment on address and function parameter-->
+                <div id="post-comments" class="comments-section">
+                    <div class="comments-header">
+                        <a href="https://github.com/davamix/davamix.github.io/issues/6#new_comment_field" rel="nofollow"  target="_blank">
+                            <button type="button" class="btn btn-primary float-right">
+                                Post a comment on Github
+                            </button>
+                        </a>
+                        <h2>COMMENTS</h2>    
+                    </div>
+                    <div id="gh-comments-list"></div>
+                    <a href="javascript:void(0)" id="gh-load-comments" class="btn" style="display:none">Load more comments</a>
+                </div>
+            </div><!-- container -->
+        </div><!-- blog -->
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+    <script defer src="https://pro.fontawesome.com/releases/v5.2.0/js/all.js" integrity="sha384-yBZ34R8uZDBb7pIwm+whKmsCiRDZXCW1vPPn/3Gz0xm4E95frfRNrOmAUfGbSGqN" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="https://davamix.net/scripts/comments.js"></script>
+    <script type="text/javascript">
+        DoGithubComments( 6 );
+    </script>
+</body>
+</html>
