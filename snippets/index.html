@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snippets | Davamix</title>
+<meta name="description" content="A collection of code samples, machine learning experiments, katas, and project templates.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary":                    "#005bc1",
+          "primary-dim":                "#004faa",
+          "primary-fixed":              "#d8e2ff",
+          "primary-fixed-dim":          "#c2d4ff",
+          "primary-container":          "#d8e2ff",
+          "on-primary":                 "#f7f7ff",
+          "on-primary-fixed":           "#003d85",
+          "on-primary-fixed-variant":   "#0058bb",
+          "on-primary-container":       "#004ea8",
+          "secondary":                  "#5c5f64",
+          "secondary-dim":              "#505358",
+          "secondary-fixed":            "#e1e2e8",
+          "secondary-fixed-dim":        "#d2d4da",
+          "secondary-container":        "#e1e2e8",
+          "on-secondary":               "#f7f9ff",
+          "on-secondary-fixed":         "#3d3f44",
+          "on-secondary-fixed-variant": "#595c61",
+          "on-secondary-container":     "#4f5257",
+          "tertiary":                   "#595e78",
+          "tertiary-dim":               "#4d526c",
+          "tertiary-fixed":             "#dadefe",
+          "tertiary-fixed-dim":         "#ccd0ef",
+          "tertiary-container":         "#dadefe",
+          "on-tertiary":                "#faf8ff",
+          "on-tertiary-fixed":          "#383c55",
+          "on-tertiary-fixed-variant":  "#545873",
+          "on-tertiary-container":      "#4a4f69",
+          "background":                 "#f8f9fa",
+          "surface":                    "#f8f9fa",
+          "surface-bright":             "#f8f9fa",
+          "surface-dim":                "#d1dce0",
+          "surface-tint":               "#005bc1",
+          "surface-variant":            "#dbe4e7",
+          "surface-container-lowest":   "#ffffff",
+          "surface-container-low":      "#f1f4f6",
+          "surface-container":          "#eaeff1",
+          "surface-container-high":     "#e3e9ec",
+          "surface-container-highest":  "#dbe4e7",
+          "on-surface":                 "#2b3437",
+          "on-surface-variant":         "#586064",
+          "on-background":              "#2b3437",
+          "outline":                    "#737c7f",
+          "outline-variant":            "#abb3b7",
+          "inverse-surface":            "#0c0f10",
+          "inverse-on-surface":         "#9b9d9e",
+          "inverse-primary":            "#4b8eff",
+          "error":                      "#9f403d",
+          "error-dim":                  "#4e0309",
+          "error-container":            "#fe8983",
+          "on-error":                   "#fff7f6",
+          "on-error-container":         "#752121"
+        },
+        borderRadius: {
+          DEFAULT: "0.125rem",
+          lg:      "0.25rem",
+          xl:      "0.5rem",
+          "2xl":   "0.75rem",
+          full:    "0.75rem"
+        },
+        fontFamily: {
+          headline: ["Manrope", "sans-serif"],
+          body:     ["Inter", "sans-serif"],
+          label:    ["Space Grotesk", "sans-serif"]
+        }
+      }
+    }
+  }
+</script>
+
+<link rel="stylesheet" href="/assets/css/main.css">
+
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+  <header class="fixed top-0 w-full z-50 glass-nav">
+  <div class="flex justify-between items-center max-w-7xl mx-auto px-8 h-20">
+    <a href="/" class="font-headline font-bold text-2xl tracking-tighter text-on-surface hover:text-primary transition-colors">
+      Davamix
+    </a>
+    <nav class="hidden md:flex items-center gap-10 ml-auto">
+      <a href="/"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Articles
+      </a>
+      <a href="/projects"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Projects
+      </a>
+      <a href="/snippets"
+         class="font-label tracking-tight transition-colors text-primary border-b-2 border-primary pb-1">
+        Snippets
+      </a>
+      <a href="/about"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        About
+      </a>
+    </nav>
+  </div>
+</header>
+
+  <main class="pt-40 pb-32">
+
+  <div class="max-w-7xl mx-auto px-8 mb-16 border-b border-outline-variant/20 pb-8">
+    
+    <h1 class="text-5xl font-headline font-extrabold tracking-tighter text-on-surface leading-[1.1]">
+      Snippets
+    </h1>
+    
+    
+    <p class="mt-4 text-lg text-on-surface-variant font-body">A collection of code samples, machine learning experiments, katas, and project templates.</p>
+    
+  </div>
+
+  
+  <section class="max-w-7xl mx-auto px-8 mb-20">
+
+    <h2 class="text-2xl font-headline font-bold tracking-tight text-on-surface mb-8">
+      Machine Learning
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+          <a href="https://gym.openai.com/envs/CartPole-v0/" target="_blank" rel="noopener noreferrer"
+             class="text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+          </a>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">RL - Deep Q-Learning</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Implementation of Q-Learning algorithm using the Cart Pole environment</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Deep-Q-Learning" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">RL - Tile Coding</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Discretizing continuous space using Tile Coding</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/RL-in-Continuous-Spaces" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">RL - Discretization</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Applying Reinforcement learning algorithms to discretize continuous state and action spaces</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/RL-in-Continuous-Spaces" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+          <a href="https://github.com/openai/gym/blob/master/gym/envs/toy_text/cliffwalking.py" target="_blank" rel="noopener noreferrer"
+             class="text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+          </a>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">RL - Temporal-Difference</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Implementation of Temporal-Difference methods using the Cliff Walking environment</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Temporal-Difference" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+          <a href="https://github.com/openai/gym/blob/master/gym/envs/toy_text/blackjack.py" target="_blank" rel="noopener noreferrer"
+             class="text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+          </a>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">RL - Monte Carlo</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Implementation of Monte Carlo algorithms using the Blackjack environment</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Monte-Carlo" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+          <a href="https://github.com/openai/gym/blob/master/gym/envs/toy_text/frozen_lake.py" target="_blank" rel="noopener noreferrer"
+             class="text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+          </a>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">RL - Dynamic Programming</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Implementation of dynamic programming algorithms using the Frozen Lake environment</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Dynamic-Programming" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">CNN with CIFAR-10</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Using a CNN to classify images from the CIFAR-10 dataset</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Convolutional-Neural-Networks/cifar10-classification" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">MLP with MNIST</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Using Multi-layer Perceptron to classify MNIST dataset</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Convolutional-Neural-Networks/mnist-mlp" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Analyzing IMDB Dataset</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Analyzing the IMDB dataset with Keras</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Deep-Neural-Networks" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">DNN - Student Admissions</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Predicting student admissions using a DNN with Keras</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Deep-Neural-Networks/Student-Admissions" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+          <a href="http://vis-www.cs.umass.edu/lfw/" target="_blank" rel="noopener noreferrer"
+             class="text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+          </a>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">PCA</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Applying PCA over the 'Labeled Faces in the Wild' dataset</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/PCA" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">KMeans vs GMM</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Clustering the Iris dataset with KMeans and Gaussian Mixture</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Gaussian-Mixture-Models-and-Cluster-Validation" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">DBSCAN</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Using DBSCAN to cluster a couple of random datasets</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Hierarchical-and-Density-based-Clustering/DBSCAN" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Hierarchical Clustering</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Use Hierarchical Clustering to classify the Iris dataset</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Hierarchical-and-Density-based-Clustering" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Clustering</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Apply Clustering to explore a dataset with movie ratings</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Clustering" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Naive Bayes</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Spam Classifier using Naive Bayes</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Naives-Bayes" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Decision Trees</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Using Decision Trees in the Titanic dataset</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Decision-Trees" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Jupyter</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Grid Search</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Model Selection with Grid Search</p>
+
+        <a href="https://github.com/davamix/udacity-machine-learning-nanodegere/tree/master/labs/Model-Selection" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+    </div>
+
+  </section>
+  
+  <section class="max-w-7xl mx-auto px-8 mb-20">
+
+    <h2 class="text-2xl font-headline font-bold tracking-tight text-on-surface mb-8">
+      Code Samples
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C++</span>
+            
+          </div>
+          
+          <a href="https://www.manning.com/books/grokking-algorithms" target="_blank" rel="noopener noreferrer"
+             class="text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+          </a>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Grokking Algorithms</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Algorithms implementation in C++ from the Grokking Algorithms book</p>
+
+        <a href="https://github.com/davamix/GrokkingAlgorithms" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C++</span>
+            
+          </div>
+          
+          <a href="https://opencv.org/" target="_blank" rel="noopener noreferrer"
+             class="text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+          </a>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Open CV</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Samples with OpenCV 3</p>
+
+        <a href="https://github.com/davamix/OpenCV-samples" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C++</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Task Manager</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Console application for text file task management</p>
+
+        <a href="https://github.com/davamix/TaskManagerCpp" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Matrices</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Matrix multiplication sample</p>
+
+        <a href="https://github.com/davamix/Matrices" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">UWP</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">AWS Service from Xbox One</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">UWP application to test the Amazon Product Advertising API and deploy into a Xbox One</p>
+
+        <a href="https://github.com/davamix/XboxOneServiceAWS" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">WPF</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">WPF Drag & Drop</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Drag and Drop sample with WPF</p>
+
+        <a href="https://github.com/davamix/DragAndDrop" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">WPF</span>
+            
+          </div>
+          
+          <a href="https://github.com/PrismLibrary/Prism" target="_blank" rel="noopener noreferrer"
+             class="text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+          </a>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Prism WPF</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Prism WPF 6.2 and Prism.Autofac</p>
+
+        <a href="https://github.com/davamix/DragAndDrop" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+            
+          </div>
+          
+          <a href="https://github.com/StackExchange/Dapper" target="_blank" rel="noopener noreferrer"
+             class="text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+          </a>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Dapper with SQLite</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Dapper.net and SQLite sample</p>
+
+        <a href="https://github.com/davamix/DapperSample" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+            
+          </div>
+          
+          <a href="https://code.msdn.microsoft.com/Sync-Framework-Toolkit-4dc10f0e" target="_blank" rel="noopener noreferrer"
+             class="text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+          </a>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Microsoft Sync Framework</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Sample to know how the SyncFramework works with databases</p>
+
+        <a href="https://github.com/davamix/SyncFrameworkSample" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">JavaScript</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Node Finance</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Get a stock value from Google Finance service</p>
+
+        <a href="https://github.com/davamix/NodeFinanceSample" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+            
+          </div>
+          
+          <a href="http://mqtt.org/" target="_blank" rel="noopener noreferrer"
+             class="text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+          </a>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Chat Mqtt</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Basic chat using Mqtt protocol to share messages</p>
+
+        <a href="https://github.com/davamix/ChatMqtt" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+    </div>
+
+  </section>
+  
+  <section class="max-w-7xl mx-auto px-8 mb-20">
+
+    <h2 class="text-2xl font-headline font-bold tracking-tight text-on-surface mb-8">
+      Katas
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C++</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Automorphic Number</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Automorphic Number kata using Google Test</p>
+
+        <a href="https://github.com/davamix/Katas/tree/master/cpp/AutomorphicNumber" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C++</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Tennis Kata</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Tennis Kata using Google Test</p>
+
+        <a href="https://github.com/davamix/Katas/tree/master/cpp/TennisKata" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C++</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">String Calculator</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">String Calculator kata using Google Test</p>
+
+        <a href="https://github.com/davamix/Katas/tree/master/cpp/StringCalculator" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">String Calculator</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">String Calculator kata using NUnit</p>
+
+        <a href="https://github.com/davamix/Katas/tree/master/csharp/StringCalculator" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Greeting Kata</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Greeting Kata using XUnit</p>
+
+        <a href="https://github.com/davamix/Katas/tree/master/csharp/GreetingKata" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Elixir</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">FizzBuzz</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">FizzBuzz kata using ExUnit</p>
+
+        <a href="https://github.com/davamix/Katas/tree/master/elixir/fizz_buzz" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Elixir</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Roman Numeral</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Roman Numeral kata using ExUnit</p>
+
+        <a href="https://github.com/davamix/Katas/tree/master/elixir/roman_numeral" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">FizzBuzz</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">FizzBuzz kata using Python Unittest</p>
+
+        <a href="https://github.com/davamix/Katas/tree/master/python/FizzBuzz" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+            
+          </div>
+          
+          <a href="https://projecteuler.net/problem=1" target="_blank" rel="noopener noreferrer"
+             class="text-on-surface-variant hover:text-primary transition-colors flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+          </a>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Multiples of 3 and 5</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Multiples of 3 and 5 kata using Python Unittest</p>
+
+        <a href="https://github.com/davamix/Katas/tree/master/python/Kata2" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+    </div>
+
+  </section>
+  
+  <section class="max-w-7xl mx-auto px-8 mb-20">
+
+    <h2 class="text-2xl font-headline font-bold tracking-tight text-on-surface mb-8">
+      Templates
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">ASP.NET Core Web API Controller Template</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Template to create a controller file in an ASP.NET Core Web API project</p>
+
+        <a href="https://github.com/davamix/AspnetWebApiControllerTemplate" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">ASP.NET Core Web API Slim Template</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Template for ASP.NET Core project based on built-in web template</p>
+
+        <a href="https://github.com/davamix/AspnetWebApiSlimTemplate" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Shell Script</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">C++ Project Template</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Shell script to create a folder structure for a C++ project with Google Test</p>
+
+        <a href="https://github.com/davamix/Scripts" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+      <div class="bg-surface-container-lowest flex flex-col gap-4 p-6 hover:bg-surface-container transition-colors duration-200">
+
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex flex-wrap gap-2">
+            
+            <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+            
+          </div>
+          
+        </div>
+
+        <h3 class="text-lg font-headline font-bold text-on-surface leading-snug">Prism Component for VS</h3>
+
+        <p class="text-sm leading-relaxed text-on-surface-variant font-body flex-grow">Project template to create a basic structure for a Prism WPF component</p>
+
+        <a href="https://github.com/davamix/VSTemplates" target="_blank" rel="noopener noreferrer"
+           class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4 mt-auto">
+          View on GitHub
+          <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+        </a>
+
+      </div>
+      
+    </div>
+
+  </section>
+  
+
+</main>
+
+  <footer class="w-full py-16 bg-surface-container-low mt-32 border-t border-outline-variant/10">
+  <div class="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-8 opacity-60">
+    <div class="font-label text-xs uppercase tracking-widest text-outline mb-6 md:mb-0">
+      &copy; 2026 Davamix. Built for clarity.
+    </div>
+    <div class="flex gap-8 items-center">
+      <a href="/feed.xml" class="font-label text-xs uppercase tracking-widest text-outline hover:text-primary transition-colors">RSS</a>
+    </div>
+    <div class="hidden md:flex items-center gap-2 mt-6 md:mt-0">
+      <span class="w-2 h-2 rounded-full bg-primary-dim"></span>
+      <span class="font-label text-[10px] uppercase tracking-[0.2em] text-outline">Node Status: Active</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

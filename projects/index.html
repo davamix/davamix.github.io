@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects | Davamix</title>
+<meta name="description" content="A selection of personal projects built around AI, desktop applications, and data tooling.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary":                    "#005bc1",
+          "primary-dim":                "#004faa",
+          "primary-fixed":              "#d8e2ff",
+          "primary-fixed-dim":          "#c2d4ff",
+          "primary-container":          "#d8e2ff",
+          "on-primary":                 "#f7f7ff",
+          "on-primary-fixed":           "#003d85",
+          "on-primary-fixed-variant":   "#0058bb",
+          "on-primary-container":       "#004ea8",
+          "secondary":                  "#5c5f64",
+          "secondary-dim":              "#505358",
+          "secondary-fixed":            "#e1e2e8",
+          "secondary-fixed-dim":        "#d2d4da",
+          "secondary-container":        "#e1e2e8",
+          "on-secondary":               "#f7f9ff",
+          "on-secondary-fixed":         "#3d3f44",
+          "on-secondary-fixed-variant": "#595c61",
+          "on-secondary-container":     "#4f5257",
+          "tertiary":                   "#595e78",
+          "tertiary-dim":               "#4d526c",
+          "tertiary-fixed":             "#dadefe",
+          "tertiary-fixed-dim":         "#ccd0ef",
+          "tertiary-container":         "#dadefe",
+          "on-tertiary":                "#faf8ff",
+          "on-tertiary-fixed":          "#383c55",
+          "on-tertiary-fixed-variant":  "#545873",
+          "on-tertiary-container":      "#4a4f69",
+          "background":                 "#f8f9fa",
+          "surface":                    "#f8f9fa",
+          "surface-bright":             "#f8f9fa",
+          "surface-dim":                "#d1dce0",
+          "surface-tint":               "#005bc1",
+          "surface-variant":            "#dbe4e7",
+          "surface-container-lowest":   "#ffffff",
+          "surface-container-low":      "#f1f4f6",
+          "surface-container":          "#eaeff1",
+          "surface-container-high":     "#e3e9ec",
+          "surface-container-highest":  "#dbe4e7",
+          "on-surface":                 "#2b3437",
+          "on-surface-variant":         "#586064",
+          "on-background":              "#2b3437",
+          "outline":                    "#737c7f",
+          "outline-variant":            "#abb3b7",
+          "inverse-surface":            "#0c0f10",
+          "inverse-on-surface":         "#9b9d9e",
+          "inverse-primary":            "#4b8eff",
+          "error":                      "#9f403d",
+          "error-dim":                  "#4e0309",
+          "error-container":            "#fe8983",
+          "on-error":                   "#fff7f6",
+          "on-error-container":         "#752121"
+        },
+        borderRadius: {
+          DEFAULT: "0.125rem",
+          lg:      "0.25rem",
+          xl:      "0.5rem",
+          "2xl":   "0.75rem",
+          full:    "0.75rem"
+        },
+        fontFamily: {
+          headline: ["Manrope", "sans-serif"],
+          body:     ["Inter", "sans-serif"],
+          label:    ["Space Grotesk", "sans-serif"]
+        }
+      }
+    }
+  }
+</script>
+
+<link rel="stylesheet" href="/assets/css/main.css">
+
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+  <header class="fixed top-0 w-full z-50 glass-nav">
+  <div class="flex justify-between items-center max-w-7xl mx-auto px-8 h-20">
+    <a href="/" class="font-headline font-bold text-2xl tracking-tighter text-on-surface hover:text-primary transition-colors">
+      Davamix
+    </a>
+    <nav class="hidden md:flex items-center gap-10 ml-auto">
+      <a href="/"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Articles
+      </a>
+      <a href="/projects"
+         class="font-label tracking-tight transition-colors text-primary border-b-2 border-primary pb-1">
+        Projects
+      </a>
+      <a href="/snippets"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Snippets
+      </a>
+      <a href="/about"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        About
+      </a>
+    </nav>
+  </div>
+</header>
+
+  <main class="pt-40 pb-32">
+
+  <div class="max-w-7xl mx-auto px-8 mb-16 border-b border-outline-variant/20 pb-8">
+    
+    <h1 class="text-5xl font-headline font-extrabold tracking-tighter text-on-surface leading-[1.1]">
+      Projects
+    </h1>
+    
+    
+    <p class="mt-4 text-lg text-on-surface-variant font-body">A selection of personal projects built around AI, desktop applications, and data tooling.</p>
+    
+  </div>
+
+  <div class="flex flex-col">
+    
+    
+    
+    
+
+    <div class="group w-full bg-surface-container-low border-y border-outline-variant/10">
+      <div class="max-w-7xl mx-auto px-8 py-16 lg:py-24">
+        <div class="flex flex-col md:flex-row items-center gap-8 lg:gap-12">
+
+          <div class="w-full md:w-3/5 aspect-video overflow-hidden border border-outline-variant/20 shadow-sm">
+            <img
+              class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+              src="/assets/images/projects/yaocr.png"
+              alt="YAOCr"
+            />
+          </div>
+
+          <div class="w-full md:w-2/5 flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+              <h2 class="text-4xl font-bold font-headline tracking-tight text-on-surface">YAOCr</h2>
+              <a
+                href="https://github.com/davamix/YAOCr"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4"
+              >
+                Repository
+                <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+              </a>
+            </div>
+
+            <p class="text-lg leading-relaxed text-on-surface-variant font-body">RAG tool for Windows desktop using <mark>WinUI 3</mark> that allows you to chat with an <mark>LLM</mark> and work with your own documents (.txt, .json). Features conversation management, dark mode, and GPU acceleration.</p>
+
+            <div class="flex flex-wrap gap-2">
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">WinUI 3</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">RAG</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Qdrant</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">LLM</span>
+              
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+
+    <div class="group w-full bg-surface-container-lowest border-b border-outline-variant/10">
+      <div class="max-w-7xl mx-auto px-8 py-16 lg:py-24">
+        <div class="flex flex-col md:flex-row-reverse items-center gap-8 lg:gap-12">
+
+          <div class="w-full md:w-3/5 aspect-video overflow-hidden border border-outline-variant/20 shadow-sm">
+            <img
+              class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+              src="/assets/images/projects/mind-notes.png"
+              alt="MindNotes"
+            />
+          </div>
+
+          <div class="w-full md:w-2/5 flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+              <h2 class="text-4xl font-bold font-headline tracking-tight text-on-surface">MindNotes</h2>
+              <a
+                href="https://github.com/davamix/MindNotes"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4"
+              >
+                Repository
+                <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+              </a>
+            </div>
+
+            <p class="text-lg leading-relaxed text-on-surface-variant font-body"><mark>WinUI 3</mark> application to take notes backed by <mark>Ollama</mark> and <mark>Qdrant</mark>. Features SmartSearch that surfaces relevant information across all your notes using semantic similarity.</p>
+
+            <div class="flex flex-wrap gap-2">
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">WinUI 3</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Ollama</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Qdrant</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">RAG</span>
+              
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+
+    <div class="group w-full bg-surface-container-low border-b border-outline-variant/10">
+      <div class="max-w-7xl mx-auto px-8 py-16 lg:py-24">
+        <div class="flex flex-col md:flex-row items-center gap-8 lg:gap-12">
+
+          <div class="w-full md:w-3/5 aspect-video overflow-hidden border border-outline-variant/20 shadow-sm">
+            <img
+              class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+              src="/assets/images/projects/mind-project.png"
+              alt="MindProject"
+            />
+          </div>
+
+          <div class="w-full md:w-2/5 flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+              <h2 class="text-4xl font-bold font-headline tracking-tight text-on-surface">MindProject</h2>
+              <a
+                href="https://github.com/davamix/MindProject"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4"
+              >
+                Repository
+                <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+              </a>
+            </div>
+
+            <p class="text-lg leading-relaxed text-on-surface-variant font-body">Knowledge manager for personal projects built with <mark>WinUI 3</mark> and a <mark>WebAPI</mark> backend. Stores structured project data in <mark>SQLite</mark> with Docker support and a Swagger interface.</p>
+
+            <div class="flex flex-wrap gap-2">
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">WinUI 3</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">C#</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">SQLite</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">WebAPI</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Docker</span>
+              
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+
+    <div class="group w-full bg-surface-container-lowest border-b border-outline-variant/10">
+      <div class="max-w-7xl mx-auto px-8 py-16 lg:py-24">
+        <div class="flex flex-col md:flex-row-reverse items-center gap-8 lg:gap-12">
+
+          <div class="w-full md:w-3/5 aspect-video overflow-hidden border border-outline-variant/20 shadow-sm">
+            <img
+              class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+              src="/assets/images/projects/cats-localization.jpg"
+              alt="cats-localization"
+            />
+          </div>
+
+          <div class="w-full md:w-2/5 flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+              <h2 class="text-4xl font-bold font-headline tracking-tight text-on-surface">cats-localization</h2>
+              <a
+                href="https://github.com/davamix/cats-localization"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4"
+              >
+                Repository
+                <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+              </a>
+            </div>
+
+            <p class="text-lg leading-relaxed text-on-surface-variant font-body">Instance segmentation using <mark>Detectron2</mark> to detect and localize cats in images and video frames. Trained on a custom dataset with multi-subject detection support.</p>
+
+            <div class="flex flex-wrap gap-2">
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Detectron2</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Computer Vision</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Deep Learning</span>
+              
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+
+    <div class="group w-full bg-surface-container-low border-b border-outline-variant/10">
+      <div class="max-w-7xl mx-auto px-8 py-16 lg:py-24">
+        <div class="flex flex-col md:flex-row items-center gap-8 lg:gap-12">
+
+          <div class="w-full md:w-3/5 aspect-video overflow-hidden border border-outline-variant/20 shadow-sm">
+            <img
+              class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+              src="https://opengraph.github.com/repo/davamix/metrics-dashboard"
+              alt="metrics-dashboard"
+            />
+          </div>
+
+          <div class="w-full md:w-2/5 flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+              <h2 class="text-4xl font-bold font-headline tracking-tight text-on-surface">metrics-dashboard</h2>
+              <a
+                href="https://github.com/davamix/metrics-dashboard"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4"
+              >
+                Repository
+                <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+              </a>
+            </div>
+
+            <p class="text-lg leading-relaxed text-on-surface-variant font-body">Web dashboard for visualizing <mark>ML training metrics</mark> in real-time using <mark>Flask</mark> and <mark>WebSockets</mark>. Supports merging metrics from multiple sources with Docker Compose deployment.</p>
+
+            <div class="flex flex-wrap gap-2">
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Flask</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">WebSockets</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Docker</span>
+              
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+
+    <div class="group w-full bg-surface-container-lowest border-b border-outline-variant/10">
+      <div class="max-w-7xl mx-auto px-8 py-16 lg:py-24">
+        <div class="flex flex-col md:flex-row-reverse items-center gap-8 lg:gap-12">
+
+          <div class="w-full md:w-3/5 aspect-video overflow-hidden border border-outline-variant/20 shadow-sm">
+            <img
+              class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+              src="/assets/images/projects/papers-library.png"
+              alt="papers-library"
+            />
+          </div>
+
+          <div class="w-full md:w-2/5 flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+              <h2 class="text-4xl font-bold font-headline tracking-tight text-on-surface">papers-library</h2>
+              <a
+                href="https://github.com/davamix/papers-library"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-center gap-1 text-primary font-label text-xs uppercase tracking-widest hover:underline underline-offset-4"
+              >
+                Repository
+                <span class="material-symbols-outlined text-[12px]">arrow_forward</span>
+              </a>
+            </div>
+
+            <p class="text-lg leading-relaxed text-on-surface-variant font-body">Tool to download and annotate papers from <mark>arXiv</mark> with personal notes, stored in <mark>MongoDB</mark>. Includes supplementary scripts for PDF processing and dataset preparation.</p>
+
+            <div class="flex flex-wrap gap-2">
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Python</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Flask</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">MongoDB</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">arXiv</span>
+              
+              <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant font-label text-xs tracking-tight">Docker</span>
+              
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+</main>
+
+  <footer class="w-full py-16 bg-surface-container-low mt-32 border-t border-outline-variant/10">
+  <div class="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-8 opacity-60">
+    <div class="font-label text-xs uppercase tracking-widest text-outline mb-6 md:mb-0">
+      &copy; 2026 Davamix. Built for clarity.
+    </div>
+    <div class="flex gap-8 items-center">
+      <a href="/feed.xml" class="font-label text-xs uppercase tracking-widest text-outline hover:text-primary transition-colors">RSS</a>
+    </div>
+    <div class="hidden md:flex items-center gap-2 mt-6 md:mt-0">
+      <span class="w-2 h-2 rounded-full bg-primary-dim"></span>
+      <span class="font-label text-[10px] uppercase tracking-[0.2em] text-outline">Node Status: Active</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

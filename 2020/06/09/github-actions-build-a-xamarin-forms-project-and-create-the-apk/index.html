@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Actions: Build a Xamarin.Forms project and create the APK | Davamix</title>
+<meta name="description" content="In this post I'll show a way to configure a basic GitHub Action workflow in order to build a Xaramin.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary":                    "#005bc1",
+          "primary-dim":                "#004faa",
+          "primary-fixed":              "#d8e2ff",
+          "primary-fixed-dim":          "#c2d4ff",
+          "primary-container":          "#d8e2ff",
+          "on-primary":                 "#f7f7ff",
+          "on-primary-fixed":           "#003d85",
+          "on-primary-fixed-variant":   "#0058bb",
+          "on-primary-container":       "#004ea8",
+          "secondary":                  "#5c5f64",
+          "secondary-dim":              "#505358",
+          "secondary-fixed":            "#e1e2e8",
+          "secondary-fixed-dim":        "#d2d4da",
+          "secondary-container":        "#e1e2e8",
+          "on-secondary":               "#f7f9ff",
+          "on-secondary-fixed":         "#3d3f44",
+          "on-secondary-fixed-variant": "#595c61",
+          "on-secondary-container":     "#4f5257",
+          "tertiary":                   "#595e78",
+          "tertiary-dim":               "#4d526c",
+          "tertiary-fixed":             "#dadefe",
+          "tertiary-fixed-dim":         "#ccd0ef",
+          "tertiary-container":         "#dadefe",
+          "on-tertiary":                "#faf8ff",
+          "on-tertiary-fixed":          "#383c55",
+          "on-tertiary-fixed-variant":  "#545873",
+          "on-tertiary-container":      "#4a4f69",
+          "background":                 "#f8f9fa",
+          "surface":                    "#f8f9fa",
+          "surface-bright":             "#f8f9fa",
+          "surface-dim":                "#d1dce0",
+          "surface-tint":               "#005bc1",
+          "surface-variant":            "#dbe4e7",
+          "surface-container-lowest":   "#ffffff",
+          "surface-container-low":      "#f1f4f6",
+          "surface-container":          "#eaeff1",
+          "surface-container-high":     "#e3e9ec",
+          "surface-container-highest":  "#dbe4e7",
+          "on-surface":                 "#2b3437",
+          "on-surface-variant":         "#586064",
+          "on-background":              "#2b3437",
+          "outline":                    "#737c7f",
+          "outline-variant":            "#abb3b7",
+          "inverse-surface":            "#0c0f10",
+          "inverse-on-surface":         "#9b9d9e",
+          "inverse-primary":            "#4b8eff",
+          "error":                      "#9f403d",
+          "error-dim":                  "#4e0309",
+          "error-container":            "#fe8983",
+          "on-error":                   "#fff7f6",
+          "on-error-container":         "#752121"
+        },
+        borderRadius: {
+          DEFAULT: "0.125rem",
+          lg:      "0.25rem",
+          xl:      "0.5rem",
+          "2xl":   "0.75rem",
+          full:    "0.75rem"
+        },
+        fontFamily: {
+          headline: ["Manrope", "sans-serif"],
+          body:     ["Inter", "sans-serif"],
+          label:    ["Space Grotesk", "sans-serif"]
+        }
+      }
+    }
+  }
+</script>
+
+<link rel="stylesheet" href="/assets/css/main.css">
+
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+  <header class="fixed top-0 w-full z-50 glass-nav">
+  <div class="flex justify-between items-center max-w-7xl mx-auto px-8 h-20">
+    <a href="/" class="font-headline font-bold text-2xl tracking-tighter text-on-surface hover:text-primary transition-colors">
+      Davamix
+    </a>
+    <nav class="hidden md:flex items-center gap-10 ml-auto">
+      <a href="/"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Articles
+      </a>
+      <a href="/projects"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Projects
+      </a>
+      <a href="/snippets"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Snippets
+      </a>
+      <a href="/about"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        About
+      </a>
+    </nav>
+  </div>
+</header>
+
+  <main class="pt-32 pb-24 px-6">
+  <div class="max-w-4xl mx-auto">
+    <article>
+
+      <nav class="flex items-center justify-between mb-8">
+        <a href="/" class="group flex items-center gap-2 text-primary font-label text-sm font-medium">
+          <span class="material-symbols-outlined text-base group-hover:-translate-x-1 transition-transform">arrow_back</span>
+          Back to Feed
+        </a>
+        <div class="flex items-center gap-2 text-xs text-secondary font-label font-medium uppercase tracking-wider">
+          <span class="material-symbols-outlined text-sm">schedule</span>
+          
+          
+          4 min read
+        </div>
+      </nav>
+
+      <header class="mb-16">
+        <div class="flex flex-wrap gap-3 mb-6">
+          
+          <span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">devops</span>
+          
+          <span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">mobile</span>
+          
+          
+          <span class="bg-surface-container-high text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">github-actions</span>
+          
+          <span class="bg-surface-container-high text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">xamarin</span>
+          
+          <span class="bg-surface-container-high text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">ci-cd</span>
+          
+        </div>
+
+        <h1 class="text-5xl md:text-6xl font-headline font-extrabold tracking-tighter text-on-surface leading-[1.1] mb-8">
+          GitHub Actions: Build a Xamarin.Forms project and create the APK
+        </h1>
+
+        <div class="flex items-center gap-4 py-6 border-t border-outline-variant/10">
+          <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+            <span class="material-symbols-outlined text-on-surface-variant">person</span>
+          </div>
+          <div>
+            <p class="text-sm font-headline font-semibold text-on-surface">Daniel Valcarce</p>
+            <p class="text-xs font-body text-secondary">June 9, 2020</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="post-content">
+        <p>In this post I’ll show a way to configure a basic GitHub Action workflow in order to build a Xaramin.Forms application and create the APK, only Android at the moment.</p>
+
+<!--more-->
+
+<p>First of all, the workflow:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  # Build App
+  build:
+    runs-on: windows-latest
+    env:
+      SERVICE_APP_KEY: $
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.0.0
+      - name: Build Solution
+        run: msbuild ./MyApplication.sln /restore /p:Configuration=Release
+      - name: Create and Sign the APK
+        run: msbuild MyApplication\MyApplication.Android\MyApplication.Android.csproj /t:SignAndroidPackage /p:Configuration=Release /p:OutputPath=bin\Release\
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: MyApplication.apk
+          path: MyApplication\MyApplication.Android\bin\Release\com.companyname.myapplication-Signed.apk
+</code></pre></div></div>
+
+<h3 id="step-by-step">Step by step</h3>
+
+<p>The first lines are self-explanatory so I’ll jump to the <mark>build</mark> section.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>build:
+  runs-on: windows-latest
+</code></pre></div></div>
+
+<p>This will configure a Windows machine and all steps for this job will run in this environment. The default shell will be a <em>PowerShell</em>, so we can run scripts in this language.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>env:
+  SERVICE_APP_KEY: $
+</code></pre></div></div>
+
+<p>With this line we create an environment variable, <mark>SERVICE\_APP\_KEY</mark> with the content of the GitHub secret <mark>secrets.SERVICE\_APP\_KEY</mark>. The variables created in an upper level can be accessed by its children elements but a variable created in a <em>step</em> level, for example, cannot be accessed from other step or a parent element.</p>
+
+<blockquote>
+  <p>A secret in GitHub is a piece of encrypted information that belongs to the repository. To create a secret go to your repository <em>Settings -&gt; Secrets</em>.
+If you try to print the value of a secret during the build process you will only see something like: SERVICE_APP_KEY: ****</p>
+</blockquote>
+
+<p>Now let’s explain the steps.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>steps:
+  - uses: actions/checkout@v2
+</code></pre></div></div>
+
+<p>The first step is the checkout. This action will download all the code to the current machine.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- name: Setup MSBuild
+  uses: microsoft/setup-msbuild@v1.0.0
+</code></pre></div></div>
+
+<p>The next steps is to use the action <a href="https://github.com/microsoft/setup-msbuild">microsoft/setup-msbuild@v1.0.0</a> in order to configure the environment that allow us to use the <em>msbuild</em> tool.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- name: Build Solution
+  run: msbuild ./MyApplication.sln /restore /p:Configuration=Release
+</code></pre></div></div>
+
+<p>Build the solution in <em>Release</em> mode.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- name: Create and Sign the APK
+  run: msbuild MyApplication\MyApplication.Android\MyApplication.Android.csproj /t:SignAndroidPackage /p:Configuration=Release /p:OutputPath=bin\Release\
+</code></pre></div></div>
+
+<p>In order to create and sign the package we will execute the <em>msbuild</em> command over the Android project with the target <mark>/t:SignAndroidPackage</mark>. The configuration should be <mark>Release</mark> and the generated <em>.apk</em> file will be located in <em>{project_folder}</em><mark>\bin\Release</mark></p>
+
+<p>The name of the file will be <em>com.companyname.myapplication-Signed.apk</em>. The default name of the package is <em>com.companyname.myapplication</em>, you can change it in the <em>AndroidManifest.xml</em> file or in the properties of the Android project in Visual Studio.</p>
+
+<p>This process attach the <em>-Signed</em> suffix to the name.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- name: Upload artifact
+  uses: actions/upload-artifact@v2
+  with:
+    name: MyApplication.apk
+    path: MyApplication\MyApplication.Android\bin\Release\com.companyname.myapplication-Signed.apk
+</code></pre></div></div>
+
+<p>The last step is to make available the artifact to be downloaded. We will use the action <mark>actions/upload-artifact@v2</mark> with the parameters <mark>name</mark> as the name of the artifact, and the <mark>path</mark>, the path where the package is located.</p>
+
+<h3 id="how-to-manage-the-secret-keys">How to manage the secret keys</h3>
+
+<p>The hardcoded keys are not a good practice ;) A better solution could be create an environment variable in your local system, but, how to access from code? One approach I follow is to create a class to manage the secrets and populate it with placeholders, something like:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static class Secrets{
+  public static string ServiceID =&gt; "#KEY1#"
+  public static string OtherKey =&gt; "#KEY2#"
+}
+</code></pre></div></div>
+
+<p>To replace the placeholders by the valid keys I have a <em>PowerShell</em> script that runs in the <em>pre-build</em> event on Visual Studio.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function Replace-Text{
+  &lt;#
+  .SYNOPSIS
+    Replace the $placeholder value by $key value in $file
+  .PARAMETER $file
+    File to replace values. Mandatory
+  .PARAMETER $placeholder
+    Value to be replaced. Mandatory
+  .PARAMETER $key
+    The new value to replace the $placeholder. Mandatory
+  .EXAMPLE
+    Replace-Text file_path "#TEXT TO REPLACE#" "KEY VALUE"
+  #&gt;
+  Param(
+    [Parameter(Mandatory=$true)]
+    [string]$file,
+    [Parameter(Mandatory=$true)]
+    [string]$placeholder,
+    [Parameter(Mandatory=$true)]
+    [string]$key
+  )
+  ((Get-Content -path $file -Raw) -replace $placeholder, $key) | Set-Content -Path $file
+}
+$file = $args[0]
+$placeholder = $args[1]
+$key_value = $args[2]
+Replace-Text $file $placeholder $key_value
+</code></pre></div></div>
+
+<p>This script have three parameters:</p>
+
+<ul>
+  <li>the <mark>$file</mark> where the placeholder are</li>
+  <li>the <mark>$placeholder</mark> to be replaced</li>
+  <li>the <mark>$key\_value</mark> from the environment variable</li>
+</ul>
+
+<p>This script is called from the <em>Pre-build event command line</em>. <em>Project properties -&gt; Build Events</em>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>powershell.exe -ExecutionPolicy Unrestricted $(ProjectDir)..\..\Tools\replace-keys-script.ps1 $(ProjectDir)Secrets.cs "`#KEY1`#" $env:SERVICE_APP_KEY
+
+powershell.exe -ExecutionPolicy Unrestricted $(ProjectDir)..\..\Tools\replace-keys-script.ps1 $(ProjectDir)Secrets.cs "`#KEY2`#" $env:OTHER_KEY
+</code></pre></div></div>
+
+<blockquote>
+  <p>If the placeholder has # characters like #INSERT_KEY_HERE# they must be escaped with grave-accents: “<code class="language-plaintext highlighter-rouge">#INSERT\_KEY\_HERE</code>#” in order to escape the comment symbol.</p>
+</blockquote>
+
+<p>Let me show the folder structure:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/
+|- Solution.sln
+|- Project/
+|- Project.Android/
+|- Tools/
+    |- replace-keys-script.ps1
+</code></pre></div></div>
+
+<p>Why use <mark>$(ProjectDir)..\..\Tools</mark> instead of <mark>$(SolutionDir)Tools</mark>? Because <mark>$(SolutionDir)</mark> does not work on GitHub Actions for whatever reason.</p>
+
+<p>As you may notice, this process change the content of the files and Git wil mark them. To fix this I do a <em>checkout</em> for all files in the <em>Post-build</em> event:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git checkout $(ProjectDir)Secrets.cs
+</code></pre></div></div>
+
+<p>After the build process the application will work with correct values and the code remains intact.</p>
+
+<p>The only thing we need to do in GitHub is to create the secrets we need for the keys and create the environment variables in the workflow with the same name as we have in out system.</p>
+
+<h2 id="references">References</h2>
+
+<p><a href="https://docs.microsoft.com/en-us/xamarin/android/deploy-test/building-apps/build-process">Xamarin Android - Build Process</a></p>
+
+<p><a href="https://github.com/marketplace/actions/setup-msbuild">GitHub Action - setup-msbuild</a></p>
+
+<p><a href="https://stackoverflow.com/a/20638116/844372">Prebuild event in Visual Studio replacing $(SolutionDir) with *Undefined*</a></p>
+
+<p><a href="https://stackoverflow.com/a/56646415/844372">How to use VisualStudio SignAndroidPackage in TeamCity?</a></p>
+
+      </div>
+
+    </article>
+  </div>
+</main>
+
+  <footer class="w-full py-16 bg-surface-container-low mt-32 border-t border-outline-variant/10">
+  <div class="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-8 opacity-60">
+    <div class="font-label text-xs uppercase tracking-widest text-outline mb-6 md:mb-0">
+      &copy; 2026 Davamix. Built for clarity.
+    </div>
+    <div class="flex gap-8 items-center">
+      <a href="/feed.xml" class="font-label text-xs uppercase tracking-widest text-outline hover:text-primary transition-colors">RSS</a>
+    </div>
+    <div class="hidden md:flex items-center gap-2 mt-6 md:mt-0">
+      <span class="w-2 h-2 rounded-full bg-primary-dim"></span>
+      <span class="font-label text-[10px] uppercase tracking-[0.2em] text-outline">Node Status: Active</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

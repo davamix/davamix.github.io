@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Detecting my cats with Detectron2 | Davamix</title>
+<meta name="description" content="In this post I'll show how train a model with Detectron2 with a custom dataset and then apply it detect my cats in a picture or video.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary":                    "#005bc1",
+          "primary-dim":                "#004faa",
+          "primary-fixed":              "#d8e2ff",
+          "primary-fixed-dim":          "#c2d4ff",
+          "primary-container":          "#d8e2ff",
+          "on-primary":                 "#f7f7ff",
+          "on-primary-fixed":           "#003d85",
+          "on-primary-fixed-variant":   "#0058bb",
+          "on-primary-container":       "#004ea8",
+          "secondary":                  "#5c5f64",
+          "secondary-dim":              "#505358",
+          "secondary-fixed":            "#e1e2e8",
+          "secondary-fixed-dim":        "#d2d4da",
+          "secondary-container":        "#e1e2e8",
+          "on-secondary":               "#f7f9ff",
+          "on-secondary-fixed":         "#3d3f44",
+          "on-secondary-fixed-variant": "#595c61",
+          "on-secondary-container":     "#4f5257",
+          "tertiary":                   "#595e78",
+          "tertiary-dim":               "#4d526c",
+          "tertiary-fixed":             "#dadefe",
+          "tertiary-fixed-dim":         "#ccd0ef",
+          "tertiary-container":         "#dadefe",
+          "on-tertiary":                "#faf8ff",
+          "on-tertiary-fixed":          "#383c55",
+          "on-tertiary-fixed-variant":  "#545873",
+          "on-tertiary-container":      "#4a4f69",
+          "background":                 "#f8f9fa",
+          "surface":                    "#f8f9fa",
+          "surface-bright":             "#f8f9fa",
+          "surface-dim":                "#d1dce0",
+          "surface-tint":               "#005bc1",
+          "surface-variant":            "#dbe4e7",
+          "surface-container-lowest":   "#ffffff",
+          "surface-container-low":      "#f1f4f6",
+          "surface-container":          "#eaeff1",
+          "surface-container-high":     "#e3e9ec",
+          "surface-container-highest":  "#dbe4e7",
+          "on-surface":                 "#2b3437",
+          "on-surface-variant":         "#586064",
+          "on-background":              "#2b3437",
+          "outline":                    "#737c7f",
+          "outline-variant":            "#abb3b7",
+          "inverse-surface":            "#0c0f10",
+          "inverse-on-surface":         "#9b9d9e",
+          "inverse-primary":            "#4b8eff",
+          "error":                      "#9f403d",
+          "error-dim":                  "#4e0309",
+          "error-container":            "#fe8983",
+          "on-error":                   "#fff7f6",
+          "on-error-container":         "#752121"
+        },
+        borderRadius: {
+          DEFAULT: "0.125rem",
+          lg:      "0.25rem",
+          xl:      "0.5rem",
+          "2xl":   "0.75rem",
+          full:    "0.75rem"
+        },
+        fontFamily: {
+          headline: ["Manrope", "sans-serif"],
+          body:     ["Inter", "sans-serif"],
+          label:    ["Space Grotesk", "sans-serif"]
+        }
+      }
+    }
+  }
+</script>
+
+<link rel="stylesheet" href="/assets/css/main.css">
+
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+  <header class="fixed top-0 w-full z-50 glass-nav">
+  <div class="flex justify-between items-center max-w-7xl mx-auto px-8 h-20">
+    <a href="/" class="font-headline font-bold text-2xl tracking-tighter text-on-surface hover:text-primary transition-colors">
+      Davamix
+    </a>
+    <nav class="hidden md:flex items-center gap-10 ml-auto">
+      <a href="/"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Articles
+      </a>
+      <a href="/projects"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Projects
+      </a>
+      <a href="/snippets"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Snippets
+      </a>
+      <a href="/about"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        About
+      </a>
+    </nav>
+  </div>
+</header>
+
+  <main class="pt-32 pb-24 px-6">
+  <div class="max-w-4xl mx-auto">
+    <article>
+
+      <nav class="flex items-center justify-between mb-8">
+        <a href="/" class="group flex items-center gap-2 text-primary font-label text-sm font-medium">
+          <span class="material-symbols-outlined text-base group-hover:-translate-x-1 transition-transform">arrow_back</span>
+          Back to Feed
+        </a>
+        <div class="flex items-center gap-2 text-xs text-secondary font-label font-medium uppercase tracking-wider">
+          <span class="material-symbols-outlined text-sm">schedule</span>
+          
+          
+          8 min read
+        </div>
+      </nav>
+
+      <header class="mb-16">
+        <div class="flex flex-wrap gap-3 mb-6">
+          
+          <span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">python</span>
+          
+          <span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">ml</span>
+          
+          
+          <span class="bg-surface-container-high text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">detectron2</span>
+          
+          <span class="bg-surface-container-high text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">object-detection</span>
+          
+          <span class="bg-surface-container-high text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">ml</span>
+          
+        </div>
+
+        <h1 class="text-5xl md:text-6xl font-headline font-extrabold tracking-tighter text-on-surface leading-[1.1] mb-8">
+          Detecting my cats with Detectron2
+        </h1>
+
+        <div class="flex items-center gap-4 py-6 border-t border-outline-variant/10">
+          <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+            <span class="material-symbols-outlined text-on-surface-variant">person</span>
+          </div>
+          <div>
+            <p class="text-sm font-headline font-semibold text-on-surface">Daniel Valcarce</p>
+            <p class="text-xs font-body text-secondary">January 24, 2020</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="post-content">
+        <p>In this post I’ll show how train a model with Detectron2 with a custom dataset and then apply it detect my cats in a picture or video.</p>
+
+<!--more-->
+
+<h4 id="table-of-content">Table of content</h4>
+
+<ul>
+  <li>Install Detectron2</li>
+  <li>Create your own dataset</li>
+  <li>Steps to annotate an image</li>
+  <li>Training process</li>
+  <li>Data loader</li>
+  <li>Inference</li>
+  <li>References</li>
+</ul>
+
+<h3 id="install-detectron2">Install Detectron2</h3>
+
+<p>I use the docker version of Detectron2 that installs all the requirements in a few steps:</p>
+
+<ol>
+  <li>
+    <p>Take the required files, <em>Dockerfile</em>, <em>Dockerfile-circleci</em>, <em>docker-compose.yml</em> from <a href="https://github.com/facebookresearch/detectron2/tree/master/docker">https://github.com/facebookresearch/detectron2/tree/master/docker</a></p>
+  </li>
+  <li>
+    <p>Create and run the container with the command:</p>
+  </li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker-compose run --volume=/local/path/to/save/your/files:/tmp:rw detectron2 
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong>Note</strong><br />
+The installed version of Pillow package is 7.0.0, this could fail when you try to train your model showing an error similiar to:</p>
+
+  <p><code class="language-plaintext highlighter-rouge">from PIL import Image, ImageOps, ImageEnhance, PILLOW_VERSION
+ImportError: cannot import name 'PILLOW_VERSION'</code></p>
+
+  <p>The solution is to downgrade the version to 6.2.2:</p>
+
+  <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip install --user Pillow==6.2.2
+</code></pre></div>  </div>
+</blockquote>
+
+<p>Check the <a href="https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md">installation guide</a> to install Detectron2 using other methods.</p>
+
+<h3 id="create-your-own-dataset">Create your own dataset</h3>
+
+<p>The first (and most tedious) step is to annotate the images. For this examples I will use a set of images of my cats, Blacky and Niche:</p>
+
+<p><img src="/assets/images/train-Detectron2-with-custom-dataset/blacky-sample.webp" alt="" title="Blacky" />
+<img src="/assets/images/train-Detectron2-with-custom-dataset/niche-sample.webp" alt="" title="Niche" /></p>
+
+<p>and I’ll use <a href="http://www.robots.ox.ac.uk/~vgg/software/via/">VIA 2.0.8</a>, it’s an easy tool to make the annotations. This is an example of how an annotation looks like:</p>
+
+<p><img src="/assets/images/train-Detectron2-with-custom-dataset/niche-annotation.webp" alt="" title="Image of a region draw around Niche" /></p>
+
+<h3 id="steps-to-annotate-an-image">Steps to annotate an image</h3>
+
+<blockquote>
+  <p><strong>Note</strong></p>
+  <ul>
+    <li>The instructions below are for VIA tool, if you are using a different tool, then jump to the next section.</li>
+    <li>Follow this process twice, once for training images, another for validation images.</li>
+  </ul>
+</blockquote>
+
+<p>Before start to annotating the images you must create a region attribute named <mark>Class</mark>, you can change the name if you want, in order to choose which region your are drawing.</p>
+
+<p><img src="/assets/images/train-Detectron2-with-custom-dataset/via-attributes.webp" alt="" title="VIA - Attributes panel" /></p>
+
+<p>Looking the image above, follow these steps:</p>
+
+<ol>
+  <li>Expand the <em>Attributes</em> panel.</li>
+  <li>Type the attribute name <mark>Class</mark> on textbox and click on plus symbol.</li>
+  <li>Change the <em>Type</em> of the attribute from <mark>text</mark> to <mark>radio</mark>.</li>
+  <li>Write all classes available for the dataset, <em>Blacky</em> and <em>Niche</em> in my case, in the <mark>id</mark> field.</li>
+</ol>
+
+<p>Next, the basics steps to annotate the images:</p>
+
+<ol>
+  <li>Add the images to the project clicking on the <em>Add Files</em> button in the <em>Project panel</em>.</li>
+  <li>Select one image and start drawing the region using the <em>Poligon region shape</em>.</li>
+  <li>To apply the changes press <em>Enter</em> and the region will be saved.</li>
+  <li>
+    <p>Click outside of the region, click again on the region and select the class you are annotating.</p>
+
+    <blockquote>
+      <p>Sometimes you will need to scroll down / right to see the option list</p>
+    </blockquote>
+  </li>
+  <li>Once all images are annotated, export the annotations as json. Go <em>Annotation</em> menu, then <em>Export Annotations (as json)</em>.</li>
+</ol>
+
+<p>The json file will contains a section by image similar to this one:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"frame80.jpg214814": {
+  "filename": "frame80.jpg",
+  "size": 214814,
+  "regions": [
+    {
+      "shape_attributes": {
+        "name": "polygon",
+        "all_points_x": [
+          1096,
+          1016,
+          947,
+          ...
+        ],
+        \"all_points_y\": [
+          116,
+          191,
+          231,
+          ...
+        ]
+      },
+      \"region_attributes\": {
+        \"Class\": \"Blacky\"
+      }
+    }
+  ],
+  \"file_attributes\": {}
+}
+
+...
+</code></pre></div></div>
+
+<h3 id="training-process">Training process</h3>
+
+<p>Before to start to explain the code, let me show the folder structure in order to have an idea of where are the code, the data and all this stuff.</p>
+
+<p><img src="/assets/images/train-Detectron2-with-custom-dataset/folder_structure.webp" alt="" title="folder structe of the project" /></p>
+
+<p>The <em>data</em> folder contains two folders, <em>train</em> and <em>validation</em>, which contain one folder per class (of course, there are more than one image in the class folder). Also, the <em>train</em> and <em>validation</em> folders have its respective annotation files. The <em>src</em> folder contains the code sepated in different files.</p>
+
+<p>Ok, now we are ready to write the code. First things first, we need to import the functions required from detectron2.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># train.py
+
+import os
+
+from detectron2.data import MetadataCatalog, DatasetCatalog
+from detectron2.config import get_cfg
+from detectron2 import model_zoo
+from detectron2.engine import DefaultTrainer
+from loader import get_data_dicts
+</code></pre></div></div>
+
+<p>Next, we’ll register both datasets, train and validation, and indicate the name of the classes that we are using.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>for d in ["train", "val"]:
+  DatasetCatalog.register("cats_" + d, lambda d=d: get_data_dicts("../data/" + d))
+  MetadataCatalog.get("cats_" + d).set(thing_classes=["Blacky", "Niche"])
+
+cats_metadata = MetadataCatalog.get("cats_train")
+</code></pre></div></div>
+
+<p>The <mark>DatasetCatalog.register</mark> function expects two parameters, the name of the dataset, and the function to get the data.
+With <mark>MetadataCatalog</mark> we specify which classes are present in the dataset using the attribute thing_classes. To know more about the metadata check the <a href="https://detectron2.readthedocs.io/tutorials/datasets.html#metadata-for-datasets">documentation</a>.</p>
+
+<p>Now let’s configure the model:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cfg = get_cfg()
+cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
+cfg.DATASETS.TRAIN = ("cats_train",)
+cfg.DATASETS.TEST = ()
+cfg.DATALOADER.NUM_WORKERS = 4
+cfg.MODEL.WEIGHTS = "detectron2://COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x/137849600/model_final_f10217.pkl"
+cfg.SOLVER.IMS_PER_BATCH = 2
+cfg.SOLVER.BASE_LR = 0.00025
+cfg.SOLVER.MAX_ITER = 700
+cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128
+cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2
+</code></pre></div></div>
+
+<ul>
+  <li><strong>get_cfg()</strong>: returns an instance of CfgNode class that allow us to modify the configuration of the model.</li>
+  <li><strong>cfg.merge_from_file</strong>: we use this to apply the original configuration from <em>mask_rcnn_R_50_FPN_3x</em> model to our configuration.</li>
+  <li><strong>cfg.DATASETS.TRAIN</strong>: This is the list of dataset names for training. Important to note the comma at the end.</li>
+  <li><strong>cfg.DATASETS.TEST</strong>: This remains empty for the training purposes.</li>
+  <li><strong>cfg.DATALOADER.NUM_WORKERS</strong>: Number of data loading threads.</li>
+  <li><strong>cfg.MODEL.WEIGHTS</strong>: Pick the weights from <em>mask_rcnn_R_50_FPN_3x</em> model.</li>
+  <li><strong>cfg.SOLVER.IMS_PER_BATCH</strong>: Number of images per batch.</li>
+  <li><strong>cfg.SOLVER.BASE_LR</strong>: Learning rate.</li>
+  <li><strong>cfg.SOLVER.MAX_ITER</strong>: Total iterations (Detectron2 don’t use epochs).</li>
+  <li><strong>cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE</strong>: Indicate the number of ROI’s (Region of Interest) per training minibatch.</li>
+  <li><strong>cfg.MODEL.ROI_HEADS.NUM_CLASSES</strong>: Number of classes.</li>
+</ul>
+
+<p>Basically what we are doing here is to get configuration from an existing model, <em>mask_rcnn_R_50_FPN_3x</em>, then we overwrite some of the values like learning rate, iterations, etc…
+Check the <a href="https://detectron2.readthedocs.io/modules/config.html#config-references">documentation</a> about the configuration to know all available options that you can change.</p>
+
+<p>And finally it’s time to call the training process:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
+
+trainer = DefaultTrainer(cfg)
+
+trainer.resume_or_load(resume=False)
+
+trainer.train()
+</code></pre></div></div>
+
+<h3 id="data-loader">Data loader</h3>
+
+<p>Now it’s time to implement the function to let Detectron2 know how to obtain the data from the dataset that we registered before with:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DatasetCatalog.register("cats_" + d, lambda d=d: get_data_dicts("../data/" + d))
+</code></pre></div></div>
+
+<p>The code of <em>loader.py</em> is pretty similar to the function shown in the  <a href="https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5#scrollTo=tjbUIhSxUdm_">Colab notebook</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># loader.py
+
+def get_data_dicts(img_dir):
+  classes = ["Blacky", "Niche"]
+  json_file = os.path.join(img_dir, "cats-annotations.json")
+  with open(json_file) as f:
+    imgs_anns = json.load(f)
+  dataset_dicts = []
+  for idx, v in enumerate(imgs_anns.values()):
+    record = {}
+    if "regions" not in v: continue
+    # Extract info from regions
+    annos = v["regions"]
+    objs = []
+    for anno in annos:
+      shape_attr = anno["shape_attributes"]
+      px = shape_attr["all_points_x"]
+      py = shape_attr["all_points_y"]
+      poly = [(x + 0.5, y + 0.5) for x, y in zip(px, py)]
+      poly = [p for x in poly for p in x]
+      region_attr = anno["region_attributes"]
+      current_class = region_attr["Class"]
+      obj = {
+        "bbox": [np.min(px), np.min(py), np.max(px), np.max(py)],
+        "bbox_mode": BoxMode.XYXY_ABS,
+        "segmentation": [poly],
+        "category_id": classes.index(current_class),
+        "iscrowd": 0
+      }
+      objs.append(obj)
+    record["annotations"] = objs
+    # Get info of the image
+    filename = os.path.join(img_dir, current_class, v["filename"])
+    height, width = cv2.imread(filename).shape[:2]
+    record["file_name"] = filename
+    record["image_id"] = idx
+    record["height"] = height
+    record["width"] = width
+    dataset_dicts.append(record)
+  return dataset_dicts
+</code></pre></div></div>
+
+<p>The function loops through all annotations in the json file and extract the information related with the region, category, etc… of the image.</p>
+
+<p>The annotation itself is represented by the dictionary <mark>obj</mark> that contains some specific keys:</p>
+
+<ul>
+  <li><strong>bbox</strong>: list of 4 numbers representing the bounding box of the instance.</li>
+  <li><strong>bbox_mode</strong>: the format of the bbox.</li>
+  <li><strong>category_id</strong>: number that represents the category label.</li>
+  <li><strong>iscrowd</strong>: 0 or 1. Whether the instance is labeled as COCO’s format.</li>
+</ul>
+
+<p>Also, some extra information is saved in the record dictionary:</p>
+
+<ul>
+  <li><strong>file_name</strong>: the fullpath of the image.</li>
+  <li><strong>image_id</strong>: a unique id to identify the image.</li>
+  <li><strong>height</strong>: self explanatory.</li>
+  <li><strong>width</strong>: self explanatory.</li>
+</ul>
+
+<p>To know more about of the dictionary check the  <a href="https://detectron2.readthedocs.io/tutorials/datasets.html#register-a-dataset">documentation</a>.</p>
+
+<h3 id="inference">Inference</h3>
+
+<p>It’s time to do some predictions and we start with the imports:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># inference.py
+
+import os
+import random
+import cv2
+
+from detectron2.config import get_cfg
+from detectron2 import model_zoo
+from detectron2.engine import DefaultPredictor
+from detectron2.utils.visualizer import Visualizer, ColorMode
+from detectron2.data import MetadataCatalog
+from loader import get_data_dicts
+</code></pre></div></div>
+
+<p>For inference we use a few different functions: <mark>DefaultPredictor</mark>, <mark>Visualizer</mark> and <mark>ColorMode</mark>.</p>
+
+<p>Next, we configure the model as we did on the training process, then create the predictor:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>classes = ["Blacky", "Niche"]
+
+cfg = get_cfg()
+cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
+cfg.DATASETS.TEST = ("cats_val",)
+cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
+cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2
+cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7
+
+predictor = DefaultPredictor(cfg)
+</code></pre></div></div>
+
+<p>This configuration is similar to the configuration we used in the training but this time the <mark>WEIGHTS</mark> come from our trained model <em>model_final.pth</em>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dataset_dicts = get_data_dicts("../data/validation")
+
+for idx, d in enumerate(random.sample(dataset_dicts, 3)):
+  im = cv2.imread(d["file_name"])
+  outputs = predictor(im)
+  
+  v = Visualizer(im[:, :, ::-1],
+    metadata = MetadataCatalog.get("cats_val").set(
+      thing_classes=classes,
+      thing_colors=[(177, 205, 223), (223, 205, 177)]),
+    scale = 0.8,
+    instance_mode = ColorMode.IMAGE_BW
+  )
+
+  pred_class = (outputs['instances'].pred_classes).detach()[0]
+  pred_score = (outputs['instances'].scores).detach()[0]
+  
+  print(f"File: {d['file_name']}")
+  print(f"--&gt; Class: {classes[pred_class]}, {pred_score * 100:.2f}%")
+
+  # Save image predictions
+  v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
+  image_name = f"inference_{idx}.jpg"
+  cv2.imwrite(image_name, v.get_image()[:, :, ::-1])
+</code></pre></div></div>
+
+<p>To make the predicitions we use 3 random images from the validation dataset.</p>
+
+<p>The predictor receive the image in format BGR, the same format that cv2 returns when reads the image.
+Once we have the predictions then we create and configure the <mark>Visualizer</mark> that we’ll use to show the regions predicted over the original image.</p>
+
+<p>The <mark>Visualizer</mark> accepts as the first parameter the original image but this time in RGB format, that’s why we have to reverse the array that cv2 returns when reads the image.
+The second parameter is the metadata, which in this case consists of the name of the classes, <em>Blacky</em> and <em>Niche</em>, and the colors applied to the regions of each class.
+The <mark>ColorMode.IMAGE\_BW</mark> value is used to remove the color of unsegmented pixels (the pixels that don’t belong to the predicted region).</p>
+
+<p>At the end we apply the regions predicted over the original image with <mark>v.draw\_instance\_predictions(outputs["instances"].to("cpu"))</mark></p>
+
+<p>In this case I save the image on disk because I don’t have access to XServer from inside Docker, so OpenCV cannot open any window to show the image. In case we worked from our local system we could use:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
+cv2.imshow(v.get_image()[:, :, ::-1])
+</code></pre></div></div>
+
+<p><img src="/assets/images/train-Detectron2-with-custom-dataset/inference_blacky.webp" alt="" title="Inference Blacky" />
+<img src="/assets/images/train-Detectron2-with-custom-dataset/inference_niche.webp" alt="" title="Inference Niche" /></p>
+
+<p><img src="/assets/images/train-Detectron2-with-custom-dataset/inference_both.webp" alt="" title="Inference Blacky and Niche" /></p>
+
+<p>Check the <a href="https://github.com/davamix/cats-localization/blob/master/src/test.py">test.py</a> file in the repository to know how to make inference in a video. Spoiler alert: predicting every frame xD.</p>
+
+<h2 id="references">References</h2>
+
+<p><a href="https://github.com/davamix/cats-localization">Code repository</a></p>
+
+<p><a href="https://drive.google.com/open?id=1o9zyd51QCqWG3DlArQnfH4q4clMVQmTY">Cats dataset</a></p>
+
+<p>(zip file ~39MB)</p>
+
+<p><a href="https://github.com/facebookresearch/detectron2">Detectron2 GitHub repository</a></p>
+
+<p><a href="https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5">Detectron2 Colab Notebook</a></p>
+
+<p><a href="https://detectron2.readthedocs.io/tutorials/datasets.html">Documentation - Use Custom Datasets</a></p>
+
+<p><a href="https://detectron2.readthedocs.io/modules/config.html#config-references">Documentation - Config References</a></p>
+
+<p><a href="https://detectron2.readthedocs.io/tutorials/models.html">Documentation - Use Models</a></p>
+
+      </div>
+
+    </article>
+  </div>
+</main>
+
+  <footer class="w-full py-16 bg-surface-container-low mt-32 border-t border-outline-variant/10">
+  <div class="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-8 opacity-60">
+    <div class="font-label text-xs uppercase tracking-widest text-outline mb-6 md:mb-0">
+      &copy; 2026 Davamix. Built for clarity.
+    </div>
+    <div class="flex gap-8 items-center">
+      <a href="/feed.xml" class="font-label text-xs uppercase tracking-widest text-outline hover:text-primary transition-colors">RSS</a>
+    </div>
+    <div class="hidden md:flex items-center gap-2 mt-6 md:mt-0">
+      <span class="w-2 h-2 rounded-full bg-primary-dim"></span>
+      <span class="font-label text-[10px] uppercase tracking-[0.2em] text-outline">Node Status: Active</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
