@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fixing front headphone jack on Debian with Creative CA0132 | Davamix</title>
+<meta name="description" content="On Debian 13 with a Creative Sound Blaster Z (CA0132), the front panel headphone jack stopped working while speakers were fine — here is what caused it and how to fix it.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary":                    "#005bc1",
+          "primary-dim":                "#004faa",
+          "primary-fixed":              "#d8e2ff",
+          "primary-fixed-dim":          "#c2d4ff",
+          "primary-container":          "#d8e2ff",
+          "on-primary":                 "#f7f7ff",
+          "on-primary-fixed":           "#003d85",
+          "on-primary-fixed-variant":   "#0058bb",
+          "on-primary-container":       "#004ea8",
+          "secondary":                  "#5c5f64",
+          "secondary-dim":              "#505358",
+          "secondary-fixed":            "#e1e2e8",
+          "secondary-fixed-dim":        "#d2d4da",
+          "secondary-container":        "#e1e2e8",
+          "on-secondary":               "#f7f9ff",
+          "on-secondary-fixed":         "#3d3f44",
+          "on-secondary-fixed-variant": "#595c61",
+          "on-secondary-container":     "#4f5257",
+          "tertiary":                   "#595e78",
+          "tertiary-dim":               "#4d526c",
+          "tertiary-fixed":             "#dadefe",
+          "tertiary-fixed-dim":         "#ccd0ef",
+          "tertiary-container":         "#dadefe",
+          "on-tertiary":                "#faf8ff",
+          "on-tertiary-fixed":          "#383c55",
+          "on-tertiary-fixed-variant":  "#545873",
+          "on-tertiary-container":      "#4a4f69",
+          "background":                 "#f8f9fa",
+          "surface":                    "#f8f9fa",
+          "surface-bright":             "#f8f9fa",
+          "surface-dim":                "#d1dce0",
+          "surface-tint":               "#005bc1",
+          "surface-variant":            "#dbe4e7",
+          "surface-container-lowest":   "#ffffff",
+          "surface-container-low":      "#f1f4f6",
+          "surface-container":          "#eaeff1",
+          "surface-container-high":     "#e3e9ec",
+          "surface-container-highest":  "#dbe4e7",
+          "on-surface":                 "#2b3437",
+          "on-surface-variant":         "#586064",
+          "on-background":              "#2b3437",
+          "outline":                    "#737c7f",
+          "outline-variant":            "#abb3b7",
+          "inverse-surface":            "#0c0f10",
+          "inverse-on-surface":         "#9b9d9e",
+          "inverse-primary":            "#4b8eff",
+          "error":                      "#9f403d",
+          "error-dim":                  "#4e0309",
+          "error-container":            "#fe8983",
+          "on-error":                   "#fff7f6",
+          "on-error-container":         "#752121"
+        },
+        borderRadius: {
+          DEFAULT: "0.125rem",
+          lg:      "0.25rem",
+          xl:      "0.5rem",
+          "2xl":   "0.75rem",
+          full:    "0.75rem"
+        },
+        fontFamily: {
+          headline: ["Manrope", "sans-serif"],
+          body:     ["Inter", "sans-serif"],
+          label:    ["Space Grotesk", "sans-serif"]
+        }
+      }
+    }
+  }
+</script>
+
+<link rel="stylesheet" href="/assets/css/main.css">
+
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+  <header class="fixed top-0 w-full z-50 glass-nav">
+  <div class="flex justify-between items-center max-w-7xl mx-auto px-8 h-20">
+    <a href="/" class="font-headline font-bold text-2xl tracking-tighter text-on-surface hover:text-primary transition-colors">
+      Davamix
+    </a>
+    <nav class="hidden md:flex items-center gap-10 ml-auto">
+      <a href="/"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Articles
+      </a>
+      <a href="/projects"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Projects
+      </a>
+      <a href="/snippets"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Snippets
+      </a>
+      <a href="/about"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        About
+      </a>
+    </nav>
+  </div>
+</header>
+
+  <main class="pt-32 pb-24 px-6">
+  <div class="max-w-4xl mx-auto">
+    <article>
+
+      <nav class="flex items-center justify-between mb-8">
+        <a href="/" class="group flex items-center gap-2 text-primary font-label text-sm font-medium">
+          <span class="material-symbols-outlined text-base group-hover:-translate-x-1 transition-transform">arrow_back</span>
+          Back to Feed
+        </a>
+        <div class="flex items-center gap-2 text-xs text-secondary font-label font-medium uppercase tracking-wider">
+          <span class="material-symbols-outlined text-sm">schedule</span>
+          
+          
+          1 min read
+        </div>
+      </nav>
+
+      <header class="mb-16">
+        <div class="flex flex-wrap gap-3 mb-6">
+          
+          <span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">linux</span>
+          
+          <span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">audio</span>
+          
+          
+          <span class="bg-surface-container-high text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">alsa</span>
+          
+          <span class="bg-surface-container-high text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">pipewire</span>
+          
+          <span class="bg-surface-container-high text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">debian</span>
+          
+          <span class="bg-surface-container-high text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">creative</span>
+          
+          <span class="bg-surface-container-high text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">ca0132</span>
+          
+        </div>
+
+        <h1 class="text-5xl md:text-6xl font-headline font-extrabold tracking-tighter text-on-surface leading-[1.1] mb-8">
+          Fixing front headphone jack on Debian with Creative CA0132
+        </h1>
+
+        <div class="flex items-center gap-4 py-6 border-t border-outline-variant/10">
+          <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+            <span class="material-symbols-outlined text-on-surface-variant">person</span>
+          </div>
+          <div>
+            <p class="text-sm font-headline font-semibold text-on-surface">Daniel Valcarce</p>
+            <p class="text-xs font-body text-secondary">April 16, 2026</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="post-content">
+        <p>On Debian 13 with a Creative Sound Blaster Z (CA0132), the front panel headphone jack stopped working while speakers were fine — here is what caused it and how to fix it.</p>
+
+<!--more-->
+
+<h4 id="table-of-content">Table of content</h4>
+
+<ul>
+  <li><a href="#system-context">System context</a></li>
+  <li><a href="#what-i-checked">What I checked</a></li>
+  <li><a href="#root-cause">Root cause</a></li>
+  <li><a href="#fix">Fix</a></li>
+  <li><a href="#if-the-problem-comes-back">If the problem comes back</a></li>
+  <li><a href="#useful-identification-commands">Useful identification commands</a></li>
+</ul>
+
+<h3 id="system-context">System context</h3>
+
+<ul>
+  <li><strong>OS with issue:</strong> Debian 13</li>
+  <li><strong>Working comparison:</strong> Linux Mint live USB</li>
+  <li><strong>Sound card:</strong> HDA Creative (CA0132 Sound Core3D), ALSA card 2, PCI <code class="language-plaintext highlighter-rouge">06:00.0</code></li>
+  <li><strong>Symptom:</strong> speakers worked, headphones plugged into the front audio jack did not</li>
+</ul>
+
+<h3 id="what-i-checked">What I checked</h3>
+
+<p>I compared the codec dumps for the Creative card between the Mint live USB and the Debian install. The jack/pin topology was effectively the same in both, so the hardware was not the issue.</p>
+
+<p>The old <code class="language-plaintext highlighter-rouge">alsa-base.conf</code> from the Mint system was not the cause either — it had no Creative/CA0132-specific entries.</p>
+
+<p>PipeWire could see the Creative analog sink, but the active port was <code class="language-plaintext highlighter-rouge">line-out</code> and the headphone port was reported as <strong>not available</strong>.</p>
+
+<h3 id="root-cause">Root cause</h3>
+
+<p>The Creative card mixer had headphone auto-detection disabled. On Debian before the fix, the relevant mixer controls were:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HP/Speaker Auto Detect = off
+Output Select = Speakers
+</code></pre></div></div>
+
+<h3 id="fix">Fix</h3>
+
+<p>Run:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>amixer -c 2 set 'HP/Speaker Auto Detect' on
+</code></pre></div></div>
+
+<p>The front headphone jack started working immediately. The change survived a reboot on this system without needing to run <code class="language-plaintext highlighter-rouge">alsactl store</code>.</p>
+
+<h3 id="if-the-problem-comes-back">If the problem comes back</h3>
+
+<p><strong>1.</strong> Check the current values:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>amixer -c 2 get 'HP/Speaker Auto Detect'
+amixer -c 2 get 'Output Select'
+</code></pre></div></div>
+
+<p><strong>2.</strong> Re-apply the fix:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>amixer -c 2 set 'HP/Speaker Auto Detect' on
+</code></pre></div></div>
+
+<p><strong>3.</strong> If needed, force headphone output manually:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>amixer -c 2 set 'Output Select' 'Headphone'
+</code></pre></div></div>
+
+<p><strong>4.</strong> Save the ALSA mixer state explicitly:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo alsactl store
+</code></pre></div></div>
+
+<h3 id="useful-identification-commands">Useful identification commands</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cat /proc/asound/cards
+pactl list short cards
+pactl list short sinks
+</code></pre></div></div>
+
+      </div>
+
+    </article>
+  </div>
+</main>
+
+  <footer class="w-full py-16 bg-surface-container-low mt-32 border-t border-outline-variant/10">
+  <div class="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-8 opacity-60">
+    <div class="font-label text-xs uppercase tracking-widest text-outline mb-6 md:mb-0">
+      &copy; 2026 Davamix. Built for clarity.
+    </div>
+    <div class="flex gap-8 items-center">
+      <a href="/feed.xml" class="font-label text-xs uppercase tracking-widest text-outline hover:text-primary transition-colors">RSS</a>
+    </div>
+    <div class="hidden md:flex items-center gap-2 mt-6 md:mt-0">
+      <span class="w-2 h-2 rounded-full bg-primary-dim"></span>
+      <span class="font-label text-[10px] uppercase tracking-[0.2em] text-outline">Node Status: Active</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

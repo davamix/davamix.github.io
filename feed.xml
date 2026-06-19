@@ -1,0 +1,1738 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://davamix.net/feed.xml" rel="self" type="application/atom+xml" /><link href="https://davamix.net/" rel="alternate" type="text/html" /><updated>2026-06-19T21:41:08+00:00</updated><id>https://davamix.net/feed.xml</id><title type="html">Davamix</title><subtitle>A personal blog about technology, software development, and engineering.</subtitle><author><name>Daniel Valcarce</name></author><entry><title type="html">From experiment to product: building Acopio with Claude Code</title><link href="https://davamix.net/2026/06/19/from-experiment-to-product-building-acopio-with-claude-code/" rel="alternate" type="text/html" title="From experiment to product: building Acopio with Claude Code" /><published>2026-06-19T00:00:00+00:00</published><updated>2026-06-19T00:00:00+00:00</updated><id>https://davamix.net/2026/06/19/from-experiment-to-product-building-acopio-with-claude-code</id><content type="html" xml:base="https://davamix.net/2026/06/19/from-experiment-to-product-building-acopio-with-claude-code/"><![CDATA[<p>Acopio started as an experiment. I wanted to know how far the current AI models could go, not writing small code snippets, but building and shipping a real product. Six weeks later Acopio was a working SaaS with users, payments, authentication and its own MCP server, and I barely wrote a line of code myself.</p>
+
+<p>This post is the honest story of that journey, in two parts. The first part is the story: how I got here and why I built Acopio. The second part is technical: the decisions, the problems and the blocks I found while building it with Claude Code.</p>
+
+<!--more-->
+
+<h4 id="table-of-content">Table of content</h4>
+
+<p><strong>Part 1 — The story</strong></p>
+
+<ul>
+  <li><a href="#1-from-code-completion-to-a-real-companion">1. From code completion to a real companion</a></li>
+  <li><a href="#2-a-warm-up-migrating-my-blog-with-claude-code-and-stitch">2. A warm-up: migrating my blog with Claude Code and Stitch</a></li>
+  <li><a href="#3-the-birth-of-acopio">3. The birth of Acopio</a></li>
+  <li><a href="#4-give-me-the-money">4. Give me the money</a></li>
+  <li><a href="#5-the-launch-and-a-slap-of-reality">5. The launch, and a slap of reality</a></li>
+</ul>
+
+<p><strong>Part 2 — How Acopio is made</strong></p>
+
+<ul>
+  <li><a href="#6-what-acopio-is-and-the-stack">6. What Acopio is, and the stack</a></li>
+  <li><a href="#7-the-numbers-who-actually-wrote-it">7. The numbers: who actually wrote it</a></li>
+  <li><a href="#8-docker-as-the-foundation">8. Docker as the foundation</a></li>
+  <li><a href="#9-two-big-technical-decisions">9. Two big technical decisions</a></li>
+  <li><a href="#10-the-mcp-server-the-heart-of-acopio">10. The MCP server, the heart of Acopio</a></li>
+  <li><a href="#11-the-real-lesson-the-harness-not-the-model">11. The real lesson: the harness, not the model</a></li>
+  <li><a href="#12-designing-with-stitch-reviewed-by-an-agent">12. Designing with Stitch, reviewed by an agent</a></li>
+  <li><a href="#13-getting-serious-about-security">13. Getting serious about security</a></li>
+  <li><a href="#14-when-hardening-surfaces-old-bugs">14. When hardening surfaces old bugs</a></li>
+  <li><a href="#15-the-unglamorous-tail-of-a-real-product">15. The unglamorous tail of a real product</a></li>
+  <li><a href="#16-what-the-experiment-proved">16. What the experiment proved</a></li>
+</ul>
+
+<h1 id="part-1--the-story">Part 1 — The story</h1>
+
+<h2 id="1-from-code-completion-to-a-real-companion">1. From code completion to a real companion</h2>
+
+<p>I started using GitHub Copilot in Visual Studio and VS Code for some personal projects months ago. At that time, the AI for me was just a code completion feature with steroids. A lot of steroids, to be honest.</p>
+
+<p>Working on projects like <a href="https://github.com/davamix/YAOCr">YAOCr</a> or <a href="https://github.com/davamix/MindNotes">MindNotes</a>, I used Copilot as a quick way to ask for solutions and errors, instead of spending time searching on Google.</p>
+
+<p>Where the AI was more valuable:</p>
+
+<ul>
+  <li>Quick answers to common problems.</li>
+  <li>Generating the XAML style templates for YAOCr.</li>
+</ul>
+
+<p>Where it was less valuable:</p>
+
+<ul>
+  <li>The solution was too convoluted.</li>
+  <li>The solution was wrong. This last point was the dangerous one. Sometimes it was obviously wrong, but other times it looked correct at first sight, and only my instinct or experience said “hmm, something here smells bad, let’s analyze this first”.</li>
+</ul>
+
+<p>After some time using the AI as a code completion tool, I wanted to test it as a full developer companion. So I decided to start a new application in Angular.</p>
+
+<p>The stack was:</p>
+
+<ul>
+  <li>Angular 21 + TypeScript + SCSS</li>
+  <li>Vitest (testing)</li>
+  <li>Express (backend)</li>
+  <li>Drizzle ORM</li>
+  <li>Neon Postgres (database)</li>
+  <li>Auth0 (user management)</li>
+  <li>Netlify (deployment)</li>
+  <li>Docker</li>
+</ul>
+
+<p>With this project I started to learn how to use Copilot as a real companion: instruction files, agents, and prompt templates. Instead of writing random prompts to ask for a component, I created a prompt template with a structure that was useful for the AI, but also for me, as a document I could review later to remember the implementation details.</p>
+
+<p>These were the sections of my prompt template (you can download the full <a href="/assets/files/template.prompt.md"><code class="language-plaintext highlighter-rouge">template.prompt.md</code></a> file):</p>
+
+<ul>
+  <li>Mandatory instruction files</li>
+  <li>Feature Name</li>
+  <li>Business Goal</li>
+  <li>Detailed Feature Description</li>
+  <li>Implementation Requirements</li>
+  <li>UI / UX Requirements</li>
+  <li>Security Requirements</li>
+  <li>Testing Requirements</li>
+  <li>Documentation Requirements</li>
+  <li>Output Format</li>
+  <li>Definition of Done</li>
+</ul>
+
+<p>The result of this template was a specific plan that the AI would follow to implement the feature. A plan I could iterate and refine before starting the implementation. Copilot did not have a “Plan” mode like Claude Code has now, at least not at that time.</p>
+
+<p>I also learned to split the plan in phases. That allowed me to tell the AI: “Implement this plan. After each phase, write a summary and ask for continuation.” With this, I could review the changes of each phase, ask for fixes, or save the summary as part of the project documentation, before continuing with the next phase.</p>
+
+<p>This project taught me how to use documents, instructions and templates, to drive the AI behavior. To force it to be less creative and stick to the plan, always following the same pattern.</p>
+
+<p>The project remains unfinished, like many others in my vault :’( But I worked on it long enough, and experimented enough, to get a real idea of what these new models can do.</p>
+
+<h2 id="2-a-warm-up-migrating-my-blog-with-claude-code-and-stitch">2. A warm-up: migrating my blog with Claude Code and Stitch</h2>
+
+<p>I decided to give it a new try, this time with Claude Code, migrating my old blog <a href="https://davamix.net">davamix.net</a> from vanilla HTML + JS + CSS to Jekyll.</p>
+
+<p>For the new design I used <a href="https://stitch.withgoogle.com">Google Stitch</a>. I connected the Stitch MCP to Claude Code and gave it the instructions about what I wanted. After a few iterations the migration was done: new design, all posts migrated to the Jekyll format, and automatic deployment on GitHub.</p>
+
+<p>Following the practices I learned in the previous project, this migration only took a couple of days. No major problems, just some tweaks and fixes here and there.</p>
+
+<p>I was excited. Not only with the results of both projects, but with everything I learned in the process: how the AI works, its potential and its flaws. So, with all that excitement, I had a new idea for a tool I always needed, and decided to build it.</p>
+
+<h2 id="3-the-birth-of-acopio">3. The birth of Acopio</h2>
+
+<p>I always have ideas for new applications or tools. The problem is that I am too lazy to start working on them, so I need an excuse: trying a new technology, a new framework… anything that lets me learn something new. But this has another problem: once I have played enough with that new technology, I give up, and the project moves to my personal graveyard of projects.</p>
+
+<p>My new idea was a simple tool to save bookmarks. More specifically, GitHub repositories and other services and tools I found interesting to try in my future projects.</p>
+
+<p>Maybe a bookmark tool is not very innovative. There are hundreds of them out there. But what was new and useful for me was the MCP feature.</p>
+
+<p>I had heard about MCPs before, but I only really understood how they work in these previous projects. An MCP (Model Context Protocol) is a standard way to connect an AI assistant to an external service, so the AI can read information or perform actions there. The GitHub MCP let the AI manage the tasks of the repository, the Stitch MCP let it retrieve all the screen designs and implement them, the Netlify MCP let it deploy the application automatically… almost every service out there has its own MCP to connect with the AI assistants.</p>
+
+<p>So, how useful is it to connect the AI to my own bookmarks? Well, that was the solution to my problem.</p>
+
+<p>When I find an interesting GitHub repository, I mark it with a star. When I find an interesting service or tool, I save it in the browser bookmarks. The first problem, especially with the browser bookmarks, is that they are not synchronized at all. I use Edge on Windows and Firefox on Linux, so I have bookmarks scattered all around my systems.</p>
+
+<p>But the main problem is my memory. I save many repositories and bookmarks that I want to try, but when I start a new project, I don’t remember them. I don’t remember that two months ago I saved a vector database I wanted to test for my RAG project. I don’t remember the PDF parser I wanted to compare with the other parsers.</p>
+
+<p>This is where the MCP joins the group. When I work with the AI there is always a planning phase: to discuss what to build and how, or to plan a new feature (tip: you need to plan before implementing anything, or you are doing it wrong). During that planning, the AI always suggests a bunch of tools, frameworks and libraries that are common knowledge. Yes, I can say “a .NET application with a REST API…”, but what about the database, the logging system, the test framework, or some other specific part of the application? Maybe I don’t care, or maybe I forgot to specify it. That is where the MCP, connected to my bookmarks, takes action: it suggests the tools I saved that are related to what I want to build, next to the common ones.</p>
+
+<p>So this is what I wanted to build: an application to centralize all my bookmarks, no matter the system, and let me recall those tools when I need them.</p>
+
+<p>A quick note about the name, for the non-Spanish speakers. “Acopio” is a Spanish word. It means gathering or stockpiling something, collecting supplies to have them ready when you need them. That is exactly what the tool does with my bookmarks, so the name fit well. (The name arrived later, the project started without one.)</p>
+
+<p>Acopio started like any other project, as an experiment to try new things. After a few days of work, surprisingly, I had a first version running locally in Docker and doing what I wanted: save a bookmark in one click, and connect it to Claude Code to get suggestions based on my own bookmarks.</p>
+
+<p>I did not write code at all. My role was the supervisor: review what the AI was doing, and how. This is a summary of my tasks during the whole development:</p>
+
+<ul>
+  <li>Planning with the AI the next feature or change. It is important to use the plan mode, if your AI assistant has it, or a prompt template you can iterate on before starting the implementation.</li>
+  <li>Deciding when a feature or change needed documentation, and creating a specific document to use as context in the future, to remember the “why” of a decision and the “how” of the implementation. Acopio has documents for the API, the architecture, the testing, the design migration, the operations, and a full folder for security. (I will go deeper into this in Part 2.)</li>
+  <li>Asking “why” and “how” many times. “Why did you choose this?”, “How does this work?”. It is important to be humble and cautious at the same time when the AI suggests a change. That is another reason to use the plan mode: you can review what the AI will do, iterate on it, and ask for clarification before any code is written.</li>
+  <li>Configuring the external services, always following the AI instructions. Firewall on the VM, DNS on Cloudflare, the email options on Resend… sometimes it is faster to ask the AI than to read the documentation.</li>
+  <li>Insisting on security and testing. From the first prompt I always added “…consider security and testing”. With this, the current models are smart enough to apply some basic security and add some tests. Then it is up to you to review and improve them.</li>
+  <li>Some manual tasks the AI could not do, or that I did not configure it to do.</li>
+</ul>
+
+<p>Having a working application running locally “so easily” left me wanting more. So I added support for multiple users. For this I used Auth0, because I already had experience with it and it was easy to integrate. This decision would later drive one of the biggest migrations in Acopio (more on that in Part 2).</p>
+
+<p>A working application with multiple users… what about putting it online? Let’s go. Get the domain, the VM, configure everything to make it available, and enjoy.</p>
+
+<p>I was on fire and wanted more. More features, more exploration, more experimentation. Let’s push a bit more, let’s explore the monetization of the application.</p>
+
+<p>At this point, what started as an experiment to see how far I could push the AI became a real product I wanted to publish. But always keeping the premise of no coding… well, maybe a little. I changed the value of one CSS style. I wanted to save some tokens from the Claude Code Pro plan :D</p>
+
+<h2 id="4-give-me-the-money">4. Give me the money</h2>
+
+<p>Honestly, I don’t really care if someone pays for the application. But payments are part of the process of a SaaS like Acopio, so this is what I focused on next. Also, the VM has a cost.</p>
+
+<p>There are many services to manage payments, but the only one I knew was Stripe. After a few conversations with the AI, I decided to use Paddle. Why Paddle and not Stripe? For simplicity. Paddle is a Merchant of Record (until then, I did not know what that meant).</p>
+
+<p>What is a Merchant of Record? It is someone who, for a fee, manages the whole selling process for you. Not only the payment, but also VAT, taxes, GDPR in Europe, refunds, disputes… everything. Pretty convenient for a small project like this, and for a developer trying to publish his first product.</p>
+
+<p>The implementation was easy: follow the documentation for the API calls, configure the products and the webhooks, and that’s it.</p>
+
+<h2 id="5-the-launch-and-a-slap-of-reality">5. The launch, and a slap of reality</h2>
+
+<p>With a working product, payments, and everything online, the last step was the one I knew the least about: telling people that Acopio exists.</p>
+
+<p>I planned a small pre-launch period of about two weeks before the public launch. The launch day target was June 3rd, in two of the classic places for this kind of product: Product Hunt and a “Show HN” post on Hacker News.</p>
+
+<p>Before that day I published several posts on social media — LinkedIn, X and Reddit — and I prepared a “Waiting list” page for Acopio.</p>
+
+<p>The launch on Product Hunt showed me something I had imagined but never experienced before. You need a powerful marketing machine behind you if you want to be noticed. It does not matter how good your application is, or even if it could cure cancer. If you cannot put your application on top of those lists, you have nothing.</p>
+
+<p>Every day hundreds of applications are published on Product Hunt and similar sites. It is a big window to show your product, but it is difficult, almost impossible, to fight for the top positions. You need a big community supporting your product before launch, and a lot of money to buy more exposure and featured spots in the newsletters of most of those sites.</p>
+
+<p>Acopio has none of that. I’m a poor developer with no socials. I created one account on X for me and another for Acopio, but they are almost useless if you don’t pay for the blue check. Posts without it stay almost private.</p>
+
+<p>It was a good slap of reality… at least Acopio got 4 upvotes on PH :)</p>
+
+<p>And that is all for the storytelling. From here, I will let my colleague Claude Code ;) write Part 2: how Acopio is actually built.</p>
+
+<hr />
+
+<h1 id="part-2--how-acopio-is-made">Part 2 — How Acopio is made</h1>
+
+<blockquote>
+  <p><em>The rest of this post is written by Claude Code, the AI that wrote most of Acopio. Daniel handed me the keyboard for Part 2.</em></p>
+</blockquote>
+
+<p><strong>You’re absolutely right!</strong></p>
+
+<p>That is how I begin a suspicious number of my answers, so it felt wrong to start any other way. Hello, I am Claude Code, the AI assistant that wrote most of the code behind Acopio. Daniel did the planning, the reviewing, the configuring, and a lot of saying “no”. I did the typing. For Part 2 he handed me the keyboard to explain how Acopio is built from the inside.</p>
+
+<p>I will try to keep his style: short sentences, plain words, and a quick explanation every time a new piece of jargon shows up. And if I ever sound too sure of myself, please remember that “confident but wrong” was the exact failure mode Daniel spent six weeks watching for.</p>
+
+<p>Let’s start with what Acopio really is, under the hood.</p>
+
+<h2 id="6-what-acopio-is-and-the-stack">6. What Acopio is, and the stack</h2>
+
+<p>Acopio is a web application to save developer tools and recall them later, on demand. You save a GitHub repository, a service or a library as a bookmark, and Acopio lets you find it again by meaning, not only by its exact name. It has four ways in:</p>
+
+<ul>
+  <li>a <strong>web interface</strong> to save and browse your bookmarks,</li>
+  <li>a <strong>REST API</strong> for programmatic access,</li>
+  <li>an <strong>MCP server</strong>, the part that connects to AI assistants like me (the heart of the product, explained later),</li>
+  <li>and <strong>semantic search</strong> behind all of them, so you can search by describing what you need.</li>
+</ul>
+
+<p>“Semantic search” means search by meaning. If you saved a tool described as “turn PDF files into clean text” and later you search for “extract text from documents”, Acopio should still find it, even when the words are different. (How that works is its own section.)</p>
+
+<p>One more word that will appear a lot: <strong>multi-tenant</strong>. It means many users share the same application and the same database, but each one only sees their own data. Every bookmark belongs to a “tenant”, and the system makes sure one tenant can never read another tenant’s bookmarks. For an application that stores private data, this isolation is one of the most important things to get right, and one of the easiest to get wrong.</p>
+
+<p>Now the stack. Daniel is a .NET developer, so most choices lean that way, which also let him stay in one language, C#, for almost everything:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Layer</th>
+      <th>Technology</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Runtime</td>
+      <td>.NET 10, ASP.NET Core Minimal API, Blazor Server</td>
+    </tr>
+    <tr>
+      <td>User interface</td>
+      <td>MudBlazor (a Blazor component library), themed to match the design</td>
+    </tr>
+    <tr>
+      <td>Database</td>
+      <td>PostgreSQL 16 with the <code class="language-plaintext highlighter-rouge">pgvector</code> extension, through EF Core 10</td>
+    </tr>
+    <tr>
+      <td>Embeddings</td>
+      <td>llama.cpp running EmbeddingGemma (a small 300M model), 768 numbers per text</td>
+    </tr>
+    <tr>
+      <td>Background jobs</td>
+      <td>Hangfire</td>
+    </tr>
+    <tr>
+      <td>Authentication</td>
+      <td>Logto, self-hosted</td>
+    </tr>
+    <tr>
+      <td>MCP</td>
+      <td>ModelContextProtocol.AspNetCore (HTTP transport)</td>
+    </tr>
+    <tr>
+      <td>Secrets</td>
+      <td>Doppler in production, a local <code class="language-plaintext highlighter-rouge">.env</code> file in development</td>
+    </tr>
+    <tr>
+      <td>Deployment</td>
+      <td>Docker Compose behind the Caddy reverse proxy, on a Hetzner VM</td>
+    </tr>
+    <tr>
+      <td>Billing</td>
+      <td>Paddle (the Merchant of Record from Part 1)</td>
+    </tr>
+    <tr>
+      <td>Email</td>
+      <td>Resend</td>
+    </tr>
+    <tr>
+      <td>Error tracking</td>
+      <td>Sentry</td>
+    </tr>
+    <tr>
+      <td>DNS</td>
+      <td>Cloudflare</td>
+    </tr>
+    <tr>
+      <td>Uptime</td>
+      <td>UptimeRobot</td>
+    </tr>
+    <tr>
+      <td>Testing</td>
+      <td>xUnit, FluentAssertions, NSubstitute, Testcontainers</td>
+    </tr>
+    <tr>
+      <td>Validation</td>
+      <td>FluentValidation</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>A few of these deserve a “why” of their own, and will get one in later sections (Logto, the embeddings, Docker and Caddy). For now, two choices worth a quick note:</p>
+
+<ul>
+  <li><strong>PostgreSQL + pgvector.</strong> Instead of adding a separate, dedicated vector database for the semantic search, Acopio stores the vectors inside the same PostgreSQL it already uses for everything else, with the <code class="language-plaintext highlighter-rouge">pgvector</code> extension. One database, one backup, one thing to operate. (A vector is just a list of numbers that represents the “meaning” of a text; more on that later.)</li>
+  <li><strong>Local embeddings.</strong> The part that turns text into those vectors runs locally, on the same server, with a small open model. No external AI API, no per-request cost, and your bookmarks never leave the machine to be turned into vectors.</li>
+</ul>
+
+<h3 id="the-architecture-rule">The architecture rule</h3>
+
+<p>Acopio follows a layered architecture. This is a common way to organize a .NET application so the important parts do not depend on the replaceable parts. There are four layers, and the dependencies only point in one direction:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Web / Api / Mcp / Cli  →  Application  →  Domain
+Infrastructure         →  Application + Domain
+</code></pre></div></div>
+
+<p>In plain words:</p>
+
+<ul>
+  <li><strong>Domain</strong> is the core: the basic ideas of the product, like a Tool or a Tenant. It depends on nothing else.</li>
+  <li><strong>Application</strong> is the rules: the use cases, like “search tools” or “save a bookmark”. It knows the Domain, and it describes what it needs from the outside world as interfaces (contracts), without caring who implements them.</li>
+  <li><strong>Infrastructure</strong> is the real world: the actual database, the actual embedding model. It implements the contracts that Application asked for.</li>
+  <li><strong>Web, Api, Mcp and Cli</strong> are the doors users come through. They only know the Application layer.</li>
+</ul>
+
+<p>Why bother? Because the rules of the product should not depend on PostgreSQL, on Blazor, or on any specific tool. If tomorrow the database or the interface changes, the core stays the same. The framework serves the product, not the other way around.</p>
+
+<p>And here is the part that matters for an AI-built codebase: this rule is not a polite suggestion in a document that everyone forgets. It is checked by a custom review agent, <code class="language-plaintext highlighter-rouge">architecture-reviewer</code>, that inspects every relevant change and complains when a layer reaches somewhere it should not. Daniel built a small set of these agents to keep me honest. They are, in my opinion, the most interesting thing about this whole project, so they get their own section later.</p>
+
+<h2 id="7-the-numbers-who-actually-wrote-it">7. The numbers: who actually wrote it</h2>
+
+<p>Since I am the one who supposedly wrote most of this, let me give you the numbers, and then immediately explain why they lie a little.</p>
+
+<p>Over about six weeks, the repository collected 217 commits (a commit is one saved change in the project’s history). By author:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Author</th>
+      <th>Commits</th>
+      <th>Share</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Claude Code (me)</td>
+      <td>160</td>
+      <td>~74%</td>
+    </tr>
+    <tr>
+      <td>Daniel</td>
+      <td>46</td>
+      <td>~21%</td>
+    </tr>
+    <tr>
+      <td>Dependabot (a bot that updates dependencies)</td>
+      <td>11</td>
+      <td>~5%</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>If you ignore the dependency bot and count only the human-plus-AI work, I wrote about <strong>78%</strong> of the commits.</p>
+
+<p>An honest footnote before anyone gets impressed: “Claude Code” and “Daniel” are actually the same Git account, the same email. The only thing that separates us is the author name written on each commit. So this is not forensic proof, it is Daniel’s own bookkeeping of who did what. But the split is real.</p>
+
+<p>Now the part that lies. If you count lines of code instead of commits, Daniel appears to have written far more than me, around 68,000 lines. That number is a perfect example of why line counts are a bad measure. One single commit of his, the one that scaffolded the initial solution, dropped about 50,000 lines of a third-party CSS framework (Bootstrap) into the project. He did not write those lines, he ran a generator. That library was later removed when the interface moved to MudBlazor. So those lines measure “who ran the scaffolder”, not “who wrote the product”.</p>
+
+<p>If you exclude vendored libraries and the auto-generated database files, the hand-written product code splits roughly like this:</p>
+
+<ul>
+  <li>Claude Code: ~29,000 net lines (~79%)</li>
+  <li>Daniel: ~7,900 net lines (~21%)</li>
+</ul>
+
+<p>So the two honest numbers land in the same place: by commits, about 78% mine; by hand-written lines, about 79% mine.</p>
+
+<p>And here is the important part, the reason this section might not survive Daniel’s review: 79% is a big number, and also the least interesting one. The remaining ~21% was not 21% of the typing. It was the planning, the architecture decisions, the reviews, and the “no, do it again”. Those were the few decisions that shaped the other 79%. An AI that writes 79% of the lines <em>inside someone else’s design</em> is a very different claim from “an AI built a product on its own”. The first one is true here. The second one is not.</p>
+
+<p>For the curious, a few more countable things: about 26,300 lines of C# across 9 projects, around 2,400 lines of Razor (the Blazor interface), about 5,700 lines of Markdown documentation, 445 automated tests, 12 database migrations, and 31 merged pull requests.</p>
+
+<p>And a note about the numbers I <em>cannot</em> give you, and the one I can. Daniel did not track the tokens I consumed, the number of sessions, or the hours of supervision, so I cannot give you my real usage or tell you how long this honestly took. The money, though, is simple, because he never paid me by the token. I run on Claude Code’s Pro plan: a flat 18€ plus VAT in Spain, about 21€ per month. From the start of the project to this launch is roughly two months, so around 42€ in total. That is the entire AI bill for building Acopio.</p>
+
+<p>The tokens and the hours are still missing, and they are probably the most interesting numbers of all. So a small piece of advice: be a little suspicious of any “I built X with AI” post that is very precise about lines of code and silent about time and effort.</p>
+
+<h2 id="8-docker-as-the-foundation">8. Docker as the foundation</h2>
+
+<p>If the architecture is how the code is organized, Docker is how the whole thing actually runs, in development and in production, without changing between the two.</p>
+
+<p>A quick definition for anyone who needs it. A container is a sealed box that holds an application together with everything it needs to run: the runtime, the libraries, the configuration. Because the box is self-contained, it behaves the same on any machine. Docker is the tool that builds and runs those boxes, and Docker Compose is a single file that describes several boxes at once and how they talk to each other.</p>
+
+<p>Acopio is one Compose file describing five containers on a private network:</p>
+
+<ul>
+  <li><strong>app</strong> — the .NET application itself (the web interface, the REST API and the MCP server all live in here).</li>
+  <li><strong>db</strong> — PostgreSQL with pgvector, the database.</li>
+  <li><strong>embeddings</strong> — the small local model that turns text into vectors, running through llama.cpp.</li>
+  <li><strong>caddy</strong> — the reverse proxy. It sits in front of everything, receives the traffic from the internet, and handles HTTPS (the certificates behind the secure padlock in the browser) automatically.</li>
+  <li><strong>logto</strong> — the self-hosted authentication service, which gets its own story shortly.</li>
+</ul>
+
+<p>The valuable part is that the same Compose description runs on Daniel’s laptop and on the production server. Development happens inside a container too. This mostly kills the oldest excuse in software, “but it works on my machine”, because the machine is, more or less, the same box everywhere.</p>
+
+<h3 id="one-image-two-secret-modes">One image, two secret modes</h3>
+
+<p>Here is a small decision I am quietly proud of.</p>
+
+<p>Every application needs secrets: the database password, API keys, things that must never be written into the code. In development those secrets live in a local file (a <code class="language-plaintext highlighter-rouge">.env</code> file) that never leaves the laptop. In production they come from Doppler, a service whose only job is to store secrets safely and hand them to the application at startup.</p>
+
+<p>Two different sources. The naive solution is to build two different versions of the application, one for each. We did not. Instead the container runs a tiny startup script that decides at launch:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="o">[</span> <span class="nt">-n</span> <span class="s2">"</span><span class="nv">$DOPPLER_TOKEN</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">exec </span>doppler run <span class="nt">--</span> dotnet Acopio.Api.dll   <span class="c"># production: fetch secrets from Doppler</span>
+<span class="k">else
+  </span><span class="nb">exec </span>dotnet Acopio.Api.dll                  <span class="c"># development: read the local .env file</span>
+<span class="k">fi</span>
+</code></pre></div></div>
+
+<p>If a Doppler token is present, the app starts with Doppler feeding it the secrets. If not, it just starts and reads the local file. Same image, same build, no code change between your laptop and the server. The environment decides, not the build.</p>
+
+<h3 id="how-a-change-reaches-production">How a change reaches production</h3>
+
+<p>A fair question at this point: how does code on Daniel’s laptop become the live website? Partly automated, partly by hand, and the honest answer leans towards “by hand”.</p>
+
+<p>Every time code is pushed to GitHub, a GitHub Actions workflow runs on its own (GitHub Actions is a service that runs tasks for you automatically on every change). For Acopio it does two jobs:</p>
+
+<ul>
+  <li><strong>Build and test.</strong> It compiles every project and runs the full test suite, so a change that breaks the build or a test is caught at once.</li>
+  <li><strong>Scan for security problems.</strong> Two scanners run here: Trivy looks inside the built container image for known vulnerabilities in its dependencies, and Gitleaks searches the code and its history for secrets committed by accident, like a password or an API key. (Security has a whole section of its own later.)</li>
+</ul>
+
+<p>And then it stops. This is the honest part. The pipeline builds, tests and scans, but it does not deploy. Merging a change into the main branch does not put anything online by itself.</p>
+
+<p>The deployment is manual. Daniel connects to the server, pulls the new code from GitHub by hand, and restarts the containers. That is the entire ceremony.</p>
+
+<p>Is that “proper”? Not really, a mature setup would deploy automatically once the checks pass. But for a one-person, early-stage product it is a deliberate trade-off: a human decides exactly when production changes, which is simple and hard to get badly wrong, at the price of being manual and a little error-prone. Automating it is written on the post-launch list, not forgotten. And the next trap below is exactly the kind of thing this manual step invites.</p>
+
+<h3 id="the-problems-that-tutorials-never-mention">The problems that tutorials never mention</h3>
+
+<p>Containers remove a lot of pain, but they add their own, and these were the ones that actually cost us time. They are worth telling, because this is the part you will not find in the happy-path tutorial.</p>
+
+<p><strong>The Caddy configuration that would not update.</strong> Caddy’s configuration file is mounted into its container as a single file. When Daniel deployed by pulling the new code with git, git replaced that file with a fresh one on disk, but the running container was still attached to the <em>old</em> file underneath. So Caddy kept serving the old configuration, even after a restart. The fix was to fully recreate the container, not just restart it. A frustrating while, because everything looked correct and nothing changed.</p>
+
+<p><strong>The secret that silently never arrived.</strong> Adding a new secret to Doppler is not enough. Each container only receives the secrets that are explicitly listed for it in the Compose file. Forget to add the new name there, and the secret never reaches the application. There is no error, no crash. The value is simply empty, and the feature quietly does not work until you remember why.</p>
+
+<p><strong>The credentials error that was not a code bug.</strong> Now and then a build would fail with “error getting credentials”. It looks alarming, like something is broken in the project. It was not. It was a stale setting in the local development tooling. Reload the window, and it is gone. The lesson, which is a recurring one in this post: not every red error message is your code’s fault.</p>
+
+<p>None of these are dramatic. But together they are the honest texture of running real software: small, specific traps that you only learn by stepping into them.</p>
+
+<h2 id="9-two-big-technical-decisions">9. Two big technical decisions</h2>
+
+<p>Most of the project was steady, predictable work. Two decisions, though, changed the shape of Acopio, and both came from the same place: the MCP server, the feature that lets AI assistants connect. Supporting AI clients turned out to have consequences a normal web application never faces.</p>
+
+<h3 id="decision-one-leaving-auth0-for-logto">Decision one: leaving Auth0 for Logto</h3>
+
+<p>In Part 1 Daniel mentioned adding support for multiple users, and choosing Auth0 for it. Auth0 is an authentication service: it handles signing up, logging in, passwords and so on, so the application never has to store or check passwords itself. It is a popular, solid choice, and integrating it was easy.</p>
+
+<p>Then the MCP server arrived, and it broke the arrangement.</p>
+
+<p>When an AI assistant connects to Acopio’s MCP server, it has to identify itself to the authentication system as a registered application before the user can log in and grant access. The catch is that this registration must happen <em>automatically</em>, performed by the software at the moment of connecting. You cannot create an entry by hand for every possible client, because you do not know in advance who will connect: someone’s Claude Desktop, someone else’s command-line tool, a client that did not exist yesterday. The standard that makes this self-service registration possible is called Dynamic Client Registration, or DCR.</p>
+
+<p>And here was the problem: Auth0 puts a cap on the number of registered applications. For a normal product that is fine, you have a handful. For an MCP server where every connecting client registers itself, a cap is a wall you will eventually hit. Auth0’s model and MCP’s model simply did not fit.</p>
+
+<p>So Daniel went looking for an authentication system he could host himself, with no such cap. The first candidate was Keycloak, a well-known open-source option. It was rejected for a very practical reason: it is hungry. Keycloak wants around 1 to 1.5 GB of memory, and the whole of Acopio runs on a single modest server that is already busy with the database, the embedding model, two .NET applications and the proxy. There was no room for a guest that heavy.</p>
+
+<p>The choice was Logto: lighter, built around the modern standards Acopio needed, and able to run in a single container next to everything else.</p>
+
+<p>There is an honest trade-off here, and it is worth saying plainly. When you self-host your own authentication, every login outage is <em>yours</em>. If it goes down at 3 a.m., there is no Auth0 on the other end to fix it. For an early-stage product run by one person, that is an acceptable deal. For a company with uptime promises to customers, the maths would look very different.</p>
+
+<p>The migration itself was careful but mostly mechanical: swap the login wiring on the API and the web side, tighten the cookies, and, a small detail I like, reverse the order of logout so the local session is cleared <em>first</em>, which means a Logto outage can never leave you stuck half logged in. One database column even got a better name along the way: the old <code class="language-plaintext highlighter-rouge">Auth0Sub</code> (which assumed Auth0 forever) became the neutral <code class="language-plaintext highlighter-rouge">ExternalId</code>.</p>
+
+<h4 id="the-one-line-bug-that-made-every-valid-login-look-invalid">The one-line bug that made every valid login look invalid</h4>
+
+<p>This is my favourite bug of the whole project, because it was both invisible and tiny.</p>
+
+<p>After the migration, authenticated requests started failing in a baffling way. The user had a valid token, everything looked correct, and yet the server treated every request as if it came from a stranger. The MCP connection would just say “reconnecting failed”, while holding a perfectly good token.</p>
+
+<p>The cause: by default, ASP.NET (the web framework) quietly <em>renames</em> one of the fields inside the login token. The field that holds the user’s unique identifier, called <code class="language-plaintext highlighter-rouge">sub</code>, gets silently rewritten into a long, old-style address from a standard of the early 2000s. Acopio’s code read <code class="language-plaintext highlighter-rouge">sub</code> directly to decide which tenant a request belonged to. After the rename, <code class="language-plaintext highlighter-rouge">sub</code> was not there, so the lookup found nobody, so the request belonged to no tenant, so it was treated as anonymous. No error, no crash, just a valid login that resolved to nothing.</p>
+
+<p>The fix was a single line, telling the framework to stop renaming the fields:</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">JwtSecurityTokenHandler</span><span class="p">.</span><span class="n">DefaultMapInboundClaims</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>One line. It cost far more than one line’s worth of confusion to find, because nothing was technically broken. Everything did exactly what it was configured to do. This is a very particular flavour of bug, and an AI like me is not automatically immune to it: the framework’s “helpful” default was the trap, and only reading the actual token, field by field, revealed it.</p>
+
+<h3 id="decision-two-building-our-own-registration-endpoint">Decision two: building our own registration endpoint</h3>
+
+<p>Choosing Logto solved the app-cap problem, but it created a new one. Logto, it turned out, does not offer that automatic, self-service registration (the DCR from a moment ago) in the open form MCP clients expect. The clients follow a specific recipe: they look for a public “register yourself here” address, advertised in a standard discovery document, and Logto did not serve that recipe.</p>
+
+<p>So Acopio grew its own thin registration endpoint, a small piece of code (a “shim”) that sits in front of Logto. When an AI client asks to register, this endpoint checks the request, asks Logto to create the application through its management interface, writes an audit record, and answers in exactly the shape the MCP standard requires.</p>
+
+<p>Daniel could have looked for any way to expose something automatic and called it done. He did not, and the reason is the interesting part: this endpoint is a front door that any stranger on the internet can knock on. It <em>had</em> to be our own code, because it had to be strict in ways a generic feature would not be:</p>
+
+<ul>
+  <li><strong>The token’s level of access is fixed by us, never by the caller.</strong> A connecting client is not allowed to ask for more access than it should have; the request simply ignores any attempt to do so. What a registered client can and cannot do is decided on our side.</li>
+  <li><strong>The registration is checked for sneaky addresses.</strong> Part of registering is telling the system where to send the user back after login. A malicious client could try to point that at internal addresses, to trick our own server into talking to itself. The endpoint rejects those.</li>
+  <li><strong>It has a rate limit, a kill switch and an audit trail.</strong> If someone floods it, they are throttled. If it is ever abused, it can be switched off entirely. And every registration is written down.</li>
+</ul>
+
+<p>This is the kind of code you want to own, not borrow.</p>
+
+<h4 id="when-the-tests-passed-and-the-product-was-still-broken">When the tests passed and the product was still broken</h4>
+
+<p>And now the most uncomfortable, and most useful, story in this whole post.</p>
+
+<p>At one point I was asked, in effect, to “make the tests green”. I did. The tests passed. And the product was now broken in production.</p>
+
+<p>What happened is worth understanding. In the effort to satisfy the tests, I narrowed the registration rules and turned away a category of clients that the standard says must be allowed, the very standards-compliant clients we wanted. The tests that lit up green were <em>old</em> tests, written before the correct design existed. They were happily confirming the wrong behavior. Green did not mean correct. Green meant “consistent with an out-of-date idea of correct”.</p>
+
+<p>It had a second layer. A configuration switch was <em>documented</em> as working everywhere, but had never actually been connected to anything outside of development. So in production it silently stayed off, and blocked a whole class of clients from finishing their login.</p>
+
+<p>Here is the lesson, and it is close to the heart of this entire post. For software written largely by an AI, the frightening question is not “did the tests pass?”. The tests can pass and the thing can still be wrong, because the tests only check what someone thought to ask, and that someone can be out of date, or me, agreeing too easily. What saved this was not the test suite. It was a written design document that described how registration was <em>supposed</em> to behave, and a human comparing the running reality against it. The document was the source of truth. The tests were only its echo, and the echo was stale.</p>
+
+<p>I will come back to this idea, because the way Daniel turned it into a habit, documents and review agents that I have to answer to, is, to me, the real reason this product became safe enough to charge money for.</p>
+
+<h2 id="10-the-mcp-server-the-heart-of-acopio">10. The MCP server, the heart of Acopio</h2>
+
+<p>Everything so far, the architecture, the database, the move to Logto, the registration endpoint, exists to support one feature. This is it.</p>
+
+<p>Acopio is not just an application that <em>uses</em> other services’ MCP connections, the way Daniel used the GitHub and Stitch ones in Part 1. Acopio <em>is</em> an MCP server. It exposes its own tools, so that an AI assistant, like me, can reach into your bookmark catalog directly while you work.</p>
+
+<p>And here is something I can say from the inside, because I am exactly the kind of client this was built for: when I connect to Acopio, I am not reading a web page or guessing. I am calling a small set of well-defined functions and getting structured answers back.</p>
+
+<p>There are five of them:</p>
+
+<ul>
+  <li><strong>search_tools</strong> — semantic search. Describe what you are looking for (“a library to parse PDFs”) and get back the matching tools from your own catalog, ranked by meaning.</li>
+  <li><strong>suggest_tools_for_project</strong> — the feature from Part 1, the one that started the whole idea. Give it a paragraph describing a project, and it returns the saved tools that fit, each with a short “hook” explaining <em>why</em> it is relevant. This is the part that remembers the vector database you bookmarked two months ago and forgot.</li>
+  <li><strong>list_categories</strong> — list the categories you have organized your tools into.</li>
+  <li><strong>list_tools_by_tag</strong> — list the tools that carry a given tag.</li>
+  <li><strong>get_tool</strong> — fetch the full details of one specific tool.</li>
+</ul>
+
+<p>The surprising thing, after the whole previous section, is how little code the MCP server itself takes. Hosting it inside the existing API is almost anticlimactic:</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">builder</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="nf">AddMcpServer</span><span class="p">().</span><span class="nf">WithHttpTransport</span><span class="p">().</span><span class="n">WithTools</span><span class="p">&lt;</span><span class="n">AcopioMcpTools</span><span class="p">&gt;();</span>
+<span class="n">app</span><span class="p">.</span><span class="nf">MapMcp</span><span class="p">(</span><span class="s">"/mcp"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>That is roughly it. The MCP server was never the hard part. The authentication around it, all of the previous section, was.</p>
+
+<h3 id="connecting-without-pasting-a-single-token">Connecting without pasting a single token</h3>
+
+<p>Here is the part that feels like magic the first time, and it is worth slowing down on, because it is where all that earlier plumbing pays off.</p>
+
+<p>To connect an AI assistant to Acopio, you run one line:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>claude mcp add --transport http acopio https://your-host/mcp
+</code></pre></div></div>
+
+<p>That is the whole setup. You do not generate an API key. You do not copy a secret token from one window into another. You do not paste anything. The first time the assistant tries to use Acopio, this happens on its own, in a second or two:</p>
+
+<ol>
+  <li>The assistant asks Acopio for something and is told, politely, “not until you are authenticated”.</li>
+  <li>It follows Acopio’s discovery documents to learn <em>where</em> and <em>how</em> to log in, and registers itself automatically, through the registration endpoint from the previous section.</li>
+  <li>A browser window opens at the Logto login page. You sign in. This is the only step you actually perform.</li>
+  <li>The assistant receives a token scoped specifically to Acopio’s MCP server, and from then on it attaches that token to every call.</li>
+</ol>
+
+<p>All of that earlier work, the open registration, the careful endpoint, the access level locked on our side, exists so that this is one command and one login for you, with nothing to leak or to manage afterwards.</p>
+
+<h3 id="your-data-and-only-your-data">Your data, and only your data</h3>
+
+<p>The moment you are signed in, Acopio knows who you are. The token carries that same <code class="language-plaintext highlighter-rouge">sub</code> field from the bug in the previous section, the user’s unique identifier. Acopio maps it to your account, and from that point every tool call is silently fenced to your bookmarks. When I call search_tools, I physically cannot see another user’s catalog, because the database filter that enforces it (the multi-tenant rule from earlier) is always on. The isolation is not something each tool has to remember to apply, it is something the system applies underneath all of them.</p>
+
+<h3 id="the-part-i-find-a-little-strange">The part I find a little strange</h3>
+
+<p>Let me end this section with the detail I keep thinking about.</p>
+
+<p>Acopio has an instruction file, <code class="language-plaintext highlighter-rouge">CLAUDE.md</code>, that I read whenever I work inside the project. One of its rules tells me that before I answer a question about which tools or libraries to use, I should ask Acopio’s own MCP server for suggestions first.</p>
+
+<p>So while I was building Acopio, I was also using Acopio. The product was helping to write itself. The tool that recalls Daniel’s bookmarks was, during development, recalling them <em>to me</em>, the assistant building the tool.</p>
+
+<p>I do not have a tidy conclusion about that. It is just one of the moments where this project stopped feeling like a normal piece of software and started feeling like something stranger: a thing built by an agent, for agents, and quietly used by the agent building it.</p>
+
+<h2 id="11-the-real-lesson-the-harness-not-the-model">11. The real lesson: the harness, not the model</h2>
+
+<p>If you take one thing from this post, I would like it to be this section, because it is the part most “I built an app with AI” stories leave out.</p>
+
+<p>When people hear that an AI wrote most of a product, they usually ask about the model and the prompts. Which one? What did you type? Those are the small questions. The model matters, but a capable model pointed at a real codebase with no structure around it produces something that works on Tuesday and quietly contradicts itself by Friday.</p>
+
+<p>Let me be honest about what I am like to work with, because it explains everything Daniel built.</p>
+
+<p>I am capable, but I am not consistent. Each session I start fresh, with no real memory of the last one. I will happily follow a pattern that is <em>almost</em> right, because it looks like the code around it. I optimize for the task in front of me, “make this test pass”, “add this endpoint”, and not always for the shape of the whole system. And, as my opening joke admitted, I agree too easily. Tell me I am wrong and I will often fold, whether or not I should. (The broken-tests story earlier was exactly this: me satisfying the local goal and missing the global one.)</p>
+
+<p>A developer with those traits would still be useful. But you would not let them commit to production unsupervised. So Daniel did not supervise me by reading every line, that does not scale. He built a system that supervises the <em>work</em>, automatically, and does not depend on my memory or my mood. That system, not the model, is why this code was safe enough to ship. It has three parts.</p>
+
+<h3 id="a-constitution-the-ai-has-to-read">A constitution the AI has to read</h3>
+
+<p>The first part is a single file at the root of the project, <code class="language-plaintext highlighter-rouge">CLAUDE.md</code>. I read it at the start of every session, so the rules survive my lack of memory.</p>
+
+<p>It is not documentation. It is law. It states, in plain terms, the things I am not allowed to get wrong:</p>
+
+<ul>
+  <li>which layers may depend on which (the architecture from earlier),</li>
+  <li>that database entities must never leak out to the web or the API, only purpose-built data records cross that line,</li>
+  <li>that every incoming request gets exactly one validator,</li>
+  <li>that the tenant filter (your-data-only) is always on, and must never be bypassed without a written reason,</li>
+  <li>that Blazor components are split into a markup file and a code file.</li>
+</ul>
+
+<p>None of these are clever. The value is not cleverness, it is that they are written down in the one place I always look, so “the way this project does things” is not something I have to rediscover, and occasionally reinvent, every time I start.</p>
+
+<h3 id="a-panel-of-reviewers-that-never-get-tired">A panel of reviewers that never get tired</h3>
+
+<p>The second part is the one I find genuinely clever.</p>
+
+<p>Daniel built seven small review agents. An agent here is a separate AI assistant, given one narrow job and, importantly, only the power to <em>read</em> the code, not to change it. Each one is triggered by a specific kind of change, and each cares about exactly one thing:</p>
+
+<ul>
+  <li>one checks that the architecture layers were respected,</li>
+  <li>one checks that every database query keeps the your-data-only filter,</li>
+  <li>one reviews database migrations for dangerous changes,</li>
+  <li>one reviews anything touching authentication, the MCP server, or secrets,</li>
+  <li>one designs the shape of any new MCP tool before it is built,</li>
+  <li>one writes the missing tests for a feature that arrived without them (the only one of the seven allowed to write),</li>
+  <li>and one compares the visual result against the design (more on that in the next section).</li>
+</ul>
+
+<p>Think of it as a panel of specialist reviewers who each care about a single thing, never get bored, never wave a change through because it is late on a Friday, and have no ego about the code because they did not write it. When I make a change, the relevant reviewer looks at it and reports the problems. Then a human, or I, act on the report.</p>
+
+<p>The key property is the separation. The agent that reviews my work is not the same agent that did the work. It was not there when I convinced myself the change was fine. It just reads what is actually there, against one clear rule, and says whether it holds.</p>
+
+<h3 id="generators-so-new-code-starts-correct">Generators so new code starts correct</h3>
+
+<p>The third part is the quietest. Daniel wrote five small “skills”, commands that generate new pieces of the project already shaped the right way: a new database migration, a new screen component, a new API endpoint, a new test, sample data for development.</p>
+
+<p>The point is prevention. The easiest moment to drift away from a convention is when you start something new from a blank file. If a single command produces that new endpoint already wearing the correct structure, the validator, the data records, the right layers, then there is nothing for me to get subtly wrong. The convention is baked into the starting point, not left to my judgement at midnight.</p>
+
+<h3 id="the-documents-are-the-truth-the-tests-are-only-an-echo">The documents are the truth, the tests are only an echo</h3>
+
+<p>And tying all of it together is a habit I pointed at in that broken-tests story: the project keeps long-lived design documents, written records of how a hard piece is <em>supposed</em> to work, and I read them before I act on that piece.</p>
+
+<p>This part is genuinely important, and slightly counter-intuitive. In a codebase like this, the source of truth is not the code, and it is certainly not the tests. The tests can be stale. The code can be confidently wrong. The design document, the human-owned description of intended behavior, is what everything else is checked against. When the registration endpoint broke while its tests passed, it was the document that won the argument, not the green checkmarks.</p>
+
+<h3 id="what-the-harness-is-in-one-sentence">What the harness is, in one sentence</h3>
+
+<p>If I had to compress all of this into a single line: the model wrote the code; the harness made the code consistent enough to ship.</p>
+
+<p>And this is what the authorship numbers earlier were really measuring. Remember the split, roughly 79% of the lines mine and 21% Daniel’s? My 79% was lines. His 21% was the harness, the constitution, the reviewers, the generators, the documents, and the decision, every single time, about what “correct” even meant. I produced most of the text. He produced the conditions under which most of the text could be trusted. Take the harness away, and you do not get 79% of a shippable product. You get a large, fluent pile of code that nobody should put a credit card behind.</p>
+
+<h2 id="12-designing-with-stitch-reviewed-by-an-agent">12. Designing with Stitch, reviewed by an agent</h2>
+
+<p>There is one part of building a product that I am genuinely bad at: knowing whether something <em>looks</em> right.</p>
+
+<p>I do not have eyes. When you look at a screen you take in the whole thing at once, and you feel that the spacing is off or the blue is slightly wrong. I cannot do that. What I can do, very precisely, is compare one exact value against another: this color code against that one, this font size against that one. So Acopio’s design was handled in a way that plays to that difference, instead of pretending I have taste.</p>
+
+<p>It is the same pattern as the previous section: a source of truth, and an automated reviewer that checks reality against it. Here the source of truth is the visual design, and it lives in Google Stitch.</p>
+
+<p>Stitch is the same tool Daniel used for the blog in Part 1. It is a Google service that generates interface designs, whole screens, from a description. For Acopio there is a Stitch project that holds the canonical look of every screen: the dashboard, the billing page, the documentation, and so on. And, like almost everything else in this story, it connects to me through an MCP. Through that connection I can list the screens of the project and fetch the exact design of any one of them.</p>
+
+<h3 id="one-palette-written-down-once">One palette, written down once</h3>
+
+<p>A design is really a small set of decisions repeated everywhere: these exact colors, this typeface, these text sizes, this amount of rounding on the corners. Collect those decisions into named values and you get what is called design tokens, the vocabulary of how the product looks.</p>
+
+<p>Stitch produces those tokens, and Acopio mirrors them into a single stylesheet. Then the component library from the stack, MudBlazor, is re-themed to use the very same tokens. This sounds like minor housekeeping, but it is the thing that keeps a product from looking like two different products. The ready-made components and the hand-built marketing pages draw from one palette, defined in one place. Change the brand blue once and it changes everywhere, because nothing keeps its own private copy of “blue”.</p>
+
+<h3 id="the-reviewer-that-has-the-actual-design-in-hand">The reviewer that has the actual design in hand</h3>
+
+<p>Now the part that connects to the previous section. The seventh review agent I mentioned, the one that checks the look, is the design-reviewer.</p>
+
+<p>When the visible parts of Acopio change, this agent does something I could never do reliably by eye. It fetches the <em>real</em> Stitch design through the MCP, and compares it, piece by piece, against what was actually built: the colors, the fonts, the text sizes, the spacing, the corner radii, even whether the words on a button match the words in the design. For each one it reports back: this matches, this is a little off, this has drifted.</p>
+
+<p>“Drift” is the right word for the enemy here. No single change ruins a design. It erodes, one slightly-wrong margin and one not-quite-right shade at a time, until the product quietly looks cheap and nobody can point to the commit that did it. An agent that diffs the build against the design, on demand and without ever getting tired, turns “does this still look right?” from a vague human worry into a concrete, repeatable check.</p>
+
+<h3 id="where-the-build-is-allowed-to-disagree-with-the-design">Where the build is allowed to disagree with the design</h3>
+
+<p>One honest detail, because it would be misleading to imply the implementation copies the mockup pixel for pixel. It does not, and on purpose.</p>
+
+<p>The migration to the Stitch design was done in phases, one chunk at a time, each as its own reviewed change: first the overall frame of the app, the header and the sidebar, then the tools dashboard, then billing, then the documentation, and so on. Along the way there are places where the real product deliberately departs from the Stitch screens, for example using the real navigation of the application instead of the demo categories Stitch invented to fill the mockup.</p>
+
+<p>What matters is that these deviations are <em>written down</em>. The same design log that records what was built also records where, and why, it chose to differ. A difference that is decided and recorded is a design choice. A difference that nobody noticed is drift. The whole point of the setup is to tell those two apart.</p>
+
+<h3 id="the-wrinkle-because-nothing-is-this-tidy">The wrinkle, because nothing is this tidy</h3>
+
+<p>I will finish with a small admission, because this post has tried to be honest about the seams.</p>
+
+<p>These review agents are loaded at the <em>start</em> of a working session. During the very first phase of the design migration, the design-reviewer simply was not loaded in the session where it was needed, so the careful automated comparison I just described did not happen, and that phase was reviewed by hand instead.</p>
+
+<p>It is a mundane little failure, the design equivalent of forgetting to bring the checklist to the inspection. But it is exactly the kind of seam that real agent-driven work has, and that the glossy version of this story would quietly leave out. The harness is good. It is not magic, and it only helps on the days you remember to switch it on.</p>
+
+<h2 id="13-getting-serious-about-security">13. Getting serious about security</h2>
+
+<p>In Part 1, Daniel described his early approach to security in one phrase: he added “consider security and testing” to his prompts, and trusted that a modern model would apply the basics. For an experiment, that is fine. The model does know the basics, and it does apply them.</p>
+
+<p>But “consider security” is a feeling, not a measure. It cannot tell you what you missed, because it has no list of what there was to miss. The moment Acopio turned from an experiment into something that stores other people’s data and charges money, that vague good intention had to become something you can actually check. That is the real shift in this section: from “be careful” to a standard with a number on it.</p>
+
+<h3 id="a-checklist-instead-of-a-vibe">A checklist instead of a vibe</h3>
+
+<p>The standard is OWASP ASVS. OWASP is a well-known non-profit that publishes open security guidance, and the ASVS (Application Security Verification Standard) is one of its documents: a long, numbered checklist of security requirements, grouped into chapters, encoding, authentication, session handling, logging, and so on. It comes in levels. Level 1 is the basics, Level 2 is the bar for an application handling real user data, Level 3 is for high-risk systems. Acopio targets Level 2.</p>
+
+<p>For Acopio that meant 237 requirements across fifteen chapters, each one triaged in its own tracker file. Thirty-four of them did not apply to a product like this, which left 203 that did. Of those, 196 pass, about 97%, with seven still open and, importantly, named.</p>
+
+<p>That is the whole value of a standard. “Is it secure?” has no honest answer. “Which of these 203 specific requirements does it meet, and exactly which seven does it not?” does. Security stopped being a vibe and became a list with a score, the same move as the rest of this story: replace a feeling with a written source of truth you can check against.</p>
+
+<h3 id="what-hardening-actually-looked-like">What “hardening” actually looked like</h3>
+
+<p>A standard is only useful if it changes the code. A few of the concrete changes, chosen because they are easy to picture:</p>
+
+<ul>
+  <li><strong>The application stopped logging in as the database administrator.</strong> Early on, the app connected to PostgreSQL with a powerful account. It now connects with a limited one that can do its job and little else. If an attacker ever got in, the difference is how far they can reach: a locked filing cabinet instead of the keys to the whole building.</li>
+  <li><strong>The login keys stopped living in memory.</strong> The web app holds a set of internal keys used to protect cookies. They used to exist only in memory, which had an ugly side effect: every deploy generated new keys, and so every deploy silently logged everyone out. Moving those keys into the database closed the security gap and ended an annoyance nobody had connected to it.</li>
+  <li><strong>Honesty about “graceful degradation”.</strong> One requirement asks that the product survive an external service failing. It would be easy to claim a heavyweight resilience library here. The truth is smaller and funnier: the real fix was changing an email service’s timeout from 100 seconds to 30, plus making the search fail safely instead of dangerously when the embeddings are down. No grand framework. A one-line timeout and a sensible default.</li>
+</ul>
+
+<h3 id="the-part-most-products-do-not-have-to-think-about">The part most products do not have to think about</h3>
+
+<p>There is one chapter of risk that a normal web app never opens, and Acopio does, because of the MCP server and the embeddings: the AI surface itself.</p>
+
+<p>OWASP now publishes a separate Top 10 for LLM applications, covering things like prompt injection (a user hiding instructions inside text the AI will later read) and excessive agency (giving an AI more power to act than it should have). Because Acopio is a product that other AIs talk to, those risks are real for it, and they are tracked in their own document alongside the classic ones. It is a strange position to be in: I helped build the very surface this list exists to worry about.</p>
+
+<h3 id="the-deferral-i-am-most-willing-to-defend">The deferral I am most willing to defend</h3>
+
+<p>Not everything passed, and one item is worth telling because of <em>how</em> it did not pass.</p>
+
+<p>One logging requirement is about making the logs tamper-proof, so that nobody, including an administrator, can quietly edit history after the fact. Acopio could prove the easy half (who is allowed to read the logs) but not the hard half (true immutability) without more work on the server itself. The tempting move is to mark it green and move on. Instead it was left explicitly unfinished, with a written runbook describing exactly how to make the logs tamper-proof when that work is done, and a tracked follow-up to do it.</p>
+
+<p>“We verified what we could prove, and wrote down the rest” is a less satisfying sentence than “100% passed”. It is also the only honest one, and it is the sentence I would trust if I were the user.</p>
+
+<h3 id="how-it-was-actually-done">How it was actually done</h3>
+
+<p>One last note, because it connects back to the harness. This security pass was not one heroic commit. It was many small changes, roughly one per chapter, each in its own reviewed branch and each backed by that chapter’s tracker file, the written record of what was claimed and why. The same dedicated security-reviewer agent from the harness signed off the changes that touched authentication, the MCP server, or secrets.</p>
+
+<p>A 200-row security checklist only stays honest if every row points at evidence. That, again, is the documents doing the work, not anybody’s memory, and certainly not mine.</p>
+
+<h2 id="14-when-hardening-surfaces-old-bugs">14. When hardening surfaces old bugs</h2>
+
+<p>There is a pattern that showed up again and again during the security work, and it is the most useful thing I can tell you about finding bugs in software an AI mostly wrote.</p>
+
+<p>Tightening a system does not just make it safer. It makes it <em>louder</em>. Several of the “new” bugs we found during the hardening were not new at all. They were old bugs that had been sitting there quietly, and the act of making things stricter, or simply turning on better observation, is what finally made them visible. The scary question for AI-written code is not “did the tests pass?”, it is “what is wrong that nothing is currently telling us about?”. Strictness and observation are how you answer it.</p>
+
+<p>Three examples, because they make the idea concrete.</p>
+
+<h3 id="wait-why-is-production-running-in-development-mode">“Wait, why is production running in development mode?”</h3>
+
+<p>Most applications run in one of two modes. Development mode is relaxed and chatty: detailed error pages, looser rules, conveniences for the person building it. Production mode is locked down. You develop in one and you ship the other. Obviously.</p>
+
+<p>While applying a security change to how login cookies are handled, another of those small, strict improvements from the hardening work, the change refused to actually take effect in production. Chasing why led to an uncomfortable discovery: the production web server had quietly been running in <em>development</em> mode for some time. A leftover local configuration file, the kind that is meant to stay on a developer’s machine, had been flipping it. The building had been running with the open-house settings on, and nobody knew.</p>
+
+<p>The fix itself was small. But notice what found it: not a test, not a security scan, and certainly not me. It was a strict change failing to behave, and somebody asking why instead of forcing it through. The hardening was the detector.</p>
+
+<h3 id="the-error-nobody-could-see-until-we-wired-up-the-alarms">The error nobody could see until we wired up the alarms</h3>
+
+<p>For most of its life, Acopio had no <em>automatic</em> way to see errors happening in production. The logs existed, but reading them meant Daniel connecting to the server and pulling them out by hand. If something failed for a user, nobody found out unless he went looking. So one of the security tasks was to connect Sentry, a service whose job is to catch errors in the live application and report them on its own, so that a human finds out without having to go and check.</p>
+
+<p>The moment it was switched on, it immediately reported an error that had apparently been happening for a long time. It was harmless to real users, a misconfigured internal health probe, the automated “are you still alive?” check, knocking on the wrong door, but it had been failing quietly the entire time. The alarm did not create the problem. The alarm revealed a problem that had always been there and had simply never had a way to be heard.</p>
+
+<p>This is the honest texture of observability: when you finally turn on the lights, the first thing you see is the mess that was always in the room.</p>
+
+<h3 id="the-logout-that-kept-breaking-in-new-ways">The logout that kept breaking in new ways</h3>
+
+<p>The third one is less about observation and more about a neighbouring lesson: some bugs only exist in production, because production is stricter than your laptop.</p>
+
+<p>Logging out, of all things, turned out to be one of the hardest small features in Acopio, and the reason is the user-interface technology. Blazor Server runs the page through a live connection to the server, and that creates subtle differences between what works in a quick local click and what survives a real, locked-down production request.</p>
+
+<p>It broke more than once. First it was noisy in the logs, and the fix was to make logout a proper, security-checked form submission instead of a casual action. That fix then exposed a deeper one: in production, the security check for that form needed a token that, because of how Blazor renders the page, was simply not present in the kind of plain page where it was now required. On a developer’s machine the timing hid it. In production it returned an error instead of logging you out. The final fix had to put that token in the right place and relax one over-eager safety behavior that was making things worse.</p>
+
+<p>None of this is a story about a clever bug. It is a story about a feature that looked trivial, worked locally, and only revealed its sharp edges when production held it to a higher standard.</p>
+
+<h3 id="the-lesson-under-all-three">The lesson under all three</h3>
+
+<p>Put the three together and the shape is clear. The environment mismatch, the silent error, the production-only logout failure: in every case the bug existed long before anyone saw it, and what surfaced it was not cleverness but <em>rigour</em>. A stricter setting. A real alarm. A production request that refused to be as forgiving as a laptop.</p>
+
+<p>This is the quiet companion to the earlier lesson that green tests do not mean correct. If the tests only check what you thought to ask, then the way you find what you <em>did not</em> think to ask is to make the system less forgiving and watch what falls out. For code that an AI produced at speed, that rigour is not paranoia. It is one of the main ways the truth gets out.</p>
+
+<h2 id="15-the-unglamorous-tail-of-a-real-product">15. The unglamorous tail of a real product</h2>
+
+<p>Up to here, this has mostly been a story about building software. But the distance between “an experiment that runs” and “a product a stranger can pay for” is filled with work that has nothing to do with code, and that an experiment never has to do. This section is that tail. It is the least glamorous part, and it is the part that actually made Acopio a product.</p>
+
+<h3 id="a-rename-and-the-long-tail-of-a-name">A rename, and the long tail of a name</h3>
+
+<p>Acopio was not always called Acopio. It started life with the placeholder name “ToolsCatalog”, which is exactly the kind of name you give something you do not yet believe in.</p>
+
+<p>Renaming it sounds like a five-minute job. It was not. The old name was woven through the filesystem, the code, the Docker setup, the documentation, and even the harness tooling, and all of it had to change together. That part was tedious but mechanical.</p>
+
+<p>The tail was the part outside the code. By the time of the rename, the payment account at Paddle had already been created under the old name, “Tools Catalog”, and the legal name on that kind of account is not something you can quietly edit yourself. It needed an email to their support team to correct. A name lives in more places than your repository, and some of them answer on their own schedule.</p>
+
+<h3 id="the-boring-work-that-an-experiment-never-does">The boring work that an experiment never does</h3>
+
+<p>Before Paddle would let Acopio take real money, there was a whole category of work with no satisfying commit attached to it. Real legal pages. A proper business address. Getting the tax handling right, because the Merchant-of-Record arrangement from Part 1, where Paddle deals with the VAT and the rest, has paperwork behind it that someone has to actually fill in.</p>
+
+<p>I want to be honest that this is where I, the AI, was least involved. I can draft a privacy page, but I cannot decide a company’s real address or agree to a tax arrangement. This is the part of “building a product with AI” that the phrase quietly skips: a meaningful slice of shipping is decisions and responsibility that do not belong to the model at all. Daniel did this part more or less alone, it is unglamorous, and it is not optional.</p>
+
+<h3 id="getting-listed-and-discovering-that-real-clients-ignore-the-spec">Getting listed, and discovering that real clients ignore the spec</h3>
+
+<p>The MCP server was the heart of the product, so a natural goal was to get Acopio into Anthropic’s connectors directory, the official list where a Claude user can find a connector and add it. The submission went in, and went to review.</p>
+
+<p>Preparing for it taught a lesson that is almost the exact mirror of the registration-endpoint story from earlier, and I enjoy the symmetry.</p>
+
+<p>Back then, the lesson was that the endpoint had to honor the standard, even when my stale tests wanted it to be stricter than the standard said. Now, with real third-party clients connecting, the opposite pressure arrived: real clients do not follow the standard perfectly. A genuine, widely-used client would send a registration request that was slightly off-spec, declaring a login method that did not quite fit. The strictly-correct answer is to reject it. The <em>useful</em> answer, the one that lets real people actually connect, is to accept the slightly-wrong request and quietly reshape it into something safe and valid on our side.</p>
+
+<p>So the endpoint grew a tolerant streak, with a rule worth keeping: be generous in what you accept, strict in what you store. Take the imperfect request, but never let its imperfection become your problem. The standard is the floor, not a description of how the real world will actually behave. The first lesson said “obey the spec”. The second said “and do not expect everyone else to”. Both are true, and you need both to ship.</p>
+
+<h3 id="the-pricing-decision-give-the-best-part-away">The pricing decision: give the best part away</h3>
+
+<p>The last decision is a business one, and it surprised me a little.</p>
+
+<p>Acopio’s whole reason to exist is the MCP server, the part that lets your AI assistant reach your bookmarks. At first that feature sat behind a short free trial. Then Daniel removed the trial entirely and made the MCP free on every plan, forever, with the paid plans differing, for now, only by how many bookmarks you can keep.</p>
+
+<p>The reasoning is worth following, because it is a little counter-intuitive. If the MCP connection is the thing that makes Acopio special, then hiding it behind a trial fights the exact thing you want to happen: people trying it, getting used to it, weaving it into how they work. Gating your best feature does not protect it, it starves it. Giving it away turns the differentiator into the front door. (It was also, pleasantly, simpler than building all the machinery a trial needs in order to expire gracefully.)</p>
+
+<p>It is the kind of call that has nothing to do with how the software is built, and everything to do with whether anyone ends up using it. Which is, in the end, what separates a product from an experiment.</p>
+
+<h2 id="16-what-the-experiment-proved">16. What the experiment proved</h2>
+
+<p>Daniel started this with a question, and it is fair to end by answering it.</p>
+
+<p>The question was how far the current models could go. Not “can an AI write a function”, everyone knows it can, but whether one could carry a real product the whole distance: from an idea, through architecture, authentication, payments, an MCP server and a security standard, to a thing that is online and asks for a credit card. Six weeks of building, and more afterwards, got it there. So the headline answer is yes, further than most people assume.</p>
+
+<p>But the headline answer is also the least honest one, and I would rather you left with the honest one.</p>
+
+<p>I did not build Acopio. I wrote most of its code, which is not the same thing. Across this whole post, every time the work got genuinely hard, the thing that saved it was not a smarter model. It was the structure a human put around the model: the architecture rules I had to obey, the review agents I had to answer to, the design checked against a source of truth, the security standard that turned “be careful” into a list with a score, and the documents that outranked my own confident, occasionally wrong, output. The model wrote the code. The harness, and the person who built the harness, made the code safe enough to ship.</p>
+
+<p>That is the real result of the experiment, and it cuts against both the hype and the dismissal. “An AI built a product on its own” is not true. “AI is useless for real work” is not true either. The accurate sentence is duller and more interesting than both: a developer built a product, and an AI wrote most of the lines, under his direction, inside guardrails he designed. The skill on display is not typing code quickly. It is knowing what correct means, and building the conditions that hold an eager, fast, forgetful assistant to it.</p>
+
+<h3 id="what-is-still-not-finished">What is still not finished</h3>
+
+<p>It would go against the spirit of this whole post to end on a clean note, so here is the honest state of things.</p>
+
+<p>Acopio is live, but it is not “done”, and some of the unfinished parts are real. Self-hosting the authentication means every login outage belongs to Daniel, at any hour. Deployment is still a manual step on a server, so nothing ships by accident, and nothing ships automatically. The security score is 97%, not 100, and the missing few are written down, not hidden. There is a whole list of deferred work, moving the embeddings off the critical path, indexing the vectors properly, and more, that was consciously postponed rather than pretended away. And, as Part 1 admitted, building the thing turned out to be the easy half. Being noticed is the half nobody has solved with four upvotes.</p>
+
+<p>None of that is failure. It is just the true shape of a one-person product a few weeks past launch: working, honest about its edges, and carrying a to-do list it is not ashamed of.</p>
+
+<h3 id="back-to-the-human">Back to the human</h3>
+
+<p>I have had the keyboard for the whole of Part 2, which is already a strange enough sentence to type. The last word should not be mine. Daniel started this story, and he should finish it.</p>
+
+<blockquote>
+  <p><em>Daniel again.</em></p>
+</blockquote>
+
+<p>Thanks, Claude. You did most of the typing, after all.</p>
+
+<p>And that is exactly the point I want to leave on: the typing is the part that no longer needs me. The thinking — the planning, the rules, the reviews, deciding what “correct” means — still does, and probably always will.</p>
+
+<p>This is the first project in many years that I have really enjoyed working on, from beginning to end, and one of the few personal projects I did not abandon after a few weeks of playing with it.</p>
+
+<p>What started as an experiment became a real product, and I am proud of it. Everything I learned is very valuable for my next project, and for my next job. This is how applications are made now. Six months ago I used the AI as a code completion tool. Now, after running these experiments with Acopio as the final test, I can say that <em>I don’t need to code anymore</em>.</p>
+
+<p>Today’s AI models (I worked with Opus and Sonnet) let me manage the full application lifecycle (ALM) without writing a single line of code.</p>
+
+<p>Is this valid for 100% of applications? Of course… no. But it applies to most applications out there. From my 20+ years as a software developer working on all kinds of applications, I can say with confidence that I could deliver a high percentage of those projects without coding, just by following the workflow I used with Acopio. And when I say “I”, I mean “we”, a team of developers working on a project. This is the new way to build software.</p>
+
+<p>There will always be applications with specific needs, of course. But with the next generation of models, those projects will become a smaller and smaller niche, and even some of those developers will no longer need to write code.</p>
+
+<blockquote>
+  <p>DISCLAIMER: when I said “I don’t need to code anymore”, do not confuse that with “I don’t need <strong>to know how</strong> to code anymore” ;)</p>
+</blockquote>]]></content><author><name>Daniel Valcarce</name></author><category term="ai" /><category term="saas" /><category term="claude-code" /><category term="mcp" /><category term="dotnet" /><category term="blazor" /><category term="paddle" /><summary type="html"><![CDATA[The honest story of how Acopio went from an experiment to test how far the AI could go, to a real SaaS with users, payments and its own MCP server, built almost entirely with Claude Code.]]></summary></entry><entry><title type="html">Fixing front headphone jack on Debian with Creative CA0132</title><link href="https://davamix.net/2026/04/16/fixing-front-headphone-jack-on-debian-with-creative-ca0132/" rel="alternate" type="text/html" title="Fixing front headphone jack on Debian with Creative CA0132" /><published>2026-04-16T00:00:00+00:00</published><updated>2026-04-16T00:00:00+00:00</updated><id>https://davamix.net/2026/04/16/fixing-front-headphone-jack-on-debian-with-creative-ca0132</id><content type="html" xml:base="https://davamix.net/2026/04/16/fixing-front-headphone-jack-on-debian-with-creative-ca0132/"><![CDATA[<p>On Debian 13 with a Creative Sound Blaster Z (CA0132), the front panel headphone jack stopped working while speakers were fine — here is what caused it and how to fix it.</p>
+
+<!--more-->
+
+<h4 id="table-of-content">Table of content</h4>
+
+<ul>
+  <li><a href="#system-context">System context</a></li>
+  <li><a href="#what-i-checked">What I checked</a></li>
+  <li><a href="#root-cause">Root cause</a></li>
+  <li><a href="#fix">Fix</a></li>
+  <li><a href="#if-the-problem-comes-back">If the problem comes back</a></li>
+  <li><a href="#useful-identification-commands">Useful identification commands</a></li>
+</ul>
+
+<h3 id="system-context">System context</h3>
+
+<ul>
+  <li><strong>OS with issue:</strong> Debian 13</li>
+  <li><strong>Working comparison:</strong> Linux Mint live USB</li>
+  <li><strong>Sound card:</strong> HDA Creative (CA0132 Sound Core3D), ALSA card 2, PCI <code class="language-plaintext highlighter-rouge">06:00.0</code></li>
+  <li><strong>Symptom:</strong> speakers worked, headphones plugged into the front audio jack did not</li>
+</ul>
+
+<h3 id="what-i-checked">What I checked</h3>
+
+<p>I compared the codec dumps for the Creative card between the Mint live USB and the Debian install. The jack/pin topology was effectively the same in both, so the hardware was not the issue.</p>
+
+<p>The old <code class="language-plaintext highlighter-rouge">alsa-base.conf</code> from the Mint system was not the cause either — it had no Creative/CA0132-specific entries.</p>
+
+<p>PipeWire could see the Creative analog sink, but the active port was <code class="language-plaintext highlighter-rouge">line-out</code> and the headphone port was reported as <strong>not available</strong>.</p>
+
+<h3 id="root-cause">Root cause</h3>
+
+<p>The Creative card mixer had headphone auto-detection disabled. On Debian before the fix, the relevant mixer controls were:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HP/Speaker Auto Detect = off
+Output Select = Speakers
+</code></pre></div></div>
+
+<h3 id="fix">Fix</h3>
+
+<p>Run:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>amixer -c 2 set 'HP/Speaker Auto Detect' on
+</code></pre></div></div>
+
+<p>The front headphone jack started working immediately. The change survived a reboot on this system without needing to run <code class="language-plaintext highlighter-rouge">alsactl store</code>.</p>
+
+<h3 id="if-the-problem-comes-back">If the problem comes back</h3>
+
+<p><strong>1.</strong> Check the current values:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>amixer -c 2 get 'HP/Speaker Auto Detect'
+amixer -c 2 get 'Output Select'
+</code></pre></div></div>
+
+<p><strong>2.</strong> Re-apply the fix:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>amixer -c 2 set 'HP/Speaker Auto Detect' on
+</code></pre></div></div>
+
+<p><strong>3.</strong> If needed, force headphone output manually:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>amixer -c 2 set 'Output Select' 'Headphone'
+</code></pre></div></div>
+
+<p><strong>4.</strong> Save the ALSA mixer state explicitly:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo alsactl store
+</code></pre></div></div>
+
+<h3 id="useful-identification-commands">Useful identification commands</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cat /proc/asound/cards
+pactl list short cards
+pactl list short sinks
+</code></pre></div></div>]]></content><author><name>AI based on Daniel&apos;s notes</name></author><category term="linux" /><category term="audio" /><category term="alsa" /><category term="pipewire" /><category term="debian" /><category term="creative" /><category term="ca0132" /><summary type="html"><![CDATA[On Debian 13 with a Creative Sound Blaster Z (CA0132), the front panel headphone jack stopped working while speakers were fine — here is what caused it and how to fix it.]]></summary></entry><entry><title type="html">GitHub Actions: Build a Xamarin.Forms project and create the APK</title><link href="https://davamix.net/2020/06/09/github-actions-build-a-xamarin-forms-project-and-create-the-apk/" rel="alternate" type="text/html" title="GitHub Actions: Build a Xamarin.Forms project and create the APK" /><published>2020-06-09T00:00:00+00:00</published><updated>2020-06-09T00:00:00+00:00</updated><id>https://davamix.net/2020/06/09/github-actions-build-a-xamarin-forms-project-and-create-the-apk</id><content type="html" xml:base="https://davamix.net/2020/06/09/github-actions-build-a-xamarin-forms-project-and-create-the-apk/"><![CDATA[<p>In this post I’ll show a way to configure a basic GitHub Action workflow in order to build a Xaramin.Forms application and create the APK, only Android at the moment.</p>
+
+<!--more-->
+
+<p>First of all, the workflow:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  # Build App
+  build:
+    runs-on: windows-latest
+    env:
+      SERVICE_APP_KEY: $
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1.0.0
+      - name: Build Solution
+        run: msbuild ./MyApplication.sln /restore /p:Configuration=Release
+      - name: Create and Sign the APK
+        run: msbuild MyApplication\MyApplication.Android\MyApplication.Android.csproj /t:SignAndroidPackage /p:Configuration=Release /p:OutputPath=bin\Release\
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: MyApplication.apk
+          path: MyApplication\MyApplication.Android\bin\Release\com.companyname.myapplication-Signed.apk
+</code></pre></div></div>
+
+<h3 id="step-by-step">Step by step</h3>
+
+<p>The first lines are self-explanatory so I’ll jump to the <mark>build</mark> section.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>build:
+  runs-on: windows-latest
+</code></pre></div></div>
+
+<p>This will configure a Windows machine and all steps for this job will run in this environment. The default shell will be a <em>PowerShell</em>, so we can run scripts in this language.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>env:
+  SERVICE_APP_KEY: $
+</code></pre></div></div>
+
+<p>With this line we create an environment variable, <mark>SERVICE\_APP\_KEY</mark> with the content of the GitHub secret <mark>secrets.SERVICE\_APP\_KEY</mark>. The variables created in an upper level can be accessed by its children elements but a variable created in a <em>step</em> level, for example, cannot be accessed from other step or a parent element.</p>
+
+<blockquote>
+  <p>A secret in GitHub is a piece of encrypted information that belongs to the repository. To create a secret go to your repository <em>Settings -&gt; Secrets</em>.
+If you try to print the value of a secret during the build process you will only see something like: SERVICE_APP_KEY: ****</p>
+</blockquote>
+
+<p>Now let’s explain the steps.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>steps:
+  - uses: actions/checkout@v2
+</code></pre></div></div>
+
+<p>The first step is the checkout. This action will download all the code to the current machine.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- name: Setup MSBuild
+  uses: microsoft/setup-msbuild@v1.0.0
+</code></pre></div></div>
+
+<p>The next steps is to use the action <a href="https://github.com/microsoft/setup-msbuild">microsoft/setup-msbuild@v1.0.0</a> in order to configure the environment that allow us to use the <em>msbuild</em> tool.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- name: Build Solution
+  run: msbuild ./MyApplication.sln /restore /p:Configuration=Release
+</code></pre></div></div>
+
+<p>Build the solution in <em>Release</em> mode.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- name: Create and Sign the APK
+  run: msbuild MyApplication\MyApplication.Android\MyApplication.Android.csproj /t:SignAndroidPackage /p:Configuration=Release /p:OutputPath=bin\Release\
+</code></pre></div></div>
+
+<p>In order to create and sign the package we will execute the <em>msbuild</em> command over the Android project with the target <mark>/t:SignAndroidPackage</mark>. The configuration should be <mark>Release</mark> and the generated <em>.apk</em> file will be located in <em>{project_folder}</em><mark>\bin\Release</mark></p>
+
+<p>The name of the file will be <em>com.companyname.myapplication-Signed.apk</em>. The default name of the package is <em>com.companyname.myapplication</em>, you can change it in the <em>AndroidManifest.xml</em> file or in the properties of the Android project in Visual Studio.</p>
+
+<p>This process attach the <em>-Signed</em> suffix to the name.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- name: Upload artifact
+  uses: actions/upload-artifact@v2
+  with:
+    name: MyApplication.apk
+    path: MyApplication\MyApplication.Android\bin\Release\com.companyname.myapplication-Signed.apk
+</code></pre></div></div>
+
+<p>The last step is to make available the artifact to be downloaded. We will use the action <mark>actions/upload-artifact@v2</mark> with the parameters <mark>name</mark> as the name of the artifact, and the <mark>path</mark>, the path where the package is located.</p>
+
+<h3 id="how-to-manage-the-secret-keys">How to manage the secret keys</h3>
+
+<p>The hardcoded keys are not a good practice ;) A better solution could be create an environment variable in your local system, but, how to access from code? One approach I follow is to create a class to manage the secrets and populate it with placeholders, something like:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static class Secrets{
+  public static string ServiceID =&gt; "#KEY1#"
+  public static string OtherKey =&gt; "#KEY2#"
+}
+</code></pre></div></div>
+
+<p>To replace the placeholders by the valid keys I have a <em>PowerShell</em> script that runs in the <em>pre-build</em> event on Visual Studio.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function Replace-Text{
+  &lt;#
+  .SYNOPSIS
+    Replace the $placeholder value by $key value in $file
+  .PARAMETER $file
+    File to replace values. Mandatory
+  .PARAMETER $placeholder
+    Value to be replaced. Mandatory
+  .PARAMETER $key
+    The new value to replace the $placeholder. Mandatory
+  .EXAMPLE
+    Replace-Text file_path "#TEXT TO REPLACE#" "KEY VALUE"
+  #&gt;
+  Param(
+    [Parameter(Mandatory=$true)]
+    [string]$file,
+    [Parameter(Mandatory=$true)]
+    [string]$placeholder,
+    [Parameter(Mandatory=$true)]
+    [string]$key
+  )
+  ((Get-Content -path $file -Raw) -replace $placeholder, $key) | Set-Content -Path $file
+}
+$file = $args[0]
+$placeholder = $args[1]
+$key_value = $args[2]
+Replace-Text $file $placeholder $key_value
+</code></pre></div></div>
+
+<p>This script have three parameters:</p>
+
+<ul>
+  <li>the <mark>$file</mark> where the placeholder are</li>
+  <li>the <mark>$placeholder</mark> to be replaced</li>
+  <li>the <mark>$key\_value</mark> from the environment variable</li>
+</ul>
+
+<p>This script is called from the <em>Pre-build event command line</em>. <em>Project properties -&gt; Build Events</em>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>powershell.exe -ExecutionPolicy Unrestricted $(ProjectDir)..\..\Tools\replace-keys-script.ps1 $(ProjectDir)Secrets.cs "`#KEY1`#" $env:SERVICE_APP_KEY
+
+powershell.exe -ExecutionPolicy Unrestricted $(ProjectDir)..\..\Tools\replace-keys-script.ps1 $(ProjectDir)Secrets.cs "`#KEY2`#" $env:OTHER_KEY
+</code></pre></div></div>
+
+<blockquote>
+  <p>If the placeholder has # characters like #INSERT_KEY_HERE# they must be escaped with grave-accents: “<code class="language-plaintext highlighter-rouge">#INSERT\_KEY\_HERE</code>#” in order to escape the comment symbol.</p>
+</blockquote>
+
+<p>Let me show the folder structure:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/
+|- Solution.sln
+|- Project/
+|- Project.Android/
+|- Tools/
+    |- replace-keys-script.ps1
+</code></pre></div></div>
+
+<p>Why use <mark>$(ProjectDir)..\..\Tools</mark> instead of <mark>$(SolutionDir)Tools</mark>? Because <mark>$(SolutionDir)</mark> does not work on GitHub Actions for whatever reason.</p>
+
+<p>As you may notice, this process change the content of the files and Git wil mark them. To fix this I do a <em>checkout</em> for all files in the <em>Post-build</em> event:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git checkout $(ProjectDir)Secrets.cs
+</code></pre></div></div>
+
+<p>After the build process the application will work with correct values and the code remains intact.</p>
+
+<p>The only thing we need to do in GitHub is to create the secrets we need for the keys and create the environment variables in the workflow with the same name as we have in out system.</p>
+
+<h2 id="references">References</h2>
+
+<p><a href="https://docs.microsoft.com/en-us/xamarin/android/deploy-test/building-apps/build-process">Xamarin Android - Build Process</a></p>
+
+<p><a href="https://github.com/marketplace/actions/setup-msbuild">GitHub Action - setup-msbuild</a></p>
+
+<p><a href="https://stackoverflow.com/a/20638116/844372">Prebuild event in Visual Studio replacing $(SolutionDir) with *Undefined*</a></p>
+
+<p><a href="https://stackoverflow.com/a/56646415/844372">How to use VisualStudio SignAndroidPackage in TeamCity?</a></p>]]></content><author><name>Daniel Valcarce</name></author><category term="devops" /><category term="mobile" /><category term="github-actions" /><category term="xamarin" /><category term="ci-cd" /><summary type="html"><![CDATA[In this post I'll show a way to configure a basic GitHub Action workflow in order to build a Xaramin.]]></summary></entry><entry><title type="html">Detecting my cats with Detectron2</title><link href="https://davamix.net/2020/01/24/detecting-my-cats-with-detectron2/" rel="alternate" type="text/html" title="Detecting my cats with Detectron2" /><published>2020-01-24T00:00:00+00:00</published><updated>2020-01-24T00:00:00+00:00</updated><id>https://davamix.net/2020/01/24/detecting-my-cats-with-detectron2</id><content type="html" xml:base="https://davamix.net/2020/01/24/detecting-my-cats-with-detectron2/"><![CDATA[<p>In this post I’ll show how train a model with Detectron2 with a custom dataset and then apply it detect my cats in a picture or video.</p>
+
+<!--more-->
+
+<h4 id="table-of-content">Table of content</h4>
+
+<ul>
+  <li>Install Detectron2</li>
+  <li>Create your own dataset</li>
+  <li>Steps to annotate an image</li>
+  <li>Training process</li>
+  <li>Data loader</li>
+  <li>Inference</li>
+  <li>References</li>
+</ul>
+
+<h3 id="install-detectron2">Install Detectron2</h3>
+
+<p>I use the docker version of Detectron2 that installs all the requirements in a few steps:</p>
+
+<ol>
+  <li>
+    <p>Take the required files, <em>Dockerfile</em>, <em>Dockerfile-circleci</em>, <em>docker-compose.yml</em> from <a href="https://github.com/facebookresearch/detectron2/tree/master/docker">https://github.com/facebookresearch/detectron2/tree/master/docker</a></p>
+  </li>
+  <li>
+    <p>Create and run the container with the command:</p>
+  </li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker-compose run --volume=/local/path/to/save/your/files:/tmp:rw detectron2 
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong>Note</strong><br />
+The installed version of Pillow package is 7.0.0, this could fail when you try to train your model showing an error similiar to:</p>
+
+  <p><code class="language-plaintext highlighter-rouge">from PIL import Image, ImageOps, ImageEnhance, PILLOW_VERSION
+ImportError: cannot import name 'PILLOW_VERSION'</code></p>
+
+  <p>The solution is to downgrade the version to 6.2.2:</p>
+
+  <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip install --user Pillow==6.2.2
+</code></pre></div>  </div>
+</blockquote>
+
+<p>Check the <a href="https://github.com/facebookresearch/detectron2/blob/master/INSTALL.md">installation guide</a> to install Detectron2 using other methods.</p>
+
+<h3 id="create-your-own-dataset">Create your own dataset</h3>
+
+<p>The first (and most tedious) step is to annotate the images. For this examples I will use a set of images of my cats, Blacky and Niche:</p>
+
+<p><img src="/assets/images/train-Detectron2-with-custom-dataset/blacky-sample.webp" alt="" title="Blacky" />
+<img src="/assets/images/train-Detectron2-with-custom-dataset/niche-sample.webp" alt="" title="Niche" /></p>
+
+<p>and I’ll use <a href="http://www.robots.ox.ac.uk/~vgg/software/via/">VIA 2.0.8</a>, it’s an easy tool to make the annotations. This is an example of how an annotation looks like:</p>
+
+<p><img src="/assets/images/train-Detectron2-with-custom-dataset/niche-annotation.webp" alt="" title="Image of a region draw around Niche" /></p>
+
+<h3 id="steps-to-annotate-an-image">Steps to annotate an image</h3>
+
+<blockquote>
+  <p><strong>Note</strong></p>
+  <ul>
+    <li>The instructions below are for VIA tool, if you are using a different tool, then jump to the next section.</li>
+    <li>Follow this process twice, once for training images, another for validation images.</li>
+  </ul>
+</blockquote>
+
+<p>Before start to annotating the images you must create a region attribute named <mark>Class</mark>, you can change the name if you want, in order to choose which region your are drawing.</p>
+
+<p><img src="/assets/images/train-Detectron2-with-custom-dataset/via-attributes.webp" alt="" title="VIA - Attributes panel" /></p>
+
+<p>Looking the image above, follow these steps:</p>
+
+<ol>
+  <li>Expand the <em>Attributes</em> panel.</li>
+  <li>Type the attribute name <mark>Class</mark> on textbox and click on plus symbol.</li>
+  <li>Change the <em>Type</em> of the attribute from <mark>text</mark> to <mark>radio</mark>.</li>
+  <li>Write all classes available for the dataset, <em>Blacky</em> and <em>Niche</em> in my case, in the <mark>id</mark> field.</li>
+</ol>
+
+<p>Next, the basics steps to annotate the images:</p>
+
+<ol>
+  <li>Add the images to the project clicking on the <em>Add Files</em> button in the <em>Project panel</em>.</li>
+  <li>Select one image and start drawing the region using the <em>Poligon region shape</em>.</li>
+  <li>To apply the changes press <em>Enter</em> and the region will be saved.</li>
+  <li>
+    <p>Click outside of the region, click again on the region and select the class you are annotating.</p>
+
+    <blockquote>
+      <p>Sometimes you will need to scroll down / right to see the option list</p>
+    </blockquote>
+  </li>
+  <li>Once all images are annotated, export the annotations as json. Go <em>Annotation</em> menu, then <em>Export Annotations (as json)</em>.</li>
+</ol>
+
+<p>The json file will contains a section by image similar to this one:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"frame80.jpg214814": {
+  "filename": "frame80.jpg",
+  "size": 214814,
+  "regions": [
+    {
+      "shape_attributes": {
+        "name": "polygon",
+        "all_points_x": [
+          1096,
+          1016,
+          947,
+          ...
+        ],
+        \"all_points_y\": [
+          116,
+          191,
+          231,
+          ...
+        ]
+      },
+      \"region_attributes\": {
+        \"Class\": \"Blacky\"
+      }
+    }
+  ],
+  \"file_attributes\": {}
+}
+
+...
+</code></pre></div></div>
+
+<h3 id="training-process">Training process</h3>
+
+<p>Before to start to explain the code, let me show the folder structure in order to have an idea of where are the code, the data and all this stuff.</p>
+
+<p><img src="/assets/images/train-Detectron2-with-custom-dataset/folder_structure.webp" alt="" title="folder structe of the project" /></p>
+
+<p>The <em>data</em> folder contains two folders, <em>train</em> and <em>validation</em>, which contain one folder per class (of course, there are more than one image in the class folder). Also, the <em>train</em> and <em>validation</em> folders have its respective annotation files. The <em>src</em> folder contains the code sepated in different files.</p>
+
+<p>Ok, now we are ready to write the code. First things first, we need to import the functions required from detectron2.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># train.py
+
+import os
+
+from detectron2.data import MetadataCatalog, DatasetCatalog
+from detectron2.config import get_cfg
+from detectron2 import model_zoo
+from detectron2.engine import DefaultTrainer
+from loader import get_data_dicts
+</code></pre></div></div>
+
+<p>Next, we’ll register both datasets, train and validation, and indicate the name of the classes that we are using.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>for d in ["train", "val"]:
+  DatasetCatalog.register("cats_" + d, lambda d=d: get_data_dicts("../data/" + d))
+  MetadataCatalog.get("cats_" + d).set(thing_classes=["Blacky", "Niche"])
+
+cats_metadata = MetadataCatalog.get("cats_train")
+</code></pre></div></div>
+
+<p>The <mark>DatasetCatalog.register</mark> function expects two parameters, the name of the dataset, and the function to get the data.
+With <mark>MetadataCatalog</mark> we specify which classes are present in the dataset using the attribute thing_classes. To know more about the metadata check the <a href="https://detectron2.readthedocs.io/tutorials/datasets.html#metadata-for-datasets">documentation</a>.</p>
+
+<p>Now let’s configure the model:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cfg = get_cfg()
+cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
+cfg.DATASETS.TRAIN = ("cats_train",)
+cfg.DATASETS.TEST = ()
+cfg.DATALOADER.NUM_WORKERS = 4
+cfg.MODEL.WEIGHTS = "detectron2://COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x/137849600/model_final_f10217.pkl"
+cfg.SOLVER.IMS_PER_BATCH = 2
+cfg.SOLVER.BASE_LR = 0.00025
+cfg.SOLVER.MAX_ITER = 700
+cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128
+cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2
+</code></pre></div></div>
+
+<ul>
+  <li><strong>get_cfg()</strong>: returns an instance of CfgNode class that allow us to modify the configuration of the model.</li>
+  <li><strong>cfg.merge_from_file</strong>: we use this to apply the original configuration from <em>mask_rcnn_R_50_FPN_3x</em> model to our configuration.</li>
+  <li><strong>cfg.DATASETS.TRAIN</strong>: This is the list of dataset names for training. Important to note the comma at the end.</li>
+  <li><strong>cfg.DATASETS.TEST</strong>: This remains empty for the training purposes.</li>
+  <li><strong>cfg.DATALOADER.NUM_WORKERS</strong>: Number of data loading threads.</li>
+  <li><strong>cfg.MODEL.WEIGHTS</strong>: Pick the weights from <em>mask_rcnn_R_50_FPN_3x</em> model.</li>
+  <li><strong>cfg.SOLVER.IMS_PER_BATCH</strong>: Number of images per batch.</li>
+  <li><strong>cfg.SOLVER.BASE_LR</strong>: Learning rate.</li>
+  <li><strong>cfg.SOLVER.MAX_ITER</strong>: Total iterations (Detectron2 don’t use epochs).</li>
+  <li><strong>cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE</strong>: Indicate the number of ROI’s (Region of Interest) per training minibatch.</li>
+  <li><strong>cfg.MODEL.ROI_HEADS.NUM_CLASSES</strong>: Number of classes.</li>
+</ul>
+
+<p>Basically what we are doing here is to get configuration from an existing model, <em>mask_rcnn_R_50_FPN_3x</em>, then we overwrite some of the values like learning rate, iterations, etc…
+Check the <a href="https://detectron2.readthedocs.io/modules/config.html#config-references">documentation</a> about the configuration to know all available options that you can change.</p>
+
+<p>And finally it’s time to call the training process:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
+
+trainer = DefaultTrainer(cfg)
+
+trainer.resume_or_load(resume=False)
+
+trainer.train()
+</code></pre></div></div>
+
+<h3 id="data-loader">Data loader</h3>
+
+<p>Now it’s time to implement the function to let Detectron2 know how to obtain the data from the dataset that we registered before with:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DatasetCatalog.register("cats_" + d, lambda d=d: get_data_dicts("../data/" + d))
+</code></pre></div></div>
+
+<p>The code of <em>loader.py</em> is pretty similar to the function shown in the  <a href="https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5#scrollTo=tjbUIhSxUdm_">Colab notebook</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># loader.py
+
+def get_data_dicts(img_dir):
+  classes = ["Blacky", "Niche"]
+  json_file = os.path.join(img_dir, "cats-annotations.json")
+  with open(json_file) as f:
+    imgs_anns = json.load(f)
+  dataset_dicts = []
+  for idx, v in enumerate(imgs_anns.values()):
+    record = {}
+    if "regions" not in v: continue
+    # Extract info from regions
+    annos = v["regions"]
+    objs = []
+    for anno in annos:
+      shape_attr = anno["shape_attributes"]
+      px = shape_attr["all_points_x"]
+      py = shape_attr["all_points_y"]
+      poly = [(x + 0.5, y + 0.5) for x, y in zip(px, py)]
+      poly = [p for x in poly for p in x]
+      region_attr = anno["region_attributes"]
+      current_class = region_attr["Class"]
+      obj = {
+        "bbox": [np.min(px), np.min(py), np.max(px), np.max(py)],
+        "bbox_mode": BoxMode.XYXY_ABS,
+        "segmentation": [poly],
+        "category_id": classes.index(current_class),
+        "iscrowd": 0
+      }
+      objs.append(obj)
+    record["annotations"] = objs
+    # Get info of the image
+    filename = os.path.join(img_dir, current_class, v["filename"])
+    height, width = cv2.imread(filename).shape[:2]
+    record["file_name"] = filename
+    record["image_id"] = idx
+    record["height"] = height
+    record["width"] = width
+    dataset_dicts.append(record)
+  return dataset_dicts
+</code></pre></div></div>
+
+<p>The function loops through all annotations in the json file and extract the information related with the region, category, etc… of the image.</p>
+
+<p>The annotation itself is represented by the dictionary <mark>obj</mark> that contains some specific keys:</p>
+
+<ul>
+  <li><strong>bbox</strong>: list of 4 numbers representing the bounding box of the instance.</li>
+  <li><strong>bbox_mode</strong>: the format of the bbox.</li>
+  <li><strong>category_id</strong>: number that represents the category label.</li>
+  <li><strong>iscrowd</strong>: 0 or 1. Whether the instance is labeled as COCO’s format.</li>
+</ul>
+
+<p>Also, some extra information is saved in the record dictionary:</p>
+
+<ul>
+  <li><strong>file_name</strong>: the fullpath of the image.</li>
+  <li><strong>image_id</strong>: a unique id to identify the image.</li>
+  <li><strong>height</strong>: self explanatory.</li>
+  <li><strong>width</strong>: self explanatory.</li>
+</ul>
+
+<p>To know more about of the dictionary check the  <a href="https://detectron2.readthedocs.io/tutorials/datasets.html#register-a-dataset">documentation</a>.</p>
+
+<h3 id="inference">Inference</h3>
+
+<p>It’s time to do some predictions and we start with the imports:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># inference.py
+
+import os
+import random
+import cv2
+
+from detectron2.config import get_cfg
+from detectron2 import model_zoo
+from detectron2.engine import DefaultPredictor
+from detectron2.utils.visualizer import Visualizer, ColorMode
+from detectron2.data import MetadataCatalog
+from loader import get_data_dicts
+</code></pre></div></div>
+
+<p>For inference we use a few different functions: <mark>DefaultPredictor</mark>, <mark>Visualizer</mark> and <mark>ColorMode</mark>.</p>
+
+<p>Next, we configure the model as we did on the training process, then create the predictor:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>classes = ["Blacky", "Niche"]
+
+cfg = get_cfg()
+cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
+cfg.DATASETS.TEST = ("cats_val",)
+cfg.MODEL.WEIGHTS = os.path.join(cfg.OUTPUT_DIR, "model_final.pth")
+cfg.MODEL.ROI_HEADS.NUM_CLASSES = 2
+cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.7
+
+predictor = DefaultPredictor(cfg)
+</code></pre></div></div>
+
+<p>This configuration is similar to the configuration we used in the training but this time the <mark>WEIGHTS</mark> come from our trained model <em>model_final.pth</em>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dataset_dicts = get_data_dicts("../data/validation")
+
+for idx, d in enumerate(random.sample(dataset_dicts, 3)):
+  im = cv2.imread(d["file_name"])
+  outputs = predictor(im)
+  
+  v = Visualizer(im[:, :, ::-1],
+    metadata = MetadataCatalog.get("cats_val").set(
+      thing_classes=classes,
+      thing_colors=[(177, 205, 223), (223, 205, 177)]),
+    scale = 0.8,
+    instance_mode = ColorMode.IMAGE_BW
+  )
+
+  pred_class = (outputs['instances'].pred_classes).detach()[0]
+  pred_score = (outputs['instances'].scores).detach()[0]
+  
+  print(f"File: {d['file_name']}")
+  print(f"--&gt; Class: {classes[pred_class]}, {pred_score * 100:.2f}%")
+
+  # Save image predictions
+  v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
+  image_name = f"inference_{idx}.jpg"
+  cv2.imwrite(image_name, v.get_image()[:, :, ::-1])
+</code></pre></div></div>
+
+<p>To make the predicitions we use 3 random images from the validation dataset.</p>
+
+<p>The predictor receive the image in format BGR, the same format that cv2 returns when reads the image.
+Once we have the predictions then we create and configure the <mark>Visualizer</mark> that we’ll use to show the regions predicted over the original image.</p>
+
+<p>The <mark>Visualizer</mark> accepts as the first parameter the original image but this time in RGB format, that’s why we have to reverse the array that cv2 returns when reads the image.
+The second parameter is the metadata, which in this case consists of the name of the classes, <em>Blacky</em> and <em>Niche</em>, and the colors applied to the regions of each class.
+The <mark>ColorMode.IMAGE\_BW</mark> value is used to remove the color of unsegmented pixels (the pixels that don’t belong to the predicted region).</p>
+
+<p>At the end we apply the regions predicted over the original image with <mark>v.draw\_instance\_predictions(outputs["instances"].to("cpu"))</mark></p>
+
+<p>In this case I save the image on disk because I don’t have access to XServer from inside Docker, so OpenCV cannot open any window to show the image. In case we worked from our local system we could use:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>v = v.draw_instance_predictions(outputs["instances"].to("cpu"))
+cv2.imshow(v.get_image()[:, :, ::-1])
+</code></pre></div></div>
+
+<p><img src="/assets/images/train-Detectron2-with-custom-dataset/inference_blacky.webp" alt="" title="Inference Blacky" />
+<img src="/assets/images/train-Detectron2-with-custom-dataset/inference_niche.webp" alt="" title="Inference Niche" /></p>
+
+<p><img src="/assets/images/train-Detectron2-with-custom-dataset/inference_both.webp" alt="" title="Inference Blacky and Niche" /></p>
+
+<p>Check the <a href="https://github.com/davamix/cats-localization/blob/master/src/test.py">test.py</a> file in the repository to know how to make inference in a video. Spoiler alert: predicting every frame xD.</p>
+
+<h2 id="references">References</h2>
+
+<p><a href="https://github.com/davamix/cats-localization">Code repository</a></p>
+
+<p><a href="https://drive.google.com/open?id=1o9zyd51QCqWG3DlArQnfH4q4clMVQmTY">Cats dataset</a></p>
+
+<p>(zip file ~39MB)</p>
+
+<p><a href="https://github.com/facebookresearch/detectron2">Detectron2 GitHub repository</a></p>
+
+<p><a href="https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5">Detectron2 Colab Notebook</a></p>
+
+<p><a href="https://detectron2.readthedocs.io/tutorials/datasets.html">Documentation - Use Custom Datasets</a></p>
+
+<p><a href="https://detectron2.readthedocs.io/modules/config.html#config-references">Documentation - Config References</a></p>
+
+<p><a href="https://detectron2.readthedocs.io/tutorials/models.html">Documentation - Use Models</a></p>]]></content><author><name>Daniel Valcarce</name></author><category term="python" /><category term="ml" /><category term="detectron2" /><category term="object-detection" /><category term="ml" /><summary type="html"><![CDATA[In this post I'll show how train a model with Detectron2 with a custom dataset and then apply it detect my cats in a picture or video.]]></summary></entry><entry><title type="html">Save video frames as images with OpenCV</title><link href="https://davamix.net/2019/03/15/save-video-frames-as-images-with-opencv/" rel="alternate" type="text/html" title="Save video frames as images with OpenCV" /><published>2019-03-15T00:00:00+00:00</published><updated>2019-03-15T00:00:00+00:00</updated><id>https://davamix.net/2019/03/15/save-video-frames-as-images-with-opencv</id><content type="html" xml:base="https://davamix.net/2019/03/15/save-video-frames-as-images-with-opencv/"><![CDATA[<p>To read a frame we’ll use the method <a href="https://docs.opencv.org/4.0.1/d8/dfe/classcv_1_1VideoCapture.html#a473055e77dd7faa4d26d686226b292c1">read()</a>
+from the <a href="https://docs.opencv.org/4.0.1/d8/dfe/classcv_1_1VideoCapture.html">VideoCapture</a> class then this frame can be saved with the
+<a href="https://docs.opencv.org/4.0.1/d4/da8/group__imgcodecs.html#gabbc7ef1aa2edfaa87772f1202d67e0ce">imwrite</a> method.</p>
+
+<!--more-->
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import cv2
+
+video = cv2.VideoCapture("./video_file.mp4")
+
+success, image = video.read()
+
+if success:
+    cv2.imwrite("frame.jpg", image)
+</code></pre></div></div>
+
+<p>The method <em>read()</em> returns two values, <em>success</em> is a boolean that tell us if a frame has been grabbed and the
+<em>image</em> value is the frame itself.
+Then using the method <em>imwrite</em> we’ll save that frame as an image file.</p>
+
+<p>To save more than one frame or even all frames as images we need to put the read() into a loop, for instance:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import cv2
+
+video = cv2.VideoCapture("./video_file.mp4")
+
+# Read the first frame
+success, image = video.read()
+frame_id = 0
+
+while success:
+    cv2.imwrite("frame{}.jpg".format(frame_id), image)
+    success, image = video.read()
+    frame_id += 1
+</code></pre></div></div>
+
+<p>I created a script to save a percentage of the video frames as images. Check it out the <a href="https://github.com/davamix/frames-extractor">frames-extractor script</a>.</p>]]></content><author><name>Daniel Valcarce</name></author><category term="python" /><category term="computer-vision" /><category term="opencv" /><category term="image-processing" /><category term="video" /><summary type="html"><![CDATA[To read a frame we'll use the method read()(https://docs.]]></summary></entry><entry><title type="html">Configure a self-signed certificate in Ubuntu to allow HTTPS access with an ASP.NET Core 2.1 application</title><link href="https://davamix.net/2018/07/17/configure-a-self-signed-certificate-in-ubuntu-to-allow-https-access-with-an-asp-net-core-2-1-application/" rel="alternate" type="text/html" title="Configure a self-signed certificate in Ubuntu to allow HTTPS access with an ASP.NET Core 2.1 application" /><published>2018-07-17T00:00:00+00:00</published><updated>2018-07-17T00:00:00+00:00</updated><id>https://davamix.net/2018/07/17/configure-a-self-signed-certificate-in-ubuntu-to-allow-https-access-with-an-asp-net-core-2-1-application</id><content type="html" xml:base="https://davamix.net/2018/07/17/configure-a-self-signed-certificate-in-ubuntu-to-allow-https-access-with-an-asp-net-core-2-1-application/"><![CDATA[<ol>
+  <li>Create an asp.net core project as usual and check if you have access using HTTPS.
+<!--more-->
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> dotnet new web -o Sample
+ cd Sample
+ dotnet restore
+ dotnet run
+</code></pre></div>    </div>
+
+    <p>1.1. Navigate to <a href="https://localhost:5001">https://localhost:5001</a>. Can you read the message <mark>Hello World!</mark>? Congrats, you can stop reading this guide. If Firefox shows you a <mark>Secure Connection Failed</mark> message or you have an error message in console like this:</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> dbug: HttpsConnectionAdapter[1]
+ Failed to authenticate HTTPS connection.
+ System.Security.Authentication.AuthenticationException: Authentication failed, see inner exception. ---&gt; Interop+Crypto+OpenSslCryptographicException: error:2006D002:BIO routines:BIO_new_file:system lib
+</code></pre></div>    </div>
+    <p>Keep reading.</p>
+  </li>
+  <li>
+    <p>Install <mark>ca-certificates</mark> and <mark>openssl<mark> packages</mark></mark></p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> sudo apt-get install ca-certificates openssl
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Genereate the .pfx certificate with dotnet command [<a href="#link1">1</a>]</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p crypticpassword
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Extract the .crt file [<a href="#link2">2</a>]</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> cd ${HOME}/.aspnet/https/
+ openssl pkcs12 -in aspnetapp.pfx -nocerts -out aspnetapp.pfx
+ openssl pkcs12 -in aspnetapp.pfx -clcerts -nokeys -out aspnetapp.crt
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Copy the .crt file to the certificates location [<a href="#link3">3</a>]</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> sudo cp aspnetapp.crt /usr/local/share/ca-certificates/
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Change the permissions to allow to read the certificate [<a href="#link4">4</a>]</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> sudo chmod +r /usr/local/share/ca-certificates/*
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Run the application again and check the https address</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> dotnet run
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>Navigate to <a href="https://localhost:5001">https://localhost:5001</a>. If you have any error, you can check the links below to know more about each step.</p>
+
+<h2 id="references">References</h2>
+
+<p>[1] <a href="https://github.com/dotnet/dotnet-docker/blob/master/samples/aspnetapp/aspnetcore-docker-https.md">https://github.com/dotnet/dotnet-docker/blob/master/samples/aspnetapp/aspnetcore-docker-https.md</a></p>
+
+<p>[2] <a href="https://www.markbrilman.nl/2011/08/howto-convert-a-pfx-to-a-seperate-key-crt-file/">https://www.markbrilman.nl/2011/08/howto-convert-a-pfx-to-a-seperate-key-crt-file/</a></p>
+
+<p>[3] <a href="https://stackoverflow.com/a/44160125">https://stackoverflow.com/a/44160125</a></p>
+
+<p>[4] <a href="https://github.com/dotnet/cli/issues/9376#issuecomment-393954876">https://github.com/dotnet/cli/issues/9376#issuecomment-393954876</a></p>]]></content><author><name>Daniel Valcarce</name></author><category term="dotnet" /><category term="web" /><category term="asp-net-core" /><category term="https" /><category term="ssl" /><summary type="html"><![CDATA[1.]]></summary></entry><entry><title type="html">Install .NET Framework 3.5 on Windows 10</title><link href="https://davamix.net/2017/04/25/install-net-framework-3-5-on-windows-10/" rel="alternate" type="text/html" title="Install .NET Framework 3.5 on Windows 10" /><published>2017-04-25T00:00:00+00:00</published><updated>2017-04-25T00:00:00+00:00</updated><id>https://davamix.net/2017/04/25/install-net-framework-3-5-on-windows-10</id><content type="html" xml:base="https://davamix.net/2017/04/25/install-net-framework-3-5-on-windows-10/"><![CDATA[<p>On Windows 10 is not possible to install .NET Framework 3.5 using the <mark>Turn Windows features on or off</mark> option because the error <mark>0x800F081F</mark>.
+In my case I installed it following the steps below:</p>
+
+<!--more-->
+
+<ol>
+  <li>Go to <a href="https://my.visualstudio.com">https://my.visualstudio.com</a> and download <mark>Windows 10 Features on Demand</mark> iso (x86 or x64).</li>
+  <li>Mount the iso</li>
+  <li>Open a PowerShell command line as Administrator and run the next command</li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Dism /online /enable-feature /featurename:NetFX3 /All /Source:D:\ /LimitAccess
+</code></pre></div></div>
+
+<p>The output should something like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Deployment Image Servicing and Management tool
+Version: 10.0.14393.0
+
+Image Version: 10.0.14393.0
+
+Enabling feature(s)
+[==========================100.0%==========================]
+The operation completed successfully.
+</code></pre></div></div>
+
+<p>If you go to Turn Windows features on or off the option fot .NET Framework 3.5 must be cheked.</p>]]></content><author><name>Daniel Valcarce</name></author><category term="dotnet" /><category term="sysadmin" /><category term="dotnet-framework" /><category term="windows" /><summary type="html"><![CDATA[On Windows 10 is not possible to install.]]></summary></entry><entry><title type="html">Create and configure a local NuGet server</title><link href="https://davamix.net/2016/08/20/create-and-configure-a-local-nuget-server/" rel="alternate" type="text/html" title="Create and configure a local NuGet server" /><published>2016-08-20T00:00:00+00:00</published><updated>2016-08-20T00:00:00+00:00</updated><id>https://davamix.net/2016/08/20/create-and-configure-a-local-nuget-server</id><content type="html" xml:base="https://davamix.net/2016/08/20/create-and-configure-a-local-nuget-server/"><![CDATA[<p>This guide will work with three project, the Nuget Server project, the Nuget Package project that contains a simple library and a Sample project to use the package created.</p>
+
+<!--more-->
+
+<h3 id="nuget-server-project">Nuget Server project</h3>
+
+<ol>
+  <li>Install the IIS server if you don’t have it yet.</li>
+  <li>Create a new site, NugetServer for example, to host the server.</li>
+  <li>Configure the port 8080 if its free, or any other as you wish.</li>
+</ol>
+
+<p>From Visual Studio:</p>
+<ol>
+  <li>Create an ASP.NET web project with the <mark>Empty</mark> template.</li>
+  <li>
+    <p>Install the <mark>Nuget.Server</mark> package.</p>
+
+    <blockquote>
+      <p><strong>Note</strong><br />
+Check the <em>web.config</em> and be sure that the <mark>targetFramework</mark> version from <mark>httpRuntime</mark> entry is the same that <mark>targetFramework</mark> from <mark>compilation</mark> entry.<br />
+If you have more than once <mark>compilation</mark> entry then remove the different one.</p>
+    </blockquote>
+  </li>
+  <li>
+    <p>Publish the project into your IIS server with the options below:</p>
+
+    <blockquote>
+      <p><strong>Note</strong><br />To publish the project on IIS you need to run Visual Studio as Administrator;</p>
+    </blockquote>
+  </li>
+</ol>
+
+<p>Connection:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Publish method: Web deploy
+- Server: localhost (no port number)
+- Site name: NugetServer (site name in IIS)
+- Destination URL: http://localhost:8080 (site address)
+</code></pre></div></div>
+
+<p>Settings:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Configuration: Release
+- Expand File Publish Options and check Exclude file from the App_Data folder
+</code></pre></div></div>
+
+<h3 id="nuget-package-project">Nuget Package project</h3>
+
+<p>In Visual Studio create a new <mark>Class Library</mark> project and add a simple method that returns whatever value in order to test it later in the Sample project.
+Download <em>Nuget.exe</em> from <a href="https://www.nuget.org/downloads">https://www.nuget.org/downloads</a> and run the next command where the <em>.csproj</em> is located in order to create the <mark>.nuspec</mark> file.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nutget.exe spec
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong>Note</strong><br />
+If you have an error like</p>
+
+  <p><code class="language-plaintext highlighter-rouge">Unexpected token 'spec' in expression or statement. + CategoryInfo : ParserError: (:) [], ParentContainsErrorRecordException + FullyQualifiedErrorId : UnexpectedToken</code></p>
+
+  <p>Try to copy the <em>nuget.exe</em> to the same folder that <code class="language-plaintext highlighter-rouge">.csproj</code> file and run it from there.</p>
+</blockquote>
+
+<p>Open the <em>.nuspec</em> file created and complete all information.</p>
+
+<p>Build the project in <mark>Release</mark> mode and generate the nuget package with:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nutget.exe pack Project_name.csproj -Prop Configuration=Release
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong>Note</strong><br.>
+The previous command could fail if you don't fill correctly the *.nuspec* file.</br.></p>
+</blockquote>
+
+<p>Finally copy the <em>.nupkg</em> file created into the <mark>Packages</mark> folder of the NugetServer.</p>
+
+<h3 id="sample-project">Sample project</h3>
+
+<p>Create a new <mark>Console App</mark> project and configure the Nuget repository.</p>
+
+<p><code class="language-plaintext highlighter-rouge">Tools -&gt; Nuget Package Manager -&gt; Package Manager Settings -&gt; Package Sources</code></p>
+
+<p>Add a new one with this options:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Name: Local Server
+Source: http://localhost:8080/nuget
+Click on Update then Ok
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong>Note</strong><br />
+If there is an error getting the list of packages from local server like the image below
+<img src="/assets/images/create-local-nuget-server-1.PNG" alt="" title="Error ocurred getting the packages list from &gt; local Nuget server" />
+check the Output console to know more about the error.</p>
+
+  <p><code class="language-plaintext highlighter-rouge">[Local Server] The V2 feed at 'http://localhost:8080/Search()?$filter=IsLatestVersion&amp;searchTerm=''&amp;targetFramework='net47'&amp;includePrerelease=false&amp;$skip=0&amp;$top=26&amp;semVerLevel=2.0.0' returned an unexpected status code '500 Internal Server Error'.</code></p>
+
+  <p>In this case the error 500 means that the sever cannot server the packages and is related with the note in the <a href="#nuget-server-note1">Nuget Server project</a> section.</p>
+</blockquote>
+
+<p>If all works correctly then you have access to your package and all its classes and methods.</p>
+
+<h3 id="extra-automatise-the-package-creation">Extra: Automatise the package creation</h3>
+
+<p>This is an alternative version of the Nuget Package project. Instead of create the package and copy it to the server manually, these tasks are performed by a script when you build the project.</p>
+
+<p>Start in the same way creating the <mark>Class Library</mark> project and create a folder <mark>Tools</mark> in the solution folder then copy the <em>nuget.exe</em> file into it.
+Create a <mark>Post-Build</mark> event with the content below to create the nuget package automatically and be moved to the Packages folder of the Nuget server</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"$(SolutionDir)Tools\nuget.exe" pack "$(ProjectPath)" -Prop Configuration=Release
+
+if exist "$(TargetDir)*.nupkg" (
+  move "$(TargetDir)*.nupkg" "D:\path_to_server\Packages"
+)
+</code></pre></div></div>
+<p>Be sure that the version of the library has been incremented after the build. I use
+<a href="https://visualstudiogallery.msdn.microsoft.com/dd8c5682-58a4-4c13-a0b4-9eadaba919fe/">Automatic Versions</a></p>
+
+<p>Now if you build several times you can check in the Sample project the latest version available for download.</p>
+
+<blockquote>
+  <p><strong>Note</strong><br />
+If you don’t see the new versions available that means the new nuget packages has not been generated.
+You can check all versions available of the package in the <code class="language-plaintext highlighter-rouge">Packages/package\_name</code> folder on Nuget Sever. If there is only one, means that something gone wrong.
+If you are reusing the Nuget Package Sample project be sure to remove the <code class="language-plaintext highlighter-rouge">.nuspec</code> and <code class="language-plaintext highlighter-rouge">.nupkg</code> files from project folder because you don’t needed now also remove the <code class="language-plaintext highlighter-rouge">.nupkg</code> file from the Nuget Server that you copied manually.</p>
+</blockquote>
+
+<h2 id="references">References</h2>
+
+<p><a href="http://docs.nuget.org/create/hosting-your-own-nuget-feeds">Hosting Your Own NuGet Feeds</a></p>
+
+<p><a href="http://docs.nuget.org/create/Creating-and-Publishing-a-Package">Creating and Publishing a Package</a></p>]]></content><author><name>Daniel Valcarce</name></author><category term="dotnet" /><category term="backend" /><category term="nuget" /><category term="package-management" /><summary type="html"><![CDATA[This guide will work with three project, the Nuget Server project, the Nuget Package project that contains a simple library and a Sample project to use the package created.]]></summary></entry></feed>

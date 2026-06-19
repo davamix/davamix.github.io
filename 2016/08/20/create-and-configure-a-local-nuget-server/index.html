@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create and configure a local NuGet server | Davamix</title>
+<meta name="description" content="This guide will work with three project, the Nuget Server project, the Nuget Package project that contains a simple library and a Sample project to use the package created.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@600;700;800&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary":                    "#005bc1",
+          "primary-dim":                "#004faa",
+          "primary-fixed":              "#d8e2ff",
+          "primary-fixed-dim":          "#c2d4ff",
+          "primary-container":          "#d8e2ff",
+          "on-primary":                 "#f7f7ff",
+          "on-primary-fixed":           "#003d85",
+          "on-primary-fixed-variant":   "#0058bb",
+          "on-primary-container":       "#004ea8",
+          "secondary":                  "#5c5f64",
+          "secondary-dim":              "#505358",
+          "secondary-fixed":            "#e1e2e8",
+          "secondary-fixed-dim":        "#d2d4da",
+          "secondary-container":        "#e1e2e8",
+          "on-secondary":               "#f7f9ff",
+          "on-secondary-fixed":         "#3d3f44",
+          "on-secondary-fixed-variant": "#595c61",
+          "on-secondary-container":     "#4f5257",
+          "tertiary":                   "#595e78",
+          "tertiary-dim":               "#4d526c",
+          "tertiary-fixed":             "#dadefe",
+          "tertiary-fixed-dim":         "#ccd0ef",
+          "tertiary-container":         "#dadefe",
+          "on-tertiary":                "#faf8ff",
+          "on-tertiary-fixed":          "#383c55",
+          "on-tertiary-fixed-variant":  "#545873",
+          "on-tertiary-container":      "#4a4f69",
+          "background":                 "#f8f9fa",
+          "surface":                    "#f8f9fa",
+          "surface-bright":             "#f8f9fa",
+          "surface-dim":                "#d1dce0",
+          "surface-tint":               "#005bc1",
+          "surface-variant":            "#dbe4e7",
+          "surface-container-lowest":   "#ffffff",
+          "surface-container-low":      "#f1f4f6",
+          "surface-container":          "#eaeff1",
+          "surface-container-high":     "#e3e9ec",
+          "surface-container-highest":  "#dbe4e7",
+          "on-surface":                 "#2b3437",
+          "on-surface-variant":         "#586064",
+          "on-background":              "#2b3437",
+          "outline":                    "#737c7f",
+          "outline-variant":            "#abb3b7",
+          "inverse-surface":            "#0c0f10",
+          "inverse-on-surface":         "#9b9d9e",
+          "inverse-primary":            "#4b8eff",
+          "error":                      "#9f403d",
+          "error-dim":                  "#4e0309",
+          "error-container":            "#fe8983",
+          "on-error":                   "#fff7f6",
+          "on-error-container":         "#752121"
+        },
+        borderRadius: {
+          DEFAULT: "0.125rem",
+          lg:      "0.25rem",
+          xl:      "0.5rem",
+          "2xl":   "0.75rem",
+          full:    "0.75rem"
+        },
+        fontFamily: {
+          headline: ["Manrope", "sans-serif"],
+          body:     ["Inter", "sans-serif"],
+          label:    ["Space Grotesk", "sans-serif"]
+        }
+      }
+    }
+  }
+</script>
+
+<link rel="stylesheet" href="/assets/css/main.css">
+
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+  <header class="fixed top-0 w-full z-50 glass-nav">
+  <div class="flex justify-between items-center max-w-7xl mx-auto px-8 h-20">
+    <a href="/" class="font-headline font-bold text-2xl tracking-tighter text-on-surface hover:text-primary transition-colors">
+      Davamix
+    </a>
+    <nav class="hidden md:flex items-center gap-10 ml-auto">
+      <a href="/"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Articles
+      </a>
+      <a href="/projects"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Projects
+      </a>
+      <a href="/snippets"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        Snippets
+      </a>
+      <a href="/about"
+         class="font-label tracking-tight transition-colors text-on-surface-variant hover:text-on-surface">
+        About
+      </a>
+    </nav>
+  </div>
+</header>
+
+  <main class="pt-32 pb-24 px-6">
+  <div class="max-w-4xl mx-auto">
+    <article>
+
+      <nav class="flex items-center justify-between mb-8">
+        <a href="/" class="group flex items-center gap-2 text-primary font-label text-sm font-medium">
+          <span class="material-symbols-outlined text-base group-hover:-translate-x-1 transition-transform">arrow_back</span>
+          Back to Feed
+        </a>
+        <div class="flex items-center gap-2 text-xs text-secondary font-label font-medium uppercase tracking-wider">
+          <span class="material-symbols-outlined text-sm">schedule</span>
+          
+          
+          3 min read
+        </div>
+      </nav>
+
+      <header class="mb-16">
+        <div class="flex flex-wrap gap-3 mb-6">
+          
+          <span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">dotnet</span>
+          
+          <span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">backend</span>
+          
+          
+          <span class="bg-surface-container-high text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">nuget</span>
+          
+          <span class="bg-surface-container-high text-on-secondary-container px-3 py-1 rounded-full text-[10px] font-label font-bold uppercase tracking-wider">package-management</span>
+          
+        </div>
+
+        <h1 class="text-5xl md:text-6xl font-headline font-extrabold tracking-tighter text-on-surface leading-[1.1] mb-8">
+          Create and configure a local NuGet server
+        </h1>
+
+        <div class="flex items-center gap-4 py-6 border-t border-outline-variant/10">
+          <div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+            <span class="material-symbols-outlined text-on-surface-variant">person</span>
+          </div>
+          <div>
+            <p class="text-sm font-headline font-semibold text-on-surface">Daniel Valcarce</p>
+            <p class="text-xs font-body text-secondary">August 20, 2016</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="post-content">
+        <p>This guide will work with three project, the Nuget Server project, the Nuget Package project that contains a simple library and a Sample project to use the package created.</p>
+
+<!--more-->
+
+<h3 id="nuget-server-project">Nuget Server project</h3>
+
+<ol>
+  <li>Install the IIS server if you don’t have it yet.</li>
+  <li>Create a new site, NugetServer for example, to host the server.</li>
+  <li>Configure the port 8080 if its free, or any other as you wish.</li>
+</ol>
+
+<p>From Visual Studio:</p>
+<ol>
+  <li>Create an ASP.NET web project with the <mark>Empty</mark> template.</li>
+  <li>
+    <p>Install the <mark>Nuget.Server</mark> package.</p>
+
+    <blockquote>
+      <p><strong>Note</strong><br />
+Check the <em>web.config</em> and be sure that the <mark>targetFramework</mark> version from <mark>httpRuntime</mark> entry is the same that <mark>targetFramework</mark> from <mark>compilation</mark> entry.<br />
+If you have more than once <mark>compilation</mark> entry then remove the different one.</p>
+    </blockquote>
+  </li>
+  <li>
+    <p>Publish the project into your IIS server with the options below:</p>
+
+    <blockquote>
+      <p><strong>Note</strong><br />To publish the project on IIS you need to run Visual Studio as Administrator;</p>
+    </blockquote>
+  </li>
+</ol>
+
+<p>Connection:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Publish method: Web deploy
+- Server: localhost (no port number)
+- Site name: NugetServer (site name in IIS)
+- Destination URL: http://localhost:8080 (site address)
+</code></pre></div></div>
+
+<p>Settings:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- Configuration: Release
+- Expand File Publish Options and check Exclude file from the App_Data folder
+</code></pre></div></div>
+
+<h3 id="nuget-package-project">Nuget Package project</h3>
+
+<p>In Visual Studio create a new <mark>Class Library</mark> project and add a simple method that returns whatever value in order to test it later in the Sample project.
+Download <em>Nuget.exe</em> from <a href="https://www.nuget.org/downloads">https://www.nuget.org/downloads</a> and run the next command where the <em>.csproj</em> is located in order to create the <mark>.nuspec</mark> file.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nutget.exe spec
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong>Note</strong><br />
+If you have an error like</p>
+
+  <p><code class="language-plaintext highlighter-rouge">Unexpected token 'spec' in expression or statement. + CategoryInfo : ParserError: (:) [], ParentContainsErrorRecordException + FullyQualifiedErrorId : UnexpectedToken</code></p>
+
+  <p>Try to copy the <em>nuget.exe</em> to the same folder that <code class="language-plaintext highlighter-rouge">.csproj</code> file and run it from there.</p>
+</blockquote>
+
+<p>Open the <em>.nuspec</em> file created and complete all information.</p>
+
+<p>Build the project in <mark>Release</mark> mode and generate the nuget package with:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nutget.exe pack Project_name.csproj -Prop Configuration=Release
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong>Note</strong><br.>
+The previous command could fail if you don't fill correctly the *.nuspec* file.</br.></p>
+</blockquote>
+
+<p>Finally copy the <em>.nupkg</em> file created into the <mark>Packages</mark> folder of the NugetServer.</p>
+
+<h3 id="sample-project">Sample project</h3>
+
+<p>Create a new <mark>Console App</mark> project and configure the Nuget repository.</p>
+
+<p><code class="language-plaintext highlighter-rouge">Tools -&gt; Nuget Package Manager -&gt; Package Manager Settings -&gt; Package Sources</code></p>
+
+<p>Add a new one with this options:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Name: Local Server
+Source: http://localhost:8080/nuget
+Click on Update then Ok
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong>Note</strong><br />
+If there is an error getting the list of packages from local server like the image below
+<img src="/assets/images/create-local-nuget-server-1.PNG" alt="" title="Error ocurred getting the packages list from &gt; local Nuget server" />
+check the Output console to know more about the error.</p>
+
+  <p><code class="language-plaintext highlighter-rouge">[Local Server] The V2 feed at 'http://localhost:8080/Search()?$filter=IsLatestVersion&amp;searchTerm=''&amp;targetFramework='net47'&amp;includePrerelease=false&amp;$skip=0&amp;$top=26&amp;semVerLevel=2.0.0' returned an unexpected status code '500 Internal Server Error'.</code></p>
+
+  <p>In this case the error 500 means that the sever cannot server the packages and is related with the note in the <a href="#nuget-server-note1">Nuget Server project</a> section.</p>
+</blockquote>
+
+<p>If all works correctly then you have access to your package and all its classes and methods.</p>
+
+<h3 id="extra-automatise-the-package-creation">Extra: Automatise the package creation</h3>
+
+<p>This is an alternative version of the Nuget Package project. Instead of create the package and copy it to the server manually, these tasks are performed by a script when you build the project.</p>
+
+<p>Start in the same way creating the <mark>Class Library</mark> project and create a folder <mark>Tools</mark> in the solution folder then copy the <em>nuget.exe</em> file into it.
+Create a <mark>Post-Build</mark> event with the content below to create the nuget package automatically and be moved to the Packages folder of the Nuget server</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"$(SolutionDir)Tools\nuget.exe" pack "$(ProjectPath)" -Prop Configuration=Release
+
+if exist "$(TargetDir)*.nupkg" (
+  move "$(TargetDir)*.nupkg" "D:\path_to_server\Packages"
+)
+</code></pre></div></div>
+<p>Be sure that the version of the library has been incremented after the build. I use
+<a href="https://visualstudiogallery.msdn.microsoft.com/dd8c5682-58a4-4c13-a0b4-9eadaba919fe/">Automatic Versions</a></p>
+
+<p>Now if you build several times you can check in the Sample project the latest version available for download.</p>
+
+<blockquote>
+  <p><strong>Note</strong><br />
+If you don’t see the new versions available that means the new nuget packages has not been generated.
+You can check all versions available of the package in the <code class="language-plaintext highlighter-rouge">Packages/package\_name</code> folder on Nuget Sever. If there is only one, means that something gone wrong.
+If you are reusing the Nuget Package Sample project be sure to remove the <code class="language-plaintext highlighter-rouge">.nuspec</code> and <code class="language-plaintext highlighter-rouge">.nupkg</code> files from project folder because you don’t needed now also remove the <code class="language-plaintext highlighter-rouge">.nupkg</code> file from the Nuget Server that you copied manually.</p>
+</blockquote>
+
+<h2 id="references">References</h2>
+
+<p><a href="http://docs.nuget.org/create/hosting-your-own-nuget-feeds">Hosting Your Own NuGet Feeds</a></p>
+
+<p><a href="http://docs.nuget.org/create/Creating-and-Publishing-a-Package">Creating and Publishing a Package</a></p>
+
+      </div>
+
+    </article>
+  </div>
+</main>
+
+  <footer class="w-full py-16 bg-surface-container-low mt-32 border-t border-outline-variant/10">
+  <div class="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-8 opacity-60">
+    <div class="font-label text-xs uppercase tracking-widest text-outline mb-6 md:mb-0">
+      &copy; 2026 Davamix. Built for clarity.
+    </div>
+    <div class="flex gap-8 items-center">
+      <a href="/feed.xml" class="font-label text-xs uppercase tracking-widest text-outline hover:text-primary transition-colors">RSS</a>
+    </div>
+    <div class="hidden md:flex items-center gap-2 mt-6 md:mt-0">
+      <span class="w-2 h-2 rounded-full bg-primary-dim"></span>
+      <span class="font-label text-[10px] uppercase tracking-[0.2em] text-outline">Node Status: Active</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

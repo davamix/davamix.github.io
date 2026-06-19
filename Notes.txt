@@ -1,0 +1,32 @@
+Problem: The dev environment is in a docker container. I removed accidentally and the configuration saved on user's folder where lost (MCP cofigs for Claude and ENV variables with API KEYS)
+
+Solution: Don't remove the container :)
+
+Env variables on .bashrc:
+- export GOOGLE_STITCH_API_KEY=<get the api from settings on Stitch>
+- export GITHUB_ACCESS_TOKEN=<Regenerate the access token claude-jekyll-blog on GitHub>
+
+Add the MCP servers to Claude:
+- claude mcp add -s user github --transport http https://api.githubcopilot.com/mcp
+- claude mcp add stitch --transport http https://stitch.googleapis.com/mcp --header "X-Goog-Api-Key: api-key" -s user
+
+After adding the MCP server, modify the .claude.json file:
+- For GitHub MCP section:
+
+"github": {
+  "type": "http",
+  "url": "https://api.githubcopilot.com/mcp",
+  "headers": {
+    "Authorization": "Bearer ${GITHUB_ACCESS_TOKEN}"
+  }
+}
+
+- For Google Stitch:
+
+"stitch": {
+  "type": "http",
+  "url": "https://stitch.googleapis.com/mcp",
+  "headers": {
+    "X-Goog-Api-Key": "${GOOGLE_STITCH_API_KEY}"
+  }
+}
